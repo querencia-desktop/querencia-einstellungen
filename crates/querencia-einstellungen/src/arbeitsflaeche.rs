@@ -351,9 +351,13 @@ impl Oberflaeche {
             eprintln!("querencia-einstellungen: Arbeitsfläche: Desktop wertet alles aus");
             return;
         }
-        let text = format!(
-            "Hinweis: Der laufende Desktop wertet {} noch nicht aus. Die Einstellungen werden trotzdem gespeichert und gelten, sobald ein neuerer Querencia Desktop läuft.",
+        let was = if fehlt.len() == 3 {
+            "diese Einstellungen".to_owned()
+        } else {
             fehlt.join(", ")
+        };
+        let text = format!(
+            "Hinweis: Der laufende Desktop wertet {was} noch nicht aus. Sie werden trotzdem gespeichert und gelten, sobald ein neuerer Querencia Desktop läuft."
         );
         eprintln!("querencia-einstellungen: Arbeitsfläche: {text}");
         self.hinweis.set_text(&text);

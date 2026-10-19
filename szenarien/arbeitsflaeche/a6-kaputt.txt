@@ -1,0 +1,10 @@
+extent 1920 1080
+wait 3500
+shot 01-hinweis.png
+move 768 823
+click
+wait 300
+move 1200 823
+click
+wait 1500
+shot 02-uebernommen.png

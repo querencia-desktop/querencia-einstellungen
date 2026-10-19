@@ -1,0 +1,11 @@
+extent 1920 1080
+wait 3500
+run sh -c 'sed -i "s/^Color=#242424/Color=#8f1b1b/" "$XDG_CONFIG_HOME/querencia/desktop.ini"'
+wait 800
+move 675 606
+click
+wait 300
+move 1200 823
+click
+wait 1500
+shot 01-uebernommen.png

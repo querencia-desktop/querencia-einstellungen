@@ -1,0 +1,12 @@
+extent 1024 768
+wait 3500
+move 140 240
+click
+wait 1500
+move 373 465
+click
+wait 500
+move 867 676
+click
+wait 1500
+shot 01-uebernommen.png

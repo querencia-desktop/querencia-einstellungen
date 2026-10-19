@@ -1,0 +1,17 @@
+extent 1024 768
+wait 3500
+shot 01-start.png
+move 227 224
+click
+wait 300
+move 409 189
+click
+wait 800
+shot 02-liste.png
+move 392 340
+click
+wait 500
+move 752 667
+click
+wait 1500
+shot 03-uebernommen.png

@@ -1,0 +1,8 @@
+extent 1920 1080
+wait 3500
+move 857 345
+click
+wait 1000
+shot 01-liste.png
+key Escape
+wait 500

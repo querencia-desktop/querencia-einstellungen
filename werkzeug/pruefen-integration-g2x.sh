@@ -15,6 +15,7 @@ BASIS=$P/nachweis/profile/integration-g2x
 EO=~/opt/querencia
 EA=~/.local/share/applications
 ALT=03c6dec5e63966b9
+G2C16=2f44261d01fd2948
 NEU=$(grep '^PROG_NEU=' "$S" | cut -d= -f2 | cut -c1-16)
 DESKNAME=org.querencia.Einstellungen.desktop
 [ -n "$NEU" ] && [ ${#NEU} = 16 ] || { echo "PROG_NEU im Skript nicht gesetzt" >&2; exit 2; }
@@ -47,6 +48,10 @@ umgebung() {
     cp -P "$EO/bin/querencia-desktop" "$EO/bin/querencia-panel" "$U/opt/bin/"
     cp -p "$EO/einstellungen/$ALT/querencia-einstellungen" "$U/opt/einstellungen/$ALT/"
     chmod 0555 "$U/opt/einstellungen/$ALT"
+    # 0.0.1-Ablage (Rückfallziel des G2-G-Skripts, nur für dessen Gegenkontrolle)
+    mkdir -p "$U/opt/einstellungen/$G2C16"
+    cp -p "$EO/einstellungen/$G2C16/querencia-einstellungen" "$U/opt/einstellungen/$G2C16/"
+    chmod 0555 "$U/opt/einstellungen/$G2C16"
     echo "Quelle: Probe" >"$U/opt/einstellungen/$ALT.herkunft"
     ln -s "$U/opt/einstellungen/$ALT/querencia-einstellungen" "$U/opt/bin/querencia-einstellungen"
     cp -p "$EO/protokoll.txt" "$U/opt/protokoll.txt"
@@ -168,11 +173,14 @@ pruef "zweiter Lauf während eines ersten: verweigert" "[ $rc = 2 ] && grep -q '
 echo "=== 8 desktop.ini wird nie angefasst"
 umgebung t08; export XDG_CONFIG_HOME=$U/config; mkdir -p "$U/config/querencia"
 printf '[Background]\nFile=\nMode=zoom\nColor=#1c4e96\n\n[Volumes]\nNetwork=false\n' >"$U/config/querencia/desktop.ini"; d=$(sha256sum <"$U/config/querencia/desktop.ini")
-lauf aktivieren >/dev/null; rc=$(lauf pruefen); lauf zurueck >/dev/null
-pruef "desktop.ini byte-gleich, pruefen nennt ihre Gruppen" "[ \"\$(sha256sum <$U/config/querencia/desktop.ini)\" = \"$d\" ] && grep -q 'Gruppen: \[Background\] \[Volumes\]' $U/ausgabe.txt"
+lauf aktivieren >/dev/null; rc=$(lauf pruefen); cp "$U/ausgabe.txt" "$U/ausgabe-pruefen.txt"; lauf zurueck >/dev/null
+pruef "desktop.ini byte-gleich, pruefen nennt ihre Gruppen" "[ $rc = 0 ] && [ \"\$(sha256sum <$U/config/querencia/desktop.ini)\" = \"$d\" ] && grep -q 'Gruppen: \[Background\] \[Volumes\]' $U/ausgabe-pruefen.txt"
 unset XDG_CONFIG_HOME
 
 pruef "echte Dateien unverändert (Inhalt, Inode); live keine 0.0.3-Ablage" "[ \"\$echt_vorher\" = \"\$(echt)\" ] && echo \"\$echt_vorher\" | grep -q 'keine 0.0.3-Ablage live'"
+# Hinweis: Ändert eine andere Session (z. B. G2-V) während der Probe live den
+# Menüeintrag oder protokoll.txt, schlagen die beiden letzten Prüfungen an,
+# ohne dass dieses Skript etwas geändert hat – dann Zeitstempel im Protokoll ansehen.
 pruef "echter Menüeintrag unverändert seit Probebeginn" "cmp -s $EA/$DESKNAME $BASIS/menueeintrag-echt.desktop"
 echo "ERGEBNIS integration-g2x: $ok PASS, $bad FAIL"
 [ "$bad" = 0 ]

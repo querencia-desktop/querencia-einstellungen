@@ -1,0 +1,23 @@
+extent 1920 1080
+wait 3500
+shot 01-start.png
+move 675 440
+click
+wait 300
+move 857 345
+click
+wait 800
+move 840 462
+click
+wait 500
+move 675 576
+click
+wait 300
+move 675 606
+click
+wait 500
+shot 02-geaendert.png
+move 1200 823
+click
+wait 1200
+shot 03-uebernommen.png

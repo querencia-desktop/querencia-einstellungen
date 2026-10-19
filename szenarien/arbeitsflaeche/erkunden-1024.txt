@@ -1,0 +1,3 @@
+extent 1024 768
+wait 4000
+shot 01-start.png

@@ -1,0 +1,24 @@
+extent 1920 1080
+wait 3500
+run sh -c 'sed -i "s/^Internal=true/Internal=false/" "$XDG_CONFIG_HOME/querencia/desktop.ini"'
+wait 800
+move 675 380
+click
+wait 300
+move 1200 823
+click
+wait 1000
+shot 01-konflikt.png
+run sh -c 'cp "$XDG_CONFIG_HOME/querencia/desktop.ini" "$XDG_CONFIG_HOME/querencia/nach-konflikt.ini"'
+wait 500
+move 944 823
+click
+wait 800
+shot 02-neu-geladen.png
+move 675 380
+click
+wait 300
+move 1200 823
+click
+wait 1200
+shot 03-uebernommen.png
