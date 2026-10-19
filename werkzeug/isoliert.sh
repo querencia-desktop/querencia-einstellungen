@@ -59,6 +59,11 @@ if [ -n "${QE_BILDSCHIRM_INI:-}" ]; then cp "$QE_BILDSCHIRM_INI" "$PROFIL/config
 if [ -n "${QE_MIMEAPPS:-}" ]; then cp "$QE_MIMEAPPS" "$PROFIL/config/mimeapps.list"; cp "$QE_MIMEAPPS" "$N/mimeapps.list.vorher"; fi
 # G2-Z: vorrangige Liste des Desktops (XDG_CURRENT_DESKTOP=X-Querencia), Prüfung der Warnung
 if [ -n "${QE_MIMEAPPS_VORRANG:-}" ]; then cp "$QE_MIMEAPPS_VORRANG" "$PROFIL/config/x-querencia-mimeapps.list"; fi
+# G2-AA: eigene labwc-rc.xml (z. B. Symbolthema gnome-human wie live, Fensterregel
+# iconPreferClient) und eigenes XDG_DATA_HOME (Starter/Symbole, die labwc sieht –
+# simuliert einen labwc, der Starter und Symbole vor G2-V eingelesen hat).
+if [ -n "${QE_LABWC_RC:-}" ]; then cp "$QE_LABWC_RC" "$PROFIL/labwc/rc.xml"; fi
+if [ -n "${QE_DATA_HOME:-}" ]; then mkdir -p "$PROFIL/share"; cp -r "$QE_DATA_HOME/." "$PROFIL/share/"; fi
 mkdir -p "$HOME/.cache/qe01"; RT=$(mktemp -d "$HOME/.cache/qe01/hmp05-runtime-XXXXXX"); chmod 0700 "$RT"; echo "$RT" > "$N/laufzeitordner.txt"
 # PT-1 (nach SW-6, QD-037): keine Portale im Wegwerf-Bus. Sonst startet
 # xdg-document-portal und sein FUSE-Mount $RT/doc erscheint im echten Querencia
@@ -114,8 +119,11 @@ fi
 # G2-C: mit QE_APP_ARGS wird die App vor dem Szenario direkt gestartet (z. B.
 # "--hintergrund" oder "-" für das Kontrollzentrum ohne Argument).
 if [ -n "\$QE_APP_ARGS" ]; then
-    if [ "\$QE_APP_ARGS" = "-" ]; then "$APP" >> logs/app-direkt.log 2>&1 &
-    else "$APP" \$QE_APP_ARGS >> logs/app-direkt.log 2>&1 & fi
+    # G2-AA: QE_APP_WAYLAND_DEBUG=1 protokolliert die Wayland-Anfragen der App
+    # (xdg_toplevel_icon) nach logs/app-direkt.log.
+    WD=; [ -n "\$QE_APP_WAYLAND_DEBUG" ] && WD="WAYLAND_DEBUG=client"
+    if [ "\$QE_APP_ARGS" = "-" ]; then env \$WD "$APP" >> logs/app-direkt.log 2>&1 &
+    else env \$WD "$APP" \$QE_APP_ARGS >> logs/app-direkt.log 2>&1 & fi
     echo "app direkt gestartet: \$QE_APP_ARGS" >> logs/app-direkt.log
 fi
 "$WERK/qe-eingabe" < "$SZENARIO" >> logs/eingabe.log 2>&1
@@ -139,11 +147,12 @@ HOME_REAL=$HOME
   export WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_HEADLESS_OUTPUTS="${QE_OUTPUTS:-1}" WLR_LIBINPUT_NO_DEVICES=1
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
   export GDK_DEBUG=no-portals GTK_USE_PORTAL=0
-  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" PATH="$PROFIL/bin:$PATH"
+  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
   export QE_LABWC_VORGABE="$PROFIL/vorgabe"
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
+  if [ -n "${QE_DATA_HOME:-}" ]; then export XDG_DATA_HOME="$PROFIL/share"; fi
   mkdir -p "$PROFIL/state/querencia" "$PROFIL/cache"
-  timeout ${QE_ZEIT:-180} dbus-run-session -- "$LABWC" -C "$LABWC_DIR" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
+  timeout ${QE_ZEIT:-180} dbus-run-session -- "$LABWC" ${QE_LABWC_DEBUG:+-d} -C "$LABWC_DIR" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
 )
 cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.nachher" 2>/dev/null || true
 cp "$PROFIL/config/mimeapps.list" "$N/mimeapps.list.nachher" 2>/dev/null || true

@@ -1,0 +1,23 @@
+[Desktop Entry]
+# Querencia Einstellungen 0.0.2 (Kontrollzentrum im Stil von GNOME 2; Bereiche
+# Hintergrund QE-01 und Bildschirm G2-G). Desktop-ID = GApplication-ID
+# org.querencia.Einstellungen. Versionierte, schreibgeschützte Ablage unter
+# ~/opt/querencia/einstellungen/03c6dec5e63966b9/ (Querencia-Werkstatt G2-G, 2026-10-18).
+# Der Desktop-Menüpunkt „Hintergrund der Arbeitsfläche ändern …“ startet das
+# Programm über den Link ~/opt/querencia/bin/querencia-einstellungen mit
+# --hintergrund; das ist nicht Teil dieser Datei.
+# Rückfall: bash ~/projects/querencia-werkstatt-w6-einstellungen/werkzeug/einstellungen-g2g-integrieren.sh zurueck (0.0.1), danach einstellungen-integrieren.sh zurueck (ganz)
+Type=Application
+Version=1.5
+Name=Systemeinstellungen
+GenericName=Einstellungen
+Comment=Hintergrund und Symbole der Arbeitsfläche, Bildschirmauflösung und Monitoranordnung von Querencia ändern
+Exec=~/opt/querencia/einstellungen/d6378490b5e53237/querencia-einstellungen
+TryExec=~/opt/querencia/einstellungen/d6378490b5e53237/querencia-einstellungen
+Icon=preferences-system
+Terminal=false
+NoDisplay=false
+Categories=Settings;
+Keywords=Einstellungen;Systemeinstellungen;Kontrollzentrum;Hintergrund;Bildschirm;Auflösung;Monitor;Skalierung;
+StartupNotify=true
+StartupWMClass=org.querencia.Einstellungen

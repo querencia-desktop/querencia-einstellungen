@@ -1,0 +1,14 @@
+extent 1024 768
+wait 3500
+shot 01-kz-1024.png
+move 140 544
+click
+wait 1200
+shot 02-seite-1024.png
+move 878 347
+click
+wait 1500
+shot 03-dialog-1024.png
+key Escape
+wait 1000
+shot 04-ende-1024.png

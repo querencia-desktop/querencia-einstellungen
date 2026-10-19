@@ -1,0 +1,14 @@
+extent 1920 1080
+wait 3500
+shot 01-kz-1920.png
+move 580 701
+click
+wait 1200
+shot 02-seite-1920.png
+move 1318 504
+click
+wait 1500
+shot 03-dialog-1920.png
+key Escape
+wait 1000
+shot 04-ende-1920.png
