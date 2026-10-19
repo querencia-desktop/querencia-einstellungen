@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- G2-AA: rc-wie-live.xml plus Fensterregel iconPriority="client": labwc nimmt
+     zuerst das Symbol, das das Programm schickt (xdg-toplevel-icon). -->
+<labwc_config>
+  <desktops number="4" popupTime="0" prefix="Arbeitsfläche" />
+  <keyboard><default /></keyboard>
+  <theme><name>Querencia-Klassisch</name><icon>gnome-human</icon></theme>
+  <windowRules>
+    <windowRule identifier="org.querencia.Einstellungen" iconPriority="client" />
+    <windowRule identifier="querencia-einstellungen" iconPriority="client" />
+  </windowRules>
+</labwc_config>

@@ -38,6 +38,32 @@ use gtk4::{gio, glib};
 
 const APP_ID: &str = "org.querencia.Einstellungen";
 
+/// Name des Fenstersymbols, das GTK labwc schickt (xdg-toplevel-icon).
+const FENSTERSYMBOL: &str = "org.querencia.Einstellungen-fenster";
+
+/// Eigenes Fenstersymbol (Zahnrad, G2-AA) für alle Fenster und Dialoge.
+///
+/// Bettet das SVG als Ressource ein, macht es dem Symbolthema bekannt und
+/// setzt es als Vorgabe; damit hängt die Titelleiste nicht mehr davon ab,
+/// welches Symbol labwc über die Desktop-Datei findet. Bewusst ein eigener,
+/// nur als SVG vorhandener Name statt der App-ID: mit den PNG-Symbolen der
+/// App-ID stürzt GTK 4.22 beim Abbau eines Fensters ab (Editor, G2-V).
+fn fenstersymbol_einrichten() {
+    let bytes =
+        glib::Bytes::from_static(include_bytes!("../data/resource/einstellungen.gresource"));
+    match gio::Resource::from_data(&bytes) {
+        Ok(resource) => {
+            gio::resources_register(&resource);
+            if let Some(display) = gtk4::gdk::Display::default() {
+                gtk4::IconTheme::for_display(&display)
+                    .add_resource_path("/org/querencia/Einstellungen/icons");
+            }
+            gtk4::Window::set_default_icon_name(FENSTERSYMBOL);
+        }
+        Err(err) => eprintln!("querencia-einstellungen: Ressourcen nicht lesbar: {err}"),
+    }
+}
+
 fn main() -> glib::ExitCode {
     let args: Vec<String> = std::env::args().collect();
     if args.iter().any(|a| a == "--version") {
@@ -70,6 +96,7 @@ fn main() -> glib::ExitCode {
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
         .build();
+    app.connect_startup(|_| fenstersymbol_einrichten());
     app.connect_activate(move |app| {
         if nur_hintergrund {
             hintergrund::oeffnen(app).present();
@@ -130,4 +157,25 @@ fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
     aussen.append(&teilung);
     fenster.set_child(Some(&aussen));
     fenster
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Die eingecheckte GResource enthält das Zahnrad byte-gleich zum SVG im
+    /// Repo (sonst `werkzeug/ressourcen.sh` vergessen).
+    #[test]
+    fn fenstersymbol_in_der_ressource() {
+        let bytes =
+            glib::Bytes::from_static(include_bytes!("../data/resource/einstellungen.gresource"));
+        let res = gio::Resource::from_data(&bytes).expect("GResource lesbar");
+        let pfad = format!("/org/querencia/Einstellungen/icons/scalable/apps/{FENSTERSYMBOL}.svg");
+        let svg = res
+            .lookup_data(&pfad, gio::ResourceLookupFlags::NONE)
+            .expect("Fenstersymbol in der Ressource");
+        let quelle =
+            include_bytes!("../data/icons/hicolor/scalable/apps/org.querencia.Einstellungen.svg");
+        assert_eq!(&svg[..], &quelle[..]);
+    }
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- G2-AA: wie werkzeug/profil-vorlage/labwc/rc.xml, dazu das Symbolthema der
+     Live-Sitzung (gnome-human, querencia-runtime session/querencia/labwc/rc.xml). -->
+<labwc_config>
+  <desktops number="4" popupTime="0" prefix="Arbeitsfläche" />
+  <keyboard><default /></keyboard>
+  <theme><name>Querencia-Klassisch</name><icon>gnome-human</icon></theme>
+</labwc_config>

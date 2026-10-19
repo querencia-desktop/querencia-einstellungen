@@ -27,3 +27,7 @@
 /nachweis/g2z/**/*.png
 /nachweis/g2z/**/querencia-einstellungen
 /nachweis/g2z/gui-kette.fertig
+# G2-AA: wie G2-Z – Textnachweise unter nachweis/g2aa/ ins Repo, Binaries/Bilder/Läufe nicht
+!/nachweis/g2aa/
+/nachweis/g2aa/**/*.png
+/nachweis/g2aa/**/querencia-einstellungen
