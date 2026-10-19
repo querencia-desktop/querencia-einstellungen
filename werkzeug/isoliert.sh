@@ -69,6 +69,25 @@ for n in org.freedesktop.portal.Documents org.freedesktop.portal.Desktop org.fre
     printf '[D-BUS Service]\nName=%s\nExec=/bin/false\n' "$n" > "$RT/dbus-1/services/$n.service"
 done
 cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.vorher" 2>/dev/null || true
+# G2-AG: labwc-Konfiguration. Die Vorgabe (rc.xml, environment) kommt als KOPIE
+# ins Profil (QE_LABWC_VORGABE, die App liest nie das Runtime-Repo); autostart
+# wird nie kopiert (labwc würde ihn im Wegwerfprofil ausführen).
+#   QE_LABWC=benutzer  Benutzerkopie im Profil wie nach dem Sitzungsstarter
+#                      (Teil A), labwc läuft mit -C darauf → „sofort“
+#   QE_LABWC=ohne      keine Benutzerkopie, labwc liest das Profil-labwc → „ab
+#                      der nächsten Anmeldung“
+#   QE_LABWC_DATEIEN=<ordner>  danach dessen Inhalt in die Benutzerkopie (Szenarien)
+VQ=${QE_LABWC_VORGABE_QUELLE:-~/projects/querencia-runtime/session/querencia/labwc}
+mkdir -p "$PROFIL/vorgabe"; cp "$VQ/rc.xml" "$VQ/environment" "$PROFIL/vorgabe/"
+LABWC_DIR=$PROFIL/labwc
+if [ "${QE_LABWC:-}" = benutzer ]; then
+    LABWC_DIR=$PROFIL/config/querencia/labwc
+    mkdir -p "$LABWC_DIR/.vorgabe"
+    cp "$PROFIL/vorgabe/rc.xml" "$PROFIL/vorgabe/environment" "$LABWC_DIR/"
+    cp "$PROFIL/vorgabe/rc.xml" "$PROFIL/vorgabe/environment" "$LABWC_DIR/.vorgabe/"
+fi
+if [ -n "${QE_LABWC_DATEIEN:-}" ]; then mkdir -p "$PROFIL/config/querencia/labwc"; cp -a "$QE_LABWC_DATEIEN/." "$PROFIL/config/querencia/labwc/"; fi
+if [ -d "$PROFIL/config/querencia/labwc" ]; then cp -a "$PROFIL/config/querencia/labwc" "$N/labwc-vorher"; fi
 
 cat > "$N/start.sh" <<EOF
 #!/bin/bash
@@ -121,13 +140,15 @@ HOME_REAL=$HOME
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
   export GDK_DEBUG=no-portals GTK_USE_PORTAL=0
   export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" PATH="$PROFIL/bin:$PATH"
+  export QE_LABWC_VORGABE="$PROFIL/vorgabe"
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
   mkdir -p "$PROFIL/state/querencia" "$PROFIL/cache"
-  timeout 180 dbus-run-session -- "$LABWC" -C "$PROFIL/labwc" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
+  timeout ${QE_ZEIT:-180} dbus-run-session -- "$LABWC" -C "$LABWC_DIR" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
 )
 cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.nachher" 2>/dev/null || true
 cp "$PROFIL/config/mimeapps.list" "$N/mimeapps.list.nachher" 2>/dev/null || true
 ls "$PROFIL/config/querencia/" > "$N/konfigordner-nachher.txt"
+if [ -d "$PROFIL/config/querencia/labwc" ]; then cp -a "$PROFIL/config/querencia/labwc" "$N/labwc-nachher"; fi
 ls -A "$PROFIL/config/" > "$N/konfig-wurzel-nachher.txt"
 echo "--- fertig: $N"; ls "$N" | tr '\n' ' '; echo; tail -3 "$N/logs/eingabe.log"
 # PT-1: falls doch ein Portal lief, nur den eigenen doc-Mount aushängen

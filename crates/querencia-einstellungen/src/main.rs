@@ -13,6 +13,8 @@
 //!   querencia-einstellungen --standardanwendungen   nur „Querencia – Standardanwendungen“
 //!                                           (G2-Z, schreibt über GIO ~/.config/mimeapps.list)
 //!   querencia-einstellungen --standardanwendungen-zeigen   Ist-Stand als Text (Prüfung)
+//!   querencia-einstellungen --labwc-zeigen   labwc-Konfiguration: Orte, Wirkung,
+//!                                           verwaltete Werte (G2-AG, Prüfung)
 //!
 //! Beide Einstiege benutzen denselben Dialog (`hintergrund::oeffnen`). Keine
 //! libadwaita, keine Kopfleiste: labwc zeichnet die Titelleiste (wie Panel
@@ -20,18 +22,26 @@
 //! Desktop-Menüpunkt und das Kontrollzentrum unabhängig starten können.
 mod arbeitsflaeche;
 mod arbeitsflaeche_modell;
+mod arbeitsflaechen;
 mod ausgaben;
 mod bereiche;
 mod bildschirm;
 mod bildschirm_modell;
 mod faehigkeiten;
+mod fensterdesign;
 mod hintergrund;
 mod ini;
+mod labwc_konfig;
+mod labwc_seite;
+mod labwc_xml;
 mod logo;
+mod maus;
 mod modell;
 mod standardanwendungen;
 mod standardanwendungen_modell;
+mod tastatur;
 mod vorschau;
+mod xkb;
 
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
@@ -58,6 +68,9 @@ fn main() -> glib::ExitCode {
     }
     if args.iter().any(|a| a == "--bildschirm-zeigen") {
         return glib::ExitCode::from(bildschirm::zeigen() as u8);
+    }
+    if args.iter().any(|a| a == "--labwc-zeigen") {
+        return glib::ExitCode::from(labwc_konfig::zeigen() as u8);
     }
     if args.iter().any(|a| a == "--standardanwendungen-zeigen") {
         return glib::ExitCode::from(standardanwendungen::zeigen() as u8);

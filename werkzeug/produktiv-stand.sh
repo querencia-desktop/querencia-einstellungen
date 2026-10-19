@@ -9,3 +9,5 @@ echo "labwc_sitzung=$lw panel=$(pids '~/opt/querencia/*querencia-panel') desktop
 sha256sum ~/.config/querencia/panel.ini ~/.local/state/querencia/desktop-symbole ~/.config/querencia/desktop.ini 2>/dev/null | cut -c1-16 | tr '\n' ' '; ls ~/.config/querencia/ | tr '\n' ' '; echo
 # G2-Z: Zuordnungen und Starter der echten Sitzung (nur gelesen)
 echo "mimeapps=$(sha256sum ~/.config/mimeapps.list 2>/dev/null | cut -c1-16) x-querencia-mimeapps=$(ls ~/.config/*-mimeapps.list 2>/dev/null | tr '\n' ,) starter=$(ls -l --time-style=+%s ~/.local/share/applications | sha256sum | cut -c1-16)"
+# G2-AG: labwc-Benutzerkopie und Vorgabe im Runtime-Repo (nur gelesen)
+echo "labwc_benutzer=$( (cd ~/.config/querencia/labwc 2>/dev/null && find . -type f | sort | xargs -r sha256sum) | sha256sum | cut -c1-16) labwc_vorgabe=$(cat ~/projects/querencia-runtime/session/querencia/labwc/{rc.xml,environment,autostart} | sha256sum | cut -c1-16)"

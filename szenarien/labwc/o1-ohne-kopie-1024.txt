@@ -1,0 +1,17 @@
+extent 1024 768
+wait 3500
+move 140 506
+click
+wait 1200
+shot 01-arbeitsflaechen.png
+move 357 592
+click
+wait 300
+move 631 263
+click
+wait 400
+shot 02-geaendert.png
+move 884 667
+click
+wait 2000
+shot 03-uebernommen.png

@@ -1,0 +1,18 @@
+extent 1024 768
+wait 3500
+move 140 278
+click
+wait 1200
+shot 01-fensterdesign.png
+move 140 392
+click
+wait 1000
+shot 02-tastatur.png
+move 140 430
+click
+wait 1000
+shot 03-maus.png
+move 140 506
+click
+wait 1000
+shot 04-arbeitsflaechen.png

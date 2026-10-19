@@ -2,8 +2,9 @@
 //! tatsächlichen Ist-Zustand aus der jeweiligen Quelle, nur lesend. Was noch
 //! kein Backend hat, steht als „Noch nicht verfügbar“ mit dem Grund – ohne
 //! Schaltflächen, die nichts tun. Funktionen: „Hintergrund …“ (QE-01),
-//! „Bildschirm“ (G2-G), „Symbole der Arbeitsfläche“ (G2-X) und
-//! „Standardanwendungen“ (G2-Z).
+//! „Bildschirm“ (G2-G), „Symbole der Arbeitsfläche“ (G2-X),
+//! „Standardanwendungen“ (G2-Z) sowie „Fensterdesign“, „Tastatur“, „Maus“
+//! und „Arbeitsflächen“ (G2-AG, über den Baustein `labwc_konfig`).
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
@@ -30,7 +31,7 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
         },
         Bereich {
             name: "Fensterdesign",
-            seite: fensterdesign(),
+            seite: crate::labwc_seite::seite::<crate::fensterdesign::Fensterdesign>(),
         },
         Bereich {
             name: "Schriften",
@@ -42,11 +43,11 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
         },
         Bereich {
             name: "Tastatur",
-            seite: tastatur(),
+            seite: crate::labwc_seite::seite::<crate::tastatur::Tastatur>(),
         },
         Bereich {
             name: "Maus",
-            seite: maus(),
+            seite: crate::labwc_seite::seite::<crate::maus::Maus>(),
         },
         Bereich {
             name: "Bildschirm",
@@ -54,7 +55,7 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
         },
         Bereich {
             name: "Arbeitsflächen",
-            seite: arbeitsflaechen(),
+            seite: crate::labwc_seite::seite::<crate::arbeitsflaechen::Arbeitsflaechen>(),
         },
         Bereich {
             name: crate::standardanwendungen::NAME,
@@ -137,62 +138,6 @@ fn gsetting(schema: &str, key: &str) -> String {
     let wert = gio::Settings::new(schema).value(key);
     wert.str()
         .map_or_else(|| wert.print(false).to_string(), str::to_string)
-}
-
-/// Der Konfigurationsordner des laufenden labwc (`-C`), aus /proc gelesen;
-/// sonst `~/.config/labwc`.
-fn labwc_konfigordner() -> std::path::PathBuf {
-    if let Ok(eintraege) = std::fs::read_dir("/proc") {
-        for e in eintraege.flatten() {
-            let Ok(cmd) = std::fs::read(e.path().join("cmdline")) else {
-                continue;
-            };
-            let teile: Vec<&[u8]> = cmd.split(|b| *b == 0).collect();
-            if teile
-                .first()
-                .is_some_and(|p| p.ends_with(b"/labwc") || *p == b"labwc")
-                && let Some(i) = teile.iter().position(|t| *t == b"-C")
-                && let Some(dir) = teile.get(i + 1)
-            {
-                return std::path::PathBuf::from(String::from_utf8_lossy(dir).into_owned());
-            }
-        }
-    }
-    glib::user_config_dir().join("labwc")
-}
-
-struct RcXml {
-    pfad: std::path::PathBuf,
-    text: String,
-}
-
-fn rc_xml() -> RcXml {
-    let pfad = labwc_konfigordner().join("rc.xml");
-    let text = std::fs::read_to_string(&pfad).unwrap_or_default();
-    RcXml { pfad, text }
-}
-
-impl RcXml {
-    fn dokument(&self) -> Option<roxmltree::Document<'_>> {
-        roxmltree::Document::parse(&self.text).ok()
-    }
-    /// Text des ersten Elements mit diesem Pfad unter der Wurzel, z. B. ["theme","name"].
-    fn text(&self, pfad: &[&str]) -> Option<String> {
-        let doc = self.dokument()?;
-        let mut knoten = doc.root_element();
-        for name in pfad {
-            knoten = knoten.children().find(|c| c.has_tag_name(*name))?;
-        }
-        knoten.text().map(|t| t.trim().to_string())
-    }
-    fn attribut(&self, pfad: &[&str], attr: &str) -> Option<String> {
-        let doc = self.dokument()?;
-        let mut knoten = doc.root_element();
-        for name in pfad {
-            knoten = knoten.children().find(|c| c.has_tag_name(*name))?;
-        }
-        knoten.attribute(attr).map(str::to_string)
-    }
 }
 
 fn oder(v: Option<String>, standard: &str) -> String {
@@ -285,87 +230,20 @@ fn hintergrundbild(app: &gtk4::Application) -> gtk4::Widget {
     s.upcast()
 }
 
-fn fensterdesign() -> gtk4::Widget {
-    let s = seite("Fensterdesign");
-    let rc = rc_xml();
-    let mut themen = Vec::new();
-    for dir in [glib::user_data_dir().join("themes")].into_iter().chain(
-        glib::system_data_dirs()
-            .into_iter()
-            .map(|d| d.join("themes")),
-    ) {
-        if let Ok(e) = std::fs::read_dir(&dir) {
-            for t in e.flatten() {
-                if t.path().join("labwc").join("themerc").is_file() {
-                    themen.push(t.file_name().to_string_lossy().into_owned());
-                }
-            }
-        }
-    }
-    themen.sort();
-    themen.dedup();
-    s.append(&werte(&[
-        (
-            "Aktives Thema:",
-            oder(rc.text(&["theme", "name"]), "eingebaut"),
-        ),
-        (
-            "Installierte labwc-Themen:",
-            if themen.is_empty() {
-                "keine".into()
-            } else {
-                themen.join(", ")
-            },
-        ),
-        (
-            "Eckenradius:",
-            oder(rc.text(&["theme", "cornerRadius"]), "8"),
-        ),
-        ("Schatten:", oder(rc.text(&["theme", "dropShadows"]), "no")),
-        (
-            "Titelleistenknöpfe:",
-            oder(
-                rc.text(&["theme", "titlebar", "layout"]),
-                "icon:iconify,max,close",
-            ),
-        ),
-    ]));
-    s.append(&quelle(&format!(
-        "{} <theme>; Themen in ~/.local/share/themes/*/labwc/themerc",
-        rc.pfad.display()
-    )));
-    s.append(&noch_nicht("Eine Änderung schreibt rc.xml im Runtime-Ordner (geschütztes Repository) und wird erst mit „labwc --reconfigure“ wirksam – beides braucht nach den Projektregeln eine Freigabe."));
-    s.upcast()
-}
-
 fn schriften() -> gtk4::Widget {
     let s = seite("Schriften");
-    let rc = rc_xml();
-    let titel = rc.dokument().and_then(|d| {
-        d.root_element()
-            .children()
-            .find(|c| c.has_tag_name("theme"))?
-            .children()
-            .find(|c| {
-                c.has_tag_name("font") && c.attribute("place").is_some_and(|p| p == "ActiveWindow")
-            })
-            .map(|f| {
-                format!(
-                    "{} {}",
-                    f.attribute("name")
-                        .or_else(|| f
-                            .children()
-                            .find(|c| c.has_tag_name("name"))
-                            .and_then(|c| c.text()))
-                        .unwrap_or("sans"),
-                    f.attribute("size")
-                        .or_else(|| f
-                            .children()
-                            .find(|c| c.has_tag_name("size"))
-                            .and_then(|c| c.text()))
-                        .unwrap_or("10")
-                )
-            })
+    // Titelleiste wie labwc: place="ActiveWindow", sonst <font> ohne place
+    let rc = crate::labwc_konfig::lesen(&crate::labwc_konfig::Orte::standard()).rc;
+    let schrift = |k: &str| {
+        crate::labwc_xml::wert(&rc, crate::labwc_xml::SCHRIFT_AKTIV, k)
+            .or_else(|| crate::labwc_xml::wert(&rc, crate::labwc_xml::SCHRIFT_ALLE, k))
+    };
+    let titel = (schrift("name").is_some() || schrift("size").is_some()).then(|| {
+        format!(
+            "{} {}",
+            schrift("name").unwrap_or_else(|| "sans".into()),
+            schrift("size").unwrap_or_else(|| "10".into())
+        )
     });
     s.append(&werte(&[
         (
@@ -383,7 +261,7 @@ fn schriften() -> gtk4::Widget {
         ("Fenstertitel (labwc):", oder(titel, "sans 10")),
     ]));
     s.append(&quelle("gsettings org.gnome.desktop.interface; rc.xml <theme><font place=\"ActiveWindow\">. Installiert sind nur DejaVu Sans/Serif/Mono und Noto Color Emoji."));
-    s.append(&noch_nicht("GTK-Schriften über gsettings wären sofort wirksam, der Fenstertitel braucht rc.xml und „labwc --reconfigure“."));
+    s.append(&noch_nicht("GTK-Schriften über gsettings wären sofort wirksam. Die Schrift der Titelleiste lässt sich unter „Fensterdesign“ ändern."));
     s.upcast()
 }
 
@@ -436,121 +314,6 @@ fn panels() -> gtk4::Widget {
         pfad.display()
     )));
     s.append(&noch_nicht("Das Panel liest panel.ini nur beim Start und bietet keine Schnittstelle für Änderungen von außen (D-Bus: nur „quit“). Vorschlag: Panel-Layoutcode als gemeinsames Crate und eine „Neu laden“-Aktion im Panel."));
-    s.upcast()
-}
-
-fn tastatur() -> gtk4::Widget {
-    let s = seite("Tastatur");
-    let rc = rc_xml();
-    let belegung =
-        std::env::var("XKB_DEFAULT_LAYOUT").unwrap_or_else(|_| "(nicht gesetzt: us)".into());
-    let variante = std::env::var("XKB_DEFAULT_VARIANT").unwrap_or_default();
-    s.append(&werte(&[
-        (
-            "Belegung:",
-            if variante.is_empty() {
-                belegung
-            } else {
-                format!("{belegung} ({variante})")
-            },
-        ),
-        (
-            "Wiederholrate:",
-            oder(rc.text(&["keyboard", "repeatRate"]), "25"),
-        ),
-        (
-            "Verzögerung (ms):",
-            oder(rc.text(&["keyboard", "repeatDelay"]), "600"),
-        ),
-        ("Num-Taste:", oder(rc.text(&["keyboard", "numlock"]), "off")),
-        (
-            "Arbeitsflächen wechseln:",
-            "Strg+Alt+←/→, mit Umschalt Fenster mitnehmen (rc.xml)".into(),
-        ),
-    ]));
-    s.append(&quelle("Belegung: Runtime-Datei labwc/environment (XKB_DEFAULT_LAYOUT, nur beim Start von labwc gelesen); Rate/Verzögerung: rc.xml <keyboard>."));
-    s.append(&noch_nicht("Belegung wirkt erst nach neuer Anmeldung; Rate/Verzögerung brauchen rc.xml und „labwc --reconfigure“."));
-    s.upcast()
-}
-
-fn maus() -> gtk4::Widget {
-    let s = seite("Maus");
-    let rc = rc_xml();
-    let geraet = |k: &str| oder(rc.text(&["libinput", "device", k]), "libinput-Standard");
-    s.append(&werte(&[
-        (
-            "Doppelklickzeit (ms):",
-            oder(rc.text(&["mouse", "doubleClickTime"]), "500"),
-        ),
-        ("Zeigergeschwindigkeit:", geraet("pointerSpeed")),
-        ("Beschleunigung:", geraet("accelProfile")),
-        ("Linkshändig:", geraet("leftHanded")),
-        ("Natürliches Rollen:", geraet("naturalScroll")),
-        (
-            "Zeigerthema / -größe (labwc):",
-            format!(
-                "{} / {}",
-                std::env::var("XCURSOR_THEME").unwrap_or_else(|_| "(Standard)".into()),
-                std::env::var("XCURSOR_SIZE").unwrap_or_else(|_| "24".into())
-            ),
-        ),
-    ]));
-    s.append(&quelle("rc.xml <mouse><doubleClickTime>, <libinput><device>; Zeiger: Umgebungsvariablen XCURSOR_THEME/XCURSOR_SIZE (labwc/environment)."));
-    s.append(&noch_nicht(
-        "Änderungen brauchen rc.xml und „labwc --reconfigure“ (Zeigerthema: neue Anmeldung).",
-    ));
-    s.upcast()
-}
-
-fn arbeitsflaechen() -> gtk4::Widget {
-    let s = seite("Arbeitsflächen");
-    let rc = rc_xml();
-    let namen = rc
-        .dokument()
-        .map(|d| {
-            d.root_element()
-                .children()
-                .find(|c| c.has_tag_name("desktops"))
-                .map(|ds| {
-                    ds.children()
-                        .find(|c| c.has_tag_name("names"))
-                        .map(|n| {
-                            n.children()
-                                .filter(|c| c.has_tag_name("name"))
-                                .filter_map(|c| c.text())
-                                .collect::<Vec<_>>()
-                                .join(", ")
-                        })
-                        .unwrap_or_default()
-                })
-                .unwrap_or_default()
-        })
-        .unwrap_or_default();
-    s.append(&werte(&[
-        ("Anzahl:", oder(rc.attribut(&["desktops"], "number"), "1")),
-        (
-            "Namensvorsilbe:",
-            oder(rc.attribut(&["desktops"], "prefix"), "Workspace"),
-        ),
-        (
-            "Eigene Namen:",
-            if namen.is_empty() {
-                "keine".into()
-            } else {
-                namen
-            },
-        ),
-        (
-            "Anzeige beim Wechsel (ms):",
-            oder(rc.attribut(&["desktops"], "popupTime"), "1000"),
-        ),
-    ]));
-    s.append(&quelle(
-        "rc.xml <desktops>; der Umschalter im Panel folgt ext_workspace_v1.",
-    ));
-    s.append(&noch_nicht(
-        "Anzahl und Namen ändern: rc.xml und „labwc --reconfigure“.",
-    ));
     s.upcast()
 }
 

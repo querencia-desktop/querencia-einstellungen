@@ -1,0 +1,59 @@
+extent 1920 1080
+wait 3500
+move 580 549
+click
+wait 1200
+shot 01-tastatur.png
+move 1191 600
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+move 1241 560
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+move 796 688
+click
+wait 500
+shot 02-geaendert.png
+move 1335 435
+click
+wait 1500
+type schweiz
+wait 1000
+shot 03-suche.png
+move 900 367
+click
+wait 400
+move 1152 798
+click
+wait 1000
+shot 04-gewaehlt.png
+move 1332 823
+click
+wait 2000
+shot 05-uebernommen.png
