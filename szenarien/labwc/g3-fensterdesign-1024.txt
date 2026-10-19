@@ -1,0 +1,34 @@
+extent 1024 768
+wait 3500
+move 152 278
+click
+wait 1200
+shot 01-fensterdesign.png
+move 582 344
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+move 358 379
+click
+wait 200
+move 358 535
+click
+wait 500
+shot 02-geaendert.png
+move 867 667
+click
+wait 2500
+shot 03-uebernommen.png

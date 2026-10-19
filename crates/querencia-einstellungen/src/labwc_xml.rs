@@ -102,7 +102,8 @@ pub const VERWALTET: &[(Pfad, &str)] = &[
 ];
 
 /// Grundgerüst, wenn es noch gar keine rc.xml gibt.
-pub const LEER: &str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<labwc_config>\n</labwc_config>\n";
+pub const LEER: &str =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<labwc_config>\n</labwc_config>\n";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Fehler(pub String);
@@ -158,7 +159,10 @@ fn passt(n: roxmltree::Node, schritt: &Schritt) -> bool {
 }
 
 /// Alle Elemente, die auf den Pfad passen, in Dokumentreihenfolge.
-fn behaelter<'a, 'i>(doc: &'a roxmltree::Document<'i>, pfad: &[Schritt]) -> Vec<roxmltree::Node<'a, 'i>> {
+fn behaelter<'a, 'i>(
+    doc: &'a roxmltree::Document<'i>,
+    pfad: &[Schritt],
+) -> Vec<roxmltree::Node<'a, 'i>> {
     let mut ebene = vec![doc.root_element()];
     for schritt in pfad {
         ebene = ebene
@@ -187,7 +191,11 @@ fn element_text(n: roxmltree::Node) -> String {
         .to_owned()
 }
 
-fn funde<'a, 'i>(doc: &'a roxmltree::Document<'i>, pfad: &[Schritt], schluessel: &str) -> Vec<Fund<'a, 'i>> {
+fn funde<'a, 'i>(
+    doc: &'a roxmltree::Document<'i>,
+    pfad: &[Schritt],
+    schluessel: &str,
+) -> Vec<Fund<'a, 'i>> {
     let mut liste = Vec::new();
     for b in behaelter(doc, pfad) {
         for a in b.attributes() {
@@ -322,7 +330,11 @@ fn einfuegen(text: &str, eltern: roxmltree::Node, zeilen: &[String]) -> String {
             schraeg -= 1;
         }
         let name = tagname(e);
-        return ersetzen(text, schraeg..ende + 1, &format!(">\n{block}{aussen}</{name}>"));
+        return ersetzen(
+            text,
+            schraeg..ende + 1,
+            &format!(">\n{block}{aussen}</{name}>"),
+        );
     }
     let schluss = r.start + e.rfind("</").unwrap_or(e.len());
     let mut s = schluss;
@@ -375,7 +387,12 @@ fn pruefen(neu: String) -> Result<String, Fehler> {
 }
 
 /// Setzt den Wert `schluessel` unter `pfad` (siehe Moduldoku).
-pub fn setzen(text: &str, pfad: &[Schritt], schluessel: &str, wert: &str) -> Result<String, Fehler> {
+pub fn setzen(
+    text: &str,
+    pfad: &[Schritt],
+    schluessel: &str,
+    wert: &str,
+) -> Result<String, Fehler> {
     if !text.trim().is_empty() {
         let doc = parsen(text)?;
         if let Some(fund) = funde(&doc, pfad, schluessel).pop() {
@@ -393,7 +410,10 @@ pub fn setzen(text: &str, pfad: &[Schritt], schluessel: &str, wert: &str) -> Res
     anlegen(
         text,
         pfad,
-        &[format!("<{schluessel}>{}</{schluessel}>", text_maskieren(wert))],
+        &[format!(
+            "<{schluessel}>{}</{schluessel}>",
+            text_maskieren(wert)
+        )],
     )
 }
 
@@ -545,7 +565,8 @@ pub fn nur_verwaltete_unterschiede(a: &str, b: &str) -> bool {
 pub fn auf_neue_vorgabe(ours: &str, basis: &str, neue: &str) -> Result<String, Fehler> {
     if !nur_verwaltete_unterschiede(ours, basis) {
         return Err(Fehler(
-            "rc.xml enthält Änderungen außerhalb der Einstellungen – bitte von Hand zusammenführen".into(),
+            "rc.xml enthält Änderungen außerhalb der Einstellungen – bitte von Hand zusammenführen"
+                .into(),
         ));
     }
     let mut neu = neue.to_owned();
@@ -594,9 +615,18 @@ mod tests {
 
     #[test]
     fn lesen_element_und_attribut() {
-        assert_eq!(wert(VORGABE, THEMA, "name").as_deref(), Some("Querencia-Klassisch"));
-        assert_eq!(wert(VORGABE, ARBEITSFLAECHEN, "number").as_deref(), Some("4"));
-        assert_eq!(wert(VORGABE, ARBEITSFLAECHEN, "popuptime").as_deref(), Some("0"));
+        assert_eq!(
+            wert(VORGABE, THEMA, "name").as_deref(),
+            Some("Querencia-Klassisch")
+        );
+        assert_eq!(
+            wert(VORGABE, ARBEITSFLAECHEN, "number").as_deref(),
+            Some("4")
+        );
+        assert_eq!(
+            wert(VORGABE, ARBEITSFLAECHEN, "popuptime").as_deref(),
+            Some("0")
+        );
         assert_eq!(wert(VORGABE, TASTATUR, "repeatRate"), None);
         assert_eq!(wert(VORGABE, SCHRIFT_AKTIV, "name"), None);
         assert!(namen(VORGABE).is_empty());
@@ -610,7 +640,10 @@ mod tests {
         let neu = setzen(VORGABE, ARBEITSFLAECHEN, "number", "6").unwrap();
         assert_eq!(neu, VORGABE.replace("number=\"4\"", "number=\"6\""));
         let neu = setzen(VORGABE, ARBEITSFLAECHEN, "popupTime", "1000").unwrap();
-        assert_eq!(neu, VORGABE.replace("popupTime=\"0\"", "popupTime=\"1000\""));
+        assert_eq!(
+            neu,
+            VORGABE.replace("popupTime=\"0\"", "popupTime=\"1000\"")
+        );
     }
 
     #[test]
@@ -726,7 +759,9 @@ mod tests {
         assert_eq!(wert(&neu, ARBEITSFLAECHEN, "number").as_deref(), Some("4"));
         let leer = namen_setzen(&neu, &[]).unwrap();
         assert!(namen(&leer).is_empty());
-        assert!(leer.contains("  <desktops number=\"4\" popupTime=\"0\" prefix=\"Arbeitsfläche\">\n  </desktops>\n"));
+        assert!(leer.contains(
+            "  <desktops number=\"4\" popupTime=\"0\" prefix=\"Arbeitsfläche\">\n  </desktops>\n"
+        ));
         // zweimal <names>: beide ersetzt
         let t = "<labwc_config>\n  <desktops>\n    <names><name>a</name></names>\n    <names><name>b</name></names>\n  </desktops>\n</labwc_config>\n";
         assert_eq!(namen(t), vec!["a", "b"]);

@@ -73,7 +73,10 @@ impl Bereich for Arbeitsflaechen {
         let a = |k: &str| lx::wert(&st.rc, lx::ARBEITSFLAECHEN, k);
         let vorsilbe = a("prefix").unwrap_or_else(|| "Workspace".into());
         let datei = lx::namen(&st.rc);
-        let zahl = a("number").and_then(|v| v.parse::<u32>().ok()).unwrap_or(1).max(1);
+        let zahl = a("number")
+            .and_then(|v| v.parse::<u32>().ok())
+            .unwrap_or(1)
+            .max(1);
         let anzahl = zahl.max(datei.len() as u32).min(HOECHSTENS);
         let namen = (0..anzahl as usize)
             .map(|i| match datei.get(i) {
@@ -81,12 +84,18 @@ impl Bereich for Arbeitsflaechen {
                 _ => String::new(),
             })
             .collect();
-        let popup = a("popupTime").and_then(|v| v.parse::<i64>().ok()).unwrap_or(1000);
+        let popup = a("popupTime")
+            .and_then(|v| v.parse::<i64>().ok())
+            .unwrap_or(1000);
         Werte {
             anzahl,
             namen,
             anzeige: popup > 0,
-            dauer: if popup > 0 { popup.min(10_000) as u32 } else { 1000 },
+            dauer: if popup > 0 {
+                popup.min(10_000) as u32
+            } else {
+                1000
+            },
             vorsilbe,
         }
     }
@@ -111,7 +120,9 @@ impl Bereich for Arbeitsflaechen {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
         let anzahl = gtk4::SpinButton::with_range(1.0, HOECHSTENS as f64, 1.0);
         inhalt.append(&ls::zeile("Anzahl der Arbeitsflächen:", &anzahl));
-        inhalt.append(&ls::grau("Fenster auf wegfallenden Arbeitsflächen kommen auf die erste."));
+        inhalt.append(&ls::grau(
+            "Fenster auf wegfallenden Arbeitsflächen kommen auf die erste.",
+        ));
 
         let (f, b) = ls::rahmen("Namen");
         let mut namen = Vec::new();
@@ -130,7 +141,9 @@ impl Bereich for Arbeitsflaechen {
         b.append(&anzeige);
         let dauer = gtk4::SpinButton::with_range(100.0, 5000.0, 100.0);
         b.append(&ls::zeile("Dauer (Millisekunden):", &dauer));
-        b.append(&ls::grau("Der Umschalter im Panel zeigt den Wechsel immer; die Einblendung kommt von labwc."));
+        b.append(&ls::grau(
+            "Der Umschalter im Panel zeigt den Wechsel immer; die Einblendung kommt von labwc.",
+        ));
         inhalt.append(&f);
 
         let a = Arbeitsflaechen {
@@ -140,7 +153,11 @@ impl Bereich for Arbeitsflaechen {
             dauer,
             vorsilbe: std::cell::RefCell::new(String::new()),
         };
-        let (g, zeilen, sp) = (geaendert.clone(), a.namen.iter().map(|(z, _)| z.clone()).collect::<Vec<_>>(), a.anzahl.clone());
+        let (g, zeilen, sp) = (
+            geaendert.clone(),
+            a.namen.iter().map(|(z, _)| z.clone()).collect::<Vec<_>>(),
+            a.anzahl.clone(),
+        );
         a.anzahl.connect_value_changed(move |_| {
             sichtbar(&zeilen, sp.value_as_int());
             g();
@@ -216,13 +233,24 @@ mod tests {
     #[test]
     fn lesen_vorgabe_und_labwc_standard() {
         let w = Arbeitsflaechen::lesen(&stand(VORGABE));
-        assert_eq!((w.anzahl, w.anzeige, w.dauer, w.vorsilbe.as_str()), (4, false, 1000, "Arbeitsfläche"));
+        assert_eq!(
+            (w.anzahl, w.anzeige, w.dauer, w.vorsilbe.as_str()),
+            (4, false, 1000, "Arbeitsfläche")
+        );
         assert_eq!(w.namen, vec![String::new(); 4]);
         let w = Arbeitsflaechen::lesen(&stand("<labwc_config/>"));
-        assert_eq!((w.anzahl, w.anzeige, w.dauer, w.vorsilbe.as_str()), (1, true, 1000, "Workspace"));
+        assert_eq!(
+            (w.anzahl, w.anzeige, w.dauer, w.vorsilbe.as_str()),
+            (1, true, 1000, "Workspace")
+        );
         // mehr Namen als number: Namen zählen (labwc legt sie an)
-        let w = Arbeitsflaechen::lesen(&stand("<labwc_config><desktops number=\"2\"><names><name>A</name><name>B</name><name>C</name></names></desktops></labwc_config>"));
-        assert_eq!((w.anzahl, w.namen.clone()), (3, vec!["A".to_string(), "B".into(), "C".into()]));
+        let w = Arbeitsflaechen::lesen(&stand(
+            "<labwc_config><desktops number=\"2\"><names><name>A</name><name>B</name><name>C</name></names></desktops></labwc_config>",
+        ));
+        assert_eq!(
+            (w.anzahl, w.namen.clone()),
+            (3, vec!["A".to_string(), "B".into(), "C".into()])
+        );
     }
 
     #[test]
@@ -231,7 +259,14 @@ mod tests {
         let alt = Arbeitsflaechen::lesen(&st);
         let neu = Werte {
             anzahl: 6,
-            namen: vec!["Büro".into(), String::new(), "Web".into(), String::new(), String::new(), String::new()],
+            namen: vec![
+                "Büro".into(),
+                String::new(),
+                "Web".into(),
+                String::new(),
+                String::new(),
+                String::new(),
+            ],
             anzeige: true,
             dauer: 800,
             vorsilbe: alt.vorsilbe.clone(),
@@ -241,13 +276,23 @@ mod tests {
         assert_eq!(Arbeitsflaechen::lesen(&stand(&rc)), neu);
         assert!(rc.contains("number=\"6\" popupTime=\"800\" prefix=\"Arbeitsfläche\""));
         // weniger: Namen werden mit gekürzt
-        let weniger = Werte { anzahl: 2, namen: vec!["Büro".into(), String::new()], ..neu.clone() };
+        let weniger = Werte {
+            anzahl: 2,
+            namen: vec!["Büro".into(), String::new()],
+            ..neu.clone()
+        };
         let rc2 = Arbeitsflaechen::rc_aendern(&weniger, &neu, &rc).unwrap();
         assert_eq!(lx::namen(&rc2), vec!["Büro"]);
         assert_eq!(Arbeitsflaechen::lesen(&stand(&rc2)).anzahl, 2);
         // Anzeige aus
-        let aus = Werte { anzeige: false, ..weniger.clone() };
+        let aus = Werte {
+            anzeige: false,
+            ..weniger.clone()
+        };
         let rc3 = Arbeitsflaechen::rc_aendern(&aus, &weniger, &rc2).unwrap();
-        assert_eq!(lx::wert(&rc3, lx::ARBEITSFLAECHEN, "popupTime").as_deref(), Some("0"));
+        assert_eq!(
+            lx::wert(&rc3, lx::ARBEITSFLAECHEN, "popupTime").as_deref(),
+            Some("0")
+        );
     }
 }

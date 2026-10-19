@@ -25,7 +25,11 @@ pub trait Bereich: Sized + 'static {
     /// rc.xml mit den geänderten Werten (nur, was sich gegenüber `alt` unterscheidet).
     fn rc_aendern(neu: &Self::Werte, alt: &Self::Werte, rc: &str) -> Result<String, Fehler>;
     /// Umgebung: `Some` setzen, `None` = eigene Angabe entfernen (Vorgabe gilt).
-    fn env_aenderungen(_neu: &Self::Werte, _alt: &Self::Werte, _st: &Stand) -> Vec<(&'static str, Option<String>)> {
+    fn env_aenderungen(
+        _neu: &Self::Werte,
+        _alt: &Self::Werte,
+        _st: &Stand,
+    ) -> Vec<(&'static str, Option<String>)> {
         Vec::new()
     }
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box);
@@ -42,8 +46,15 @@ pub fn standard<B: Bereich>(st: &Stand) -> B::Werte {
 }
 
 /// Für Umgebungswerte: entfernen, wenn gleich der Vorgabe, sonst setzen.
-pub fn env_wert(st: &Stand, schluessel: &'static str, wert: &str) -> (&'static str, Option<String>) {
-    let vorgabe = st.env_ohne_eigene.get(schluessel).map_or("", String::as_str);
+pub fn env_wert(
+    st: &Stand,
+    schluessel: &'static str,
+    wert: &str,
+) -> (&'static str, Option<String>) {
+    let vorgabe = st
+        .env_ohne_eigene
+        .get(schluessel)
+        .map_or("", String::as_str);
     (schluessel, (vorgabe != wert).then(|| wert.to_owned()))
 }
 
@@ -141,7 +152,10 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     aussen.set_margin_start(14);
     aussen.set_margin_end(14);
     let ueberschrift = gtk4::Label::new(None);
-    ueberschrift.set_markup(&format!("<b><big>{}</big></b>", glib::markup_escape_text(B::NAME)));
+    ueberschrift.set_markup(&format!(
+        "<b><big>{}</big></b>",
+        glib::markup_escape_text(B::NAME)
+    ));
     ueberschrift.set_xalign(0.0);
     aussen.append(&ueberschrift);
 
@@ -245,10 +259,14 @@ impl<B: Bereich> Seite<B> {
         let wirkung = lk::wirkung(&self.orte);
         let mut hinweis = lk::wirkung_text(&wirkung, &st);
         if let Err(e) = crate::labwc_xml::gueltig(&st.rc) {
-            hinweis = format!("{hinweis}\nAchtung: {e}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei repariert ist.");
+            hinweis = format!(
+                "{hinweis}\nAchtung: {e}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei repariert ist."
+            );
         }
         // erster Satz fett: wann es wirkt
-        let (kopf, rest) = hinweis.split_once(". ").map_or((hinweis.as_str(), ""), |(a, b)| (a, b));
+        let (kopf, rest) = hinweis
+            .split_once(". ")
+            .map_or((hinweis.as_str(), ""), |(a, b)| (a, b));
         self.hinweis.set_markup(&format!(
             "<b>{}.</b> {}",
             glib::markup_escape_text(kopf.trim_end_matches('.')),
@@ -267,7 +285,8 @@ impl<B: Bereich> Seite<B> {
         *self.geladen.borrow_mut() = Some(w);
         *self.stand.borrow_mut() = Some(st);
         self.uebernehmen.set_sensitive(false);
-        self.status.set_text("Änderungen gelten erst nach „Übernehmen“.");
+        self.status
+            .set_text("Änderungen gelten erst nach „Übernehmen“.");
     }
 
     fn geaendert(&self) {
@@ -303,7 +322,10 @@ impl<B: Bereich> Seite<B> {
         // nicht unbemerkt überschreiben: nur die eigenen Werte zählen
         if B::lesen(&st) != alt {
             self.status.set_text("Die Einstellungen wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.");
-            eprintln!("querencia-einstellungen: {}: Konflikt, nicht geschrieben", B::NAME);
+            eprintln!(
+                "querencia-einstellungen: {}: Konflikt, nicht geschrieben",
+                B::NAME
+            );
             return;
         }
         let zeit = jetzt_text("%Y%m%d-%H%M%S");
@@ -333,9 +355,15 @@ impl<B: Bereich> Seite<B> {
         if geschrieben {
             let w = lk::wirkung(&self.orte);
             match (&w, lk::neu_laden(&w)) {
-                (Wirkung::Sofort { .. }, Ok(())) => text.push_str(" labwc hat die Konfiguration neu geladen."),
-                (Wirkung::Sofort { .. }, Err(e)) => text.push_str(&format!(" Neu laden fehlgeschlagen: {e}.")),
-                _ => text.push_str(" Gespeichert in ~/.config/querencia/labwc; wirksam ab der nächsten Anmeldung."),
+                (Wirkung::Sofort { .. }, Ok(())) => {
+                    text.push_str(" labwc hat die Konfiguration neu geladen.")
+                }
+                (Wirkung::Sofort { .. }, Err(e)) => {
+                    text.push_str(&format!(" Neu laden fehlgeschlagen: {e}."))
+                }
+                _ => text.push_str(
+                    " Gespeichert in ~/.config/querencia/labwc; wirksam ab der nächsten Anmeldung.",
+                ),
             }
         }
         if !gesichert.is_empty() {
@@ -345,7 +373,10 @@ impl<B: Bereich> Seite<B> {
                 .collect();
             text.push_str(&format!(" Vorher gesichert als {}.", namen.join(", ")));
         }
-        eprintln!("querencia-einstellungen: {} übernommen: {neu:?} – {text}", B::NAME);
+        eprintln!(
+            "querencia-einstellungen: {} übernommen: {neu:?} – {text}",
+            B::NAME
+        );
         self.laden();
         self.status.set_text(&text);
     }
@@ -359,11 +390,20 @@ impl<B: Bereich> Seite<B> {
                 self.laden();
                 self.status.set_text(&format!(
                     "Neue Vorgabe übernommen, Ihre Einstellungen bleiben.{}{}",
-                    if geladen { " labwc hat neu geladen." } else { "" },
-                    s.and_then(|p| p.file_name().map(|n| format!(" Vorher gesichert als {}.", n.to_string_lossy())))
+                    if geladen {
+                        " labwc hat neu geladen."
+                    } else {
+                        ""
+                    },
+                    s.and_then(|p| p
+                        .file_name()
+                        .map(|n| format!(" Vorher gesichert als {}.", n.to_string_lossy())))
                         .unwrap_or_default()
                 ));
-                eprintln!("querencia-einstellungen: {}: neue Vorgabe übernommen", B::NAME);
+                eprintln!(
+                    "querencia-einstellungen: {}: neue Vorgabe übernommen",
+                    B::NAME
+                );
             }
             Err(e) => self.fehler(&format!("Neue Vorgabe nicht übernommen: {e}")),
         }
@@ -371,6 +411,9 @@ impl<B: Bereich> Seite<B> {
 
     fn fehler(&self, text: &str) {
         self.status.set_text(&format!("Nicht gespeichert: {text}"));
-        eprintln!("querencia-einstellungen: {}: nicht gespeichert: {text}", B::NAME);
+        eprintln!(
+            "querencia-einstellungen: {}: nicht gespeichert: {text}",
+            B::NAME
+        );
     }
 }

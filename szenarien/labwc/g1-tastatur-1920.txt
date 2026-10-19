@@ -1,10 +1,10 @@
 extent 1920 1080
 wait 3500
-move 580 549
+move 600 548
 click
 wait 1200
 shot 01-tastatur.png
-move 1191 600
+move 1166 588
 click
 wait 120
 click
@@ -15,7 +15,7 @@ click
 wait 120
 click
 wait 120
-move 1241 560
+move 1205 548
 click
 wait 120
 click
@@ -36,11 +36,11 @@ click
 wait 120
 click
 wait 120
-move 796 688
+move 797 674
 click
 wait 500
 shot 02-geaendert.png
-move 1335 435
+move 1316 428
 click
 wait 1500
 type schweiz
@@ -53,7 +53,7 @@ move 1152 798
 click
 wait 1000
 shot 04-gewaehlt.png
-move 1332 823
+move 1315 823
 click
 wait 2000
 shot 05-uebernommen.png

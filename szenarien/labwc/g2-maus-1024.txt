@@ -1,0 +1,40 @@
+extent 1024 768
+wait 3500
+move 152 430
+click
+wait 1200
+shot 01-maus.png
+move 358 537
+click
+wait 200
+move 358 507
+click
+wait 200
+move 665 434
+click
+wait 120
+click
+wait 120
+click
+wait 120
+click
+wait 120
+move 842 298
+click
+wait 500
+shot 02-geaendert.png
+move 867 667
+click
+wait 2000
+shot 03-uebernommen.png
+move 452 83
+click
+wait 330
+click
+wait 1200
+shot 04-titel-zwei-klicks-gross-abstand.png
+click
+wait 60
+click
+wait 1200
+shot 05-titel-zwei-klicks-klein-abstand.png

@@ -1,10 +1,10 @@
 extent 1920 1080
 wait 3500
-move 580 435
+move 600 434
 click
 wait 1200
 shot 01-fensterdesign.png
-move 1045 511
+move 1030 500
 click
 wait 120
 click
@@ -21,14 +21,14 @@ click
 wait 120
 click
 wait 120
-move 805 548
+move 806 535
 click
 wait 200
-move 805 714
+move 806 691
 click
 wait 500
 shot 02-geaendert.png
-move 1332 823
+move 1315 823
 click
 wait 2500
 shot 03-uebernommen.png

@@ -21,7 +21,8 @@ use std::path::{Path, PathBuf};
 use crate::labwc_xml;
 
 /// Vorgaben im Runtime-Repo (nur lesen). Für Prüfungen: `QE_LABWC_VORGABE`.
-pub const VORGABE_STANDARD: &str = "~/projects/querencia-runtime/session/querencia/labwc";
+pub const VORGABE_STANDARD: &str =
+    "~/projects/querencia-runtime/session/querencia/labwc";
 /// Eigene Umgebungsdatei; labwc liest `environment.d/*.env` nach `environment`.
 pub const ENV_DATEI: &str = "querencia-einstellungen.env";
 /// So viele Sicherungen je Datei bleiben liegen.
@@ -36,7 +37,9 @@ pub struct Orte {
 impl Orte {
     pub fn standard() -> Orte {
         Orte {
-            benutzer: gtk4::glib::user_config_dir().join("querencia").join("labwc"),
+            benutzer: gtk4::glib::user_config_dir()
+                .join("querencia")
+                .join("labwc"),
             vorgabe: std::env::var_os("QE_LABWC_VORGABE")
                 .map(PathBuf::from)
                 .unwrap_or_else(|| PathBuf::from(VORGABE_STANDARD)),
@@ -199,7 +202,12 @@ fn sichern(pfad: &Path, zeit: &str) -> std::io::Result<Option<PathBuf>> {
 /// `stand` ist der Stand, auf dem `neu` beruht: kam er aus der Vorgabe,
 /// wird die Vorgabe als Ausgangspunkt in `.vorgabe/rc.xml` notiert (falls
 /// dort noch nichts steht). Rückgabe: die Sicherung, falls angelegt.
-pub fn rc_schreiben(o: &Orte, neu: &str, stand: &Stand, zeit: &str) -> Result<Option<PathBuf>, String> {
+pub fn rc_schreiben(
+    o: &Orte,
+    neu: &str,
+    stand: &Stand,
+    zeit: &str,
+) -> Result<Option<PathBuf>, String> {
     labwc_xml::gueltig(neu).map_err(|e| e.to_string())?;
     if neu.trim().is_empty() {
         return Err("leere rc.xml wird nicht geschrieben".into());
@@ -229,7 +237,9 @@ pub fn env_text(alt: &str, aenderungen: &[(&str, Option<String>)]) -> String {
     for (schluessel, wert) in aenderungen {
         let ist = |z: &String| {
             let z = z.trim();
-            !z.starts_with('#') && z.split_once('=').is_some_and(|(k, _)| k.trim() == *schluessel)
+            !z.starts_with('#')
+                && z.split_once('=')
+                    .is_some_and(|(k, _)| k.trim() == *schluessel)
         };
         // erste Zeile des Schlüssels ersetzen, weitere entfernen
         let mut gesetzt = false;
@@ -253,7 +263,11 @@ pub fn env_text(alt: &str, aenderungen: &[(&str, Option<String>)]) -> String {
     t
 }
 
-pub fn env_schreiben(o: &Orte, aenderungen: &[(&str, Option<String>)], zeit: &str) -> Result<Option<PathBuf>, String> {
+pub fn env_schreiben(
+    o: &Orte,
+    aenderungen: &[(&str, Option<String>)],
+    zeit: &str,
+) -> Result<Option<PathBuf>, String> {
     let pfad = o.env_datei();
     let alt = lesen_oder_leer(&pfad);
     let neu = env_text(&alt, aenderungen);
@@ -350,8 +364,10 @@ pub fn neu_laden(w: &Wirkung) -> Result<(), String> {
 /// neue Vorgabe als Ausgangspunkt, `rc.xml.vorgabe-neu` ist weg.
 pub fn vorgabe_uebernehmen(o: &Orte, zeit: &str) -> Result<Option<PathBuf>, String> {
     let ours = std::fs::read_to_string(o.rc()).map_err(|e| format!("rc.xml: {e}"))?;
-    let basis = std::fs::read_to_string(o.vorgabe_basis()).map_err(|e| format!(".vorgabe/rc.xml: {e}"))?;
-    let neue = std::fs::read_to_string(o.vorgabe_neu()).map_err(|e| format!("rc.xml.vorgabe-neu: {e}"))?;
+    let basis =
+        std::fs::read_to_string(o.vorgabe_basis()).map_err(|e| format!(".vorgabe/rc.xml: {e}"))?;
+    let neue =
+        std::fs::read_to_string(o.vorgabe_neu()).map_err(|e| format!("rc.xml.vorgabe-neu: {e}"))?;
     let zusammen = labwc_xml::auf_neue_vorgabe(&ours, &basis, &neue).map_err(|e| e.to_string())?;
     labwc_xml::gueltig(&zusammen).map_err(|e| e.to_string())?;
     let io = |e: std::io::Error| e.to_string();
@@ -389,7 +405,9 @@ pub fn zeigen() -> i32 {
         Wirkung::Sofort { pid, .. } => println!("wirkung=sofort labwc={pid}"),
         Wirkung::NaechsteAnmeldung { ordner } => println!(
             "wirkung=naechste-anmeldung labwc-ordner={}",
-            ordner.as_ref().map_or("-".into(), |d| d.display().to_string())
+            ordner
+                .as_ref()
+                .map_or("-".into(), |d| d.display().to_string())
         ),
     }
     println!("vorgabe-neu={}", if st.vorgabe_neu { "ja" } else { "nein" });
@@ -409,7 +427,12 @@ pub fn zeigen() -> i32 {
         );
     }
     println!("desktops/names={}", labwc_xml::namen(&st.rc).join("|"));
-    for k in ["XKB_DEFAULT_LAYOUT", "XKB_DEFAULT_VARIANT", "XCURSOR_THEME", "XCURSOR_SIZE"] {
+    for k in [
+        "XKB_DEFAULT_LAYOUT",
+        "XKB_DEFAULT_VARIANT",
+        "XCURSOR_THEME",
+        "XCURSOR_SIZE",
+    ] {
         println!("env {k}={}", st.env.get(k).map_or("-", String::as_str));
     }
     0
@@ -437,7 +460,11 @@ mod tests {
             "<?xml version=\"1.0\"?>\n<labwc_config>\n  <desktops number=\"4\" />\n</labwc_config>\n",
         )
         .unwrap();
-        std::fs::write(o.vorgabe.join("environment"), "LANG=en_US.UTF-8\nXKB_DEFAULT_LAYOUT=de\n").unwrap();
+        std::fs::write(
+            o.vorgabe.join("environment"),
+            "LANG=en_US.UTF-8\nXKB_DEFAULT_LAYOUT=de\n",
+        )
+        .unwrap();
         o
     }
 
@@ -447,14 +474,24 @@ mod tests {
         let o = orte(&w);
         let st = lesen(&o);
         assert_eq!(st.quelle, Quelle::Vorgabe);
-        assert_eq!(st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str), Some("de"));
+        assert_eq!(
+            st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str),
+            Some("de")
+        );
         let neu = labwc_xml::setzen(&st.rc, labwc_xml::ARBEITSFLAECHEN, "number", "6").unwrap();
         assert_eq!(rc_schreiben(&o, &neu, &st, "1").unwrap(), None);
         assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), neu);
         // Vorgabe als Ausgangspunkt für den Starter notiert
-        assert_eq!(std::fs::read_to_string(o.vorgabe_basis()).unwrap(), st.rc_vorgabe);
+        assert_eq!(
+            std::fs::read_to_string(o.vorgabe_basis()).unwrap(),
+            st.rc_vorgabe
+        );
         // Vorgabe selbst unverändert
-        assert!(std::fs::read_to_string(o.vorgabe.join("rc.xml")).unwrap().contains("number=\"4\""));
+        assert!(
+            std::fs::read_to_string(o.vorgabe.join("rc.xml"))
+                .unwrap()
+                .contains("number=\"4\"")
+        );
         let st2 = lesen(&o);
         assert_eq!(st2.quelle, Quelle::Benutzer);
         // Sicherung beim zweiten Schreiben
@@ -488,7 +525,9 @@ mod tests {
         let o = orte(&w);
         for i in 0..15 {
             let st = lesen(&o);
-            let neu = labwc_xml::setzen(&st.rc, labwc_xml::ARBEITSFLAECHEN, "number", &i.to_string()).unwrap();
+            let neu =
+                labwc_xml::setzen(&st.rc, labwc_xml::ARBEITSFLAECHEN, "number", &i.to_string())
+                    .unwrap();
             rc_schreiben(&o, &neu, &st, &format!("{i:02}")).unwrap();
         }
         let mut s: Vec<String> = std::fs::read_dir(&o.benutzer)
@@ -509,19 +548,41 @@ mod tests {
     fn umgebung_eigene_datei_hat_vorrang() {
         let w = ordner("env");
         let o = orte(&w);
-        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", Some("us".into())), ("XCURSOR_SIZE", Some("32".into()))], "1").unwrap();
+        env_schreiben(
+            &o,
+            &[
+                ("XKB_DEFAULT_LAYOUT", Some("us".into())),
+                ("XCURSOR_SIZE", Some("32".into())),
+            ],
+            "1",
+        )
+        .unwrap();
         let st = lesen(&o);
-        assert_eq!(st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str), Some("us"));
-        assert_eq!(st.env_ohne_eigene.get("XKB_DEFAULT_LAYOUT").map(String::as_str), Some("de"));
+        assert_eq!(
+            st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str),
+            Some("us")
+        );
+        assert_eq!(
+            st.env_ohne_eigene
+                .get("XKB_DEFAULT_LAYOUT")
+                .map(String::as_str),
+            Some("de")
+        );
         assert_eq!(st.env.get("LANG").map(String::as_str), Some("en_US.UTF-8"));
         // entfernen → Vorgabe gilt wieder; Sicherung angelegt
         let s = env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "2").unwrap();
         assert!(s.is_some_and(|p| !p.to_string_lossy().ends_with(".env")));
         let st = lesen(&o);
-        assert_eq!(st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str), Some("de"));
+        assert_eq!(
+            st.env.get("XKB_DEFAULT_LAYOUT").map(String::as_str),
+            Some("de")
+        );
         assert_eq!(st.env.get("XCURSOR_SIZE").map(String::as_str), Some("32"));
         // nichts geändert → nichts geschrieben
-        assert_eq!(env_schreiben(&o, &[("XCURSOR_SIZE", Some("32".into()))], "3").unwrap(), None);
+        assert_eq!(
+            env_schreiben(&o, &[("XCURSOR_SIZE", Some("32".into()))], "3").unwrap(),
+            None
+        );
         std::fs::remove_dir_all(&w).unwrap();
     }
 
@@ -530,7 +591,10 @@ mod tests {
         let alt = "# k\nA=1\nB=2\nA=3\n";
         assert_eq!(env_text(alt, &[("A", Some("9".into()))]), "# k\nA=9\nB=2\n");
         assert_eq!(env_text(alt, &[("A", None)]), "# k\nB=2\n");
-        assert_eq!(env_text(alt, &[("C", Some("x".into()))]), "# k\nA=1\nB=2\nA=3\nC=x\n");
+        assert_eq!(
+            env_text(alt, &[("C", Some("x".into()))]),
+            "# k\nA=1\nB=2\nA=3\nC=x\n"
+        );
         assert!(env_text("", &[("A", Some("1".into()))]).ends_with("\nA=1\n"));
     }
 
@@ -546,8 +610,14 @@ mod tests {
         assert!(lesen(&o).vorgabe_neu);
         vorgabe_uebernehmen(&o, "2").unwrap();
         let rc = std::fs::read_to_string(o.rc()).unwrap();
-        assert_eq!(labwc_xml::wert(&rc, labwc_xml::TASTATUR, "repeatRate").as_deref(), Some("40"));
-        assert_eq!(labwc_xml::wert(&rc, labwc_xml::ARBEITSFLAECHEN, "number").as_deref(), Some("5"));
+        assert_eq!(
+            labwc_xml::wert(&rc, labwc_xml::TASTATUR, "repeatRate").as_deref(),
+            Some("40")
+        );
+        assert_eq!(
+            labwc_xml::wert(&rc, labwc_xml::ARBEITSFLAECHEN, "number").as_deref(),
+            Some("5")
+        );
         assert_eq!(std::fs::read_to_string(o.vorgabe_basis()).unwrap(), neue);
         assert!(!o.vorgabe_neu().exists());
         std::fs::remove_dir_all(&w).unwrap();

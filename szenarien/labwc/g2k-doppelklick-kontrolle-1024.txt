@@ -1,0 +1,9 @@
+extent 1024 768
+wait 3500
+shot 01-start.png
+move 452 83
+click
+wait 330
+click
+wait 1200
+shot 02-titel-zwei-klicks-gross-abstand.png

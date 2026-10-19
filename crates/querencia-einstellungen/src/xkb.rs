@@ -203,14 +203,17 @@ pub fn liste_aus(regeln: &str, sprachen: &str, laender: &str, ue: Uebersetzer) -
             continue;
         };
         for v in varianten.children().filter(|c| c.has_tag_name("variant")) {
-            let (Some(vcode), Some(vbeschr)) = (kind_text(v, "name"), kind_text(v, "description")) else {
+            let (Some(vcode), Some(vbeschr)) = (kind_text(v, "name"), kind_text(v, "description"))
+            else {
                 continue;
             };
             let name = if vbeschr.starts_with(&wort) {
                 match klammer(&vbeschr) {
                     Some(k) => {
                         // die Teile der Grundbelegung (z. B. „UK“) nicht wiederholen
-                        let grund: Vec<&str> = klammer(&beschr).map(|g| g.split(',').map(str::trim).collect()).unwrap_or_default();
+                        let grund: Vec<&str> = klammer(&beschr)
+                            .map(|g| g.split(',').map(str::trim).collect())
+                            .unwrap_or_default();
                         let teile: Vec<String> = k
                             .split(", ")
                             .filter(|t| !grund.contains(&t.trim()))
@@ -292,7 +295,13 @@ pub fn anzeigename(liste: &[Belegung], layout: &str, variante: &str) -> String {
                 .iter()
                 .find(|b| b.layout == l.trim() && b.variante == v)
                 .map_or_else(
-                    || if v.is_empty() { l.trim().to_owned() } else { format!("{} ({v})", l.trim()) },
+                    || {
+                        if v.is_empty() {
+                            l.trim().to_owned()
+                        } else {
+                            format!("{} ({v})", l.trim())
+                        }
+                    },
                     |b| b.name.clone(),
                 )
         })
@@ -342,20 +351,32 @@ mod tests {
     #[test]
     fn deutsche_namen() {
         let l = liste_aus(REGELN_TEST, SPRACHEN_TEST, LAENDER_TEST, &deutsch);
-        let n = |lay: &str, var: &str| l.iter().find(|b| b.layout == lay && b.variante == var).unwrap().name.clone();
+        let n = |lay: &str, var: &str| {
+            l.iter()
+                .find(|b| b.layout == lay && b.variante == var)
+                .unwrap()
+                .name
+                .clone()
+        };
         assert_eq!(n("de", ""), "Deutsch");
         assert_eq!(n("de", "nodeadkeys"), "Deutsch – ohne Akzenttasten");
         assert_eq!(n("de", "dsb"), "Niedersorbisch – Deutsch");
         assert_eq!(n("at", ""), "Deutsch (Österreich)");
         assert_eq!(n("at", "mac"), "Deutsch (Österreich) – Macintosh");
         assert_eq!(n("us", ""), "Englisch (Vereinigte Staaten)");
-        assert_eq!(n("us", "intl"), "Englisch (Vereinigte Staaten) – international, mit Akzenttasten");
+        assert_eq!(
+            n("us", "intl"),
+            "Englisch (Vereinigte Staaten) – international, mit Akzenttasten"
+        );
         assert_eq!(n("brai", ""), "Braille");
         assert_eq!(n("be", ""), "Belgien (Deutsch)");
         // sortiert, Umlaute wie Grundbuchstaben
-        assert_eq!(l.first().unwrap().name, "Braille");
+        assert_eq!(l.first().unwrap().name, "Belgien (Deutsch)");
         assert_eq!(anzeigename(&l, "de", ""), "Deutsch");
-        assert_eq!(anzeigename(&l, "de,us", ",intl"), "Deutsch + Englisch (Vereinigte Staaten) – international, mit Akzenttasten");
+        assert_eq!(
+            anzeigename(&l, "de,us", ",intl"),
+            "Deutsch + Englisch (Vereinigte Staaten) – international, mit Akzenttasten"
+        );
         assert_eq!(anzeigename(&l, "xx", "y"), "xx (y)");
     }
 
@@ -366,7 +387,10 @@ mod tests {
             let l = liste();
             assert!(l.len() > 400, "{} Einträge", l.len());
             assert!(l.iter().any(|b| b.layout == "de" && b.variante.is_empty()));
-            assert!(l.iter().any(|b| b.layout == "de" && b.variante == "nodeadkeys"));
+            assert!(
+                l.iter()
+                    .any(|b| b.layout == "de" && b.variante == "nodeadkeys")
+            );
             let mut namen: Vec<&str> = l.iter().map(|b| b.name.as_str()).collect();
             namen.sort();
             let vorher = namen.len();

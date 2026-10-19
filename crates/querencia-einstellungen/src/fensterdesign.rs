@@ -15,9 +15,18 @@ use crate::tastatur::ja;
 
 /// Titelleistenknöpfe (labwc `<theme><titlebar><layout>`), Standard zuerst.
 pub const KNOEPFE: &[(&str, &str)] = &[
-    ("icon:iconify,max,close", "Programmsymbol links; Minimieren, Maximieren, Schließen rechts (Standard)"),
-    ("menu:iconify,max,close", "Fenstermenü links; Minimieren, Maximieren, Schließen rechts"),
-    ("close,iconify,max:", "Schließen, Minimieren, Maximieren links"),
+    (
+        "icon:iconify,max,close",
+        "Programmsymbol links; Minimieren, Maximieren, Schließen rechts (Standard)",
+    ),
+    (
+        "menu:iconify,max,close",
+        "Fenstermenü links; Minimieren, Maximieren, Schließen rechts",
+    ),
+    (
+        "close,iconify,max:",
+        "Schließen, Minimieren, Maximieren links",
+    ),
     ("icon:close", "Nur Schließen"),
 ];
 
@@ -35,8 +44,15 @@ pub struct Werte {
 
 /// Installierte labwc-Themen (`themes/<name>/labwc/themerc`).
 pub fn themen() -> Vec<String> {
-    let mut ordner = vec![glib::user_data_dir().join("themes"), glib::home_dir().join(".themes")];
-    ordner.extend(glib::system_data_dirs().into_iter().map(|d| d.join("themes")));
+    let mut ordner = vec![
+        glib::user_data_dir().join("themes"),
+        glib::home_dir().join(".themes"),
+    ];
+    ordner.extend(
+        glib::system_data_dirs()
+            .into_iter()
+            .map(|d| d.join("themes")),
+    );
     let mut liste = Vec::new();
     for d in ordner {
         if let Ok(e) = std::fs::read_dir(&d) {
@@ -70,12 +86,15 @@ impl Bereich for Fensterdesign {
 
     fn lesen(st: &Stand) -> Werte {
         let t = |k: &str| lx::wert(&st.rc, lx::THEMA, k);
-        let schrift = |k: &str| lx::wert(&st.rc, lx::SCHRIFT_AKTIV, k).or_else(|| lx::wert(&st.rc, lx::SCHRIFT_ALLE, k));
+        let schrift = |k: &str| {
+            lx::wert(&st.rc, lx::SCHRIFT_AKTIV, k).or_else(|| lx::wert(&st.rc, lx::SCHRIFT_ALLE, k))
+        };
         Werte {
             thema: t("name").unwrap_or_default(),
             eckenradius: t("cornerRadius").and_then(|v| v.parse().ok()).unwrap_or(8),
             schatten: ja(t("dropShadows")),
-            knoepfe: lx::wert(&st.rc, lx::TITELLEISTE, "layout").unwrap_or_else(|| KNOEPFE[0].0.to_owned()),
+            knoepfe: lx::wert(&st.rc, lx::TITELLEISTE, "layout")
+                .unwrap_or_else(|| KNOEPFE[0].0.to_owned()),
             schrift: schrift("name").unwrap_or_else(|| "sans".into()),
             schriftgroesse: schrift("size").and_then(|v| v.parse().ok()).unwrap_or(10),
         }
@@ -90,7 +109,12 @@ impl Bereich for Fensterdesign {
             t = lx::setzen(&t, lx::THEMA, "cornerRadius", &neu.eckenradius.to_string())?;
         }
         if neu.schatten != alt.schatten {
-            t = lx::setzen(&t, lx::THEMA, "dropShadows", if neu.schatten { "yes" } else { "no" })?;
+            t = lx::setzen(
+                &t,
+                lx::THEMA,
+                "dropShadows",
+                if neu.schatten { "yes" } else { "no" },
+            )?;
         }
         if neu.knoepfe != alt.knoepfe {
             t = lx::setzen(&t, lx::TITELLEISTE, "layout", &neu.knoepfe)?;
@@ -124,10 +148,17 @@ impl Bereich for Fensterdesign {
         inhalt.append(&f);
 
         let (f, b) = ls::rahmen("Schrift der Titelleiste");
-        let schrift = gtk4::FontDialogButton::new(Some(gtk4::FontDialog::builder().title("Schrift der Titelleiste").modal(true).build()));
+        let schrift = gtk4::FontDialogButton::new(Some(
+            gtk4::FontDialog::builder()
+                .title("Schrift der Titelleiste")
+                .modal(true)
+                .build(),
+        ));
         schrift.set_halign(gtk4::Align::Start);
         b.append(&schrift);
-        b.append(&ls::grau("Für aktive und inaktive Fenster. Die übrigen Schriften stehen im Bereich „Schriften“."));
+        b.append(&ls::grau(
+            "Für aktive und inaktive Fenster. Die übrigen Schriften stehen im Bereich „Schriften“.",
+        ));
         inhalt.append(&f);
 
         let d = Fensterdesign {
@@ -163,15 +194,36 @@ impl Bereich for Fensterdesign {
                 t.clone()
             }
         };
-        let liste: Vec<(String, String)> = themen.iter().map(|t| (t.clone(), beschriftung(t))).collect();
-        ls::optionen(&self.themen_kasten, &self.themen, &liste, &w.thema, &self.geaendert);
+        let liste: Vec<(String, String)> = themen
+            .iter()
+            .map(|t| (t.clone(), beschriftung(t)))
+            .collect();
+        ls::optionen(
+            &self.themen_kasten,
+            &self.themen,
+            &liste,
+            &w.thema,
+            &self.geaendert,
+        );
         self.eckenradius.set_value(w.eckenradius as f64);
         self.schatten.set_active(w.schatten);
-        let mut knoepfe: Vec<(String, String)> = KNOEPFE.iter().map(|(k, t)| ((*k).to_owned(), (*t).to_owned())).collect();
+        let mut knoepfe: Vec<(String, String)> = KNOEPFE
+            .iter()
+            .map(|(k, t)| ((*k).to_owned(), (*t).to_owned()))
+            .collect();
         if !knoepfe.iter().any(|(k, _)| k == &w.knoepfe) {
-            knoepfe.push((w.knoepfe.clone(), format!("Eigene Anordnung: {}", w.knoepfe)));
+            knoepfe.push((
+                w.knoepfe.clone(),
+                format!("Eigene Anordnung: {}", w.knoepfe),
+            ));
         }
-        ls::optionen(&self.knoepfe_kasten, &self.knoepfe, &knoepfe, &w.knoepfe, &self.geaendert);
+        ls::optionen(
+            &self.knoepfe_kasten,
+            &self.knoepfe,
+            &knoepfe,
+            &w.knoepfe,
+            &self.geaendert,
+        );
         let mut fd = pango::FontDescription::from_string(&w.schrift);
         fd.set_size(w.schriftgroesse as i32 * pango::SCALE);
         self.schrift.set_font_desc(&fd);
@@ -179,7 +231,11 @@ impl Bereich for Fensterdesign {
 
     fn aktuell(&self) -> Werte {
         let gewaehlt = |l: &RefCell<Vec<(String, gtk4::CheckButton)>>| {
-            l.borrow().iter().find(|(_, k)| k.is_active()).map(|(t, _)| t.clone()).unwrap_or_default()
+            l.borrow()
+                .iter()
+                .find(|(_, k)| k.is_active())
+                .map(|(t, _)| t.clone())
+                .unwrap_or_default()
         };
         let fd = self.schrift.font_desc();
         Werte {
@@ -249,11 +305,22 @@ mod tests {
         };
         let rc = Fensterdesign::rc_aendern(&neu, &alt, &st.rc).unwrap();
         assert_eq!(Fensterdesign::lesen(&stand(&rc)), neu);
-        assert_eq!(lx::wert(&rc, lx::SCHRIFT_INAKTIV, "size").as_deref(), Some("12"));
+        assert_eq!(
+            lx::wert(&rc, lx::SCHRIFT_INAKTIV, "size").as_deref(),
+            Some("12")
+        );
         // OSD-Schrift bleibt
         assert!(rc.contains("<font place=\"OnScreenDisplay\">\n      <name>Adwaita Sans</name>\n      <size>11</size>"));
         // leeres Thema wird nie geschrieben
-        let rc2 = Fensterdesign::rc_aendern(&Werte { thema: String::new(), ..alt.clone() }, &alt, &st.rc).unwrap();
+        let rc2 = Fensterdesign::rc_aendern(
+            &Werte {
+                thema: String::new(),
+                ..alt.clone()
+            },
+            &alt,
+            &st.rc,
+        )
+        .unwrap();
         assert_eq!(rc2, st.rc);
     }
 }

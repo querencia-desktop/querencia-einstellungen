@@ -13,7 +13,12 @@ use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
 use crate::tastatur::ja;
 
-pub const GROESSEN: &[(u32, &str)] = &[(24, "Normal (24)"), (32, "Groß (32)"), (48, "Größer (48)"), (64, "Sehr groß (64)")];
+pub const GROESSEN: &[(u32, &str)] = &[
+    (24, "Normal (24)"),
+    (32, "Groß (32)"),
+    (48, "Größer (48)"),
+    (64, "Sehr groß (64)"),
+];
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Werte {
@@ -32,8 +37,15 @@ pub struct Werte {
 
 /// Installierte Zeigerthemen (Ordner mit `cursors/`), ohne „default“.
 pub fn zeigerthemen() -> Vec<String> {
-    let mut ordner: Vec<PathBuf> = vec![gtk4::glib::user_data_dir().join("icons"), gtk4::glib::home_dir().join(".icons")];
-    ordner.extend(gtk4::glib::system_data_dirs().into_iter().map(|d| d.join("icons")));
+    let mut ordner: Vec<PathBuf> = vec![
+        gtk4::glib::user_data_dir().join("icons"),
+        gtk4::glib::home_dir().join(".icons"),
+    ];
+    ordner.extend(
+        gtk4::glib::system_data_dirs()
+            .into_iter()
+            .map(|d| d.join("icons")),
+    );
     let mut liste = Vec::new();
     for d in ordner {
         if let Ok(e) = std::fs::read_dir(&d) {
@@ -84,7 +96,11 @@ impl Bereich for Maus {
             linkshaendig: ja(g("leftHanded")),
             natuerlich: ja(g("naturalScroll")),
             zeigerthema: st.env.get("XCURSOR_THEME").cloned().unwrap_or_default(),
-            zeigergroesse: st.env.get("XCURSOR_SIZE").and_then(|v| v.parse().ok()).unwrap_or(24),
+            zeigergroesse: st
+                .env
+                .get("XCURSOR_SIZE")
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(24),
         }
     }
 
@@ -92,13 +108,32 @@ impl Bereich for Maus {
         let mut t = rc.to_owned();
         let jn = |b: bool| if b { "yes" } else { "no" };
         if neu.doppelklick != alt.doppelklick {
-            t = lx::setzen(&t, lx::MAUS, "doubleClickTime", &neu.doppelklick.to_string())?;
+            t = lx::setzen(
+                &t,
+                lx::MAUS,
+                "doubleClickTime",
+                &neu.doppelklick.to_string(),
+            )?;
         }
         if neu.geschwindigkeit != alt.geschwindigkeit {
-            t = lx::setzen(&t, lx::GERAET, "pointerSpeed", &format!("{:.2}", neu.geschwindigkeit as f64 / 100.0))?;
+            t = lx::setzen(
+                &t,
+                lx::GERAET,
+                "pointerSpeed",
+                &format!("{:.2}", neu.geschwindigkeit as f64 / 100.0),
+            )?;
         }
         if neu.beschleunigung != alt.beschleunigung {
-            t = lx::setzen(&t, lx::GERAET, "accelProfile", if neu.beschleunigung { "adaptive" } else { "flat" })?;
+            t = lx::setzen(
+                &t,
+                lx::GERAET,
+                "accelProfile",
+                if neu.beschleunigung {
+                    "adaptive"
+                } else {
+                    "flat"
+                },
+            )?;
         }
         if neu.linkshaendig != alt.linkshaendig {
             t = lx::setzen(&t, lx::GERAET, "leftHanded", jn(neu.linkshaendig))?;
@@ -109,14 +144,25 @@ impl Bereich for Maus {
         Ok(t)
     }
 
-    fn env_aenderungen(neu: &Werte, alt: &Werte, st: &Stand) -> Vec<(&'static str, Option<String>)> {
+    fn env_aenderungen(
+        neu: &Werte,
+        alt: &Werte,
+        st: &Stand,
+    ) -> Vec<(&'static str, Option<String>)> {
         let mut v = Vec::new();
         if neu.zeigerthema != alt.zeigerthema {
             v.push(ls::env_wert(st, "XCURSOR_THEME", &neu.zeigerthema));
         }
         if neu.zeigergroesse != alt.zeigergroesse {
-            let vorgabe = st.env_ohne_eigene.get("XCURSOR_SIZE").and_then(|s| s.parse().ok()).unwrap_or(24);
-            v.push(("XCURSOR_SIZE", (neu.zeigergroesse != vorgabe).then(|| neu.zeigergroesse.to_string())));
+            let vorgabe = st
+                .env_ohne_eigene
+                .get("XCURSOR_SIZE")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(24);
+            v.push((
+                "XCURSOR_SIZE",
+                (neu.zeigergroesse != vorgabe).then(|| neu.zeigergroesse.to_string()),
+            ));
         }
         v
     }
@@ -125,7 +171,8 @@ impl Bereich for Maus {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
         let (f, b) = ls::rahmen("Zeiger bewegen");
-        let geschwindigkeit = gtk4::Scale::with_range(gtk4::Orientation::Horizontal, -1.0, 1.0, 0.05);
+        let geschwindigkeit =
+            gtk4::Scale::with_range(gtk4::Orientation::Horizontal, -1.0, 1.0, 0.05);
         geschwindigkeit.set_hexpand(true);
         geschwindigkeit.set_size_request(260, -1);
         geschwindigkeit.add_mark(-1.0, gtk4::PositionType::Bottom, Some("Langsam"));
@@ -137,19 +184,27 @@ impl Bereich for Maus {
         geschwindigkeit.set_margin_end(28);
         geschwindigkeit.set_format_value_func(|_, v| format!("{v:+.2}").replace('.', ","));
         b.append(&ls::zeile("Geschwindigkeit:", &geschwindigkeit));
-        let beschleunigung = gtk4::CheckButton::with_label("Beschleunigung (schnelle Bewegungen tragen weiter)");
+        let beschleunigung =
+            gtk4::CheckButton::with_label("Beschleunigung (schnelle Bewegungen tragen weiter)");
         b.append(&beschleunigung);
         inhalt.append(&f);
 
         let (f, b) = ls::rahmen("Tasten und Rad");
         let doppelklick = gtk4::SpinButton::with_range(100.0, 2000.0, 50.0);
-        b.append(&ls::zeile("Doppelklick-Zeitlimit (Millisekunden):", &doppelklick));
+        b.append(&ls::zeile(
+            "Doppelklick-Zeitlimit (Millisekunden):",
+            &doppelklick,
+        ));
         b.append(&ls::grau("Gilt für labwc (Titelleisten, Fensterrahmen); GTK-Programme haben eine eigene Einstellung."));
-        let linkshaendig = gtk4::CheckButton::with_label("Linkshändig (linke und rechte Taste tauschen)");
+        let linkshaendig =
+            gtk4::CheckButton::with_label("Linkshändig (linke und rechte Taste tauschen)");
         b.append(&linkshaendig);
-        let natuerlich = gtk4::CheckButton::with_label("Natürliches Rollen (Inhalt folgt den Fingern)");
+        let natuerlich =
+            gtk4::CheckButton::with_label("Natürliches Rollen (Inhalt folgt den Fingern)");
         b.append(&natuerlich);
-        b.append(&ls::grau("Gilt für alle Mäuse und Touchpads ohne eigenes Profil in rc.xml."));
+        b.append(&ls::grau(
+            "Gilt für alle Mäuse und Touchpads ohne eigenes Profil in rc.xml.",
+        ));
         inhalt.append(&f);
 
         let (f, b) = ls::rahmen("Mauszeiger");
@@ -202,7 +257,8 @@ impl Bereich for Maus {
 
     fn zeigen(&self, w: &Werte) {
         self.doppelklick.set_value(w.doppelklick as f64);
-        self.geschwindigkeit.set_value(w.geschwindigkeit as f64 / 100.0);
+        self.geschwindigkeit
+            .set_value(w.geschwindigkeit as f64 / 100.0);
         self.beschleunigung.set_active(w.beschleunigung);
         self.linkshaendig.set_active(w.linkshaendig);
         self.natuerlich.set_active(w.natuerlich);
@@ -256,11 +312,21 @@ impl Maus {
         let liste: Vec<(String, String)> = namen
             .into_iter()
             .map(|n| {
-                let text = if n.is_empty() { "Standard".to_owned() } else { n.clone() };
+                let text = if n.is_empty() {
+                    "Standard".to_owned()
+                } else {
+                    n.clone()
+                };
                 (n, text)
             })
             .collect();
-        ls::optionen(&self.themen_kasten, &self.themen, &liste, aktuell, &self.geaendert);
+        ls::optionen(
+            &self.themen_kasten,
+            &self.themen,
+            &liste,
+            aktuell,
+            &self.geaendert,
+        );
     }
 }
 
@@ -284,11 +350,29 @@ mod tests {
     #[test]
     fn lesen_standard_und_datei() {
         let w = Maus::lesen(&stand("<labwc_config/>"));
-        assert_eq!((w.doppelklick, w.geschwindigkeit, w.beschleunigung, w.linkshaendig, w.natuerlich), (500, 0, true, false, false));
+        assert_eq!(
+            (
+                w.doppelklick,
+                w.geschwindigkeit,
+                w.beschleunigung,
+                w.linkshaendig,
+                w.natuerlich
+            ),
+            (500, 0, true, false, false)
+        );
         assert_eq!((w.zeigerthema.as_str(), w.zeigergroesse), ("", 24));
         let rc = "<labwc_config><mouse><doubleClickTime>350</doubleClickTime></mouse><libinput><device category=\"touchpad\"><naturalScroll>yes</naturalScroll></device><device><pointerSpeed>-0.5</pointerSpeed><accelProfile>flat</accelProfile><leftHanded>yes</leftHanded></device></libinput></labwc_config>";
         let w = Maus::lesen(&stand(rc));
-        assert_eq!((w.doppelklick, w.geschwindigkeit, w.beschleunigung, w.linkshaendig, w.natuerlich), (350, -50, false, true, false));
+        assert_eq!(
+            (
+                w.doppelklick,
+                w.geschwindigkeit,
+                w.beschleunigung,
+                w.linkshaendig,
+                w.natuerlich
+            ),
+            (350, -50, false, true, false)
+        );
     }
 
     #[test]
@@ -300,16 +384,28 @@ mod tests {
         neu.natuerlich = true;
         neu.doppelklick = 400;
         let rc = Maus::rc_aendern(&neu, &alt, &st.rc).unwrap();
-        assert_eq!(lx::wert(&rc, lx::GERAET, "pointerSpeed").as_deref(), Some("0.35"));
-        assert_eq!(lx::wert(&rc, lx::GERAET, "naturalScroll").as_deref(), Some("yes"));
-        assert_eq!(lx::wert(&rc, lx::MAUS, "doubleClickTime").as_deref(), Some("400"));
+        assert_eq!(
+            lx::wert(&rc, lx::GERAET, "pointerSpeed").as_deref(),
+            Some("0.35")
+        );
+        assert_eq!(
+            lx::wert(&rc, lx::GERAET, "naturalScroll").as_deref(),
+            Some("yes")
+        );
+        assert_eq!(
+            lx::wert(&rc, lx::MAUS, "doubleClickTime").as_deref(),
+            Some("400")
+        );
         assert_eq!(lx::wert(&rc, lx::GERAET, "leftHanded"), None);
         assert_eq!(Maus::lesen(&stand(&rc)), neu);
         neu.zeigergroesse = 48;
         neu.zeigerthema = "Adwaita".into();
         assert_eq!(
             Maus::env_aenderungen(&neu, &alt, &st),
-            vec![("XCURSOR_THEME", Some("Adwaita".into())), ("XCURSOR_SIZE", Some("48".into()))]
+            vec![
+                ("XCURSOR_THEME", Some("Adwaita".into())),
+                ("XCURSOR_SIZE", Some("48".into()))
+            ]
         );
     }
 }

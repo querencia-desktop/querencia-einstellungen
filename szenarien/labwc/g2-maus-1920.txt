@@ -1,16 +1,16 @@
 extent 1920 1080
 wait 3500
-move 580 587
+move 600 586
 click
 wait 1200
 shot 01-maus.png
-move 805 714
+move 806 693
 click
 wait 200
-move 805 683
+move 806 663
 click
 wait 200
-move 1140 605
+move 1113 590
 click
 wait 120
 click
@@ -19,11 +19,11 @@ click
 wait 120
 click
 wait 120
-move 1300 463
+move 1290 454
 click
 wait 500
 shot 02-geaendert.png
-move 1332 823
+move 1315 823
 click
 wait 2000
 shot 03-uebernommen.png

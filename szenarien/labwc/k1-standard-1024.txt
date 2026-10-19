@@ -1,28 +1,29 @@
 extent 1024 768
 wait 3500
-move 140 392
+move 152 392
 click
 wait 1200
 shot 01-tastatur-geaendert.png
-move 449 667
+move 443 667
 click
 wait 600
 shot 02-standard.png
-move 884 667
+move 867 667
 click
 wait 2000
 shot 03-uebernommen.png
-move 140 430
+move 152 430
 click
 wait 1000
-move 640 400
+move 632 404
 scroll 5
 wait 600
-move 543 480
+shot 04-maus-gerollt.png
+move 551 491
 click
 wait 400
-shot 04-maus-gross.png
-move 884 667
+shot 05-maus-gross.png
+move 867 667
 click
 wait 2000
-shot 05-maus-uebernommen.png
+shot 06-maus-uebernommen.png

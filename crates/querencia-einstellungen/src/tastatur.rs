@@ -50,7 +50,11 @@ fn namen_zeigen(name: &gtk4::Label, liste: &[xkb::Belegung], belegung: &(String,
         "<b>{}</b>  <span alpha=\"60%\">({}{})</span>",
         gtk4::glib::markup_escape_text(&xkb::anzeigename(liste, l, v)),
         gtk4::glib::markup_escape_text(if l.is_empty() { "us" } else { l }),
-        if v.is_empty() { String::new() } else { format!(", {v}") }
+        if v.is_empty() {
+            String::new()
+        } else {
+            format!(", {v}")
+        }
     ));
 }
 
@@ -61,8 +65,16 @@ impl Bereich for Tastatur {
 
     fn lesen(st: &Stand) -> Werte {
         Werte {
-            layout: st.env.get("XKB_DEFAULT_LAYOUT").cloned().unwrap_or_default(),
-            variante: st.env.get("XKB_DEFAULT_VARIANT").cloned().unwrap_or_default(),
+            layout: st
+                .env
+                .get("XKB_DEFAULT_LAYOUT")
+                .cloned()
+                .unwrap_or_default(),
+            variante: st
+                .env
+                .get("XKB_DEFAULT_VARIANT")
+                .cloned()
+                .unwrap_or_default(),
             rate: zahl(st, "repeatRate", 25),
             verzoegerung: zahl(st, "repeatDelay", 600),
             numlock: ja(lx::wert(&st.rc, lx::TASTATUR, "numlock")),
@@ -75,15 +87,29 @@ impl Bereich for Tastatur {
             t = lx::setzen(&t, lx::TASTATUR, "repeatRate", &neu.rate.to_string())?;
         }
         if neu.verzoegerung != alt.verzoegerung {
-            t = lx::setzen(&t, lx::TASTATUR, "repeatDelay", &neu.verzoegerung.to_string())?;
+            t = lx::setzen(
+                &t,
+                lx::TASTATUR,
+                "repeatDelay",
+                &neu.verzoegerung.to_string(),
+            )?;
         }
         if neu.numlock != alt.numlock {
-            t = lx::setzen(&t, lx::TASTATUR, "numlock", if neu.numlock { "on" } else { "off" })?;
+            t = lx::setzen(
+                &t,
+                lx::TASTATUR,
+                "numlock",
+                if neu.numlock { "on" } else { "off" },
+            )?;
         }
         Ok(t)
     }
 
-    fn env_aenderungen(neu: &Werte, alt: &Werte, st: &Stand) -> Vec<(&'static str, Option<String>)> {
+    fn env_aenderungen(
+        neu: &Werte,
+        alt: &Werte,
+        st: &Stand,
+    ) -> Vec<(&'static str, Option<String>)> {
         if (&neu.layout, &neu.variante) == (&alt.layout, &alt.variante) {
             return Vec::new();
         }
@@ -112,7 +138,10 @@ impl Bereich for Tastatur {
 
         let (f, b) = ls::rahmen("Tastenwiederholung");
         let verzoegerung = gtk4::SpinButton::with_range(100.0, 2000.0, 10.0);
-        b.append(&ls::zeile("Verzögerung bis zur Wiederholung (Millisekunden):", &verzoegerung));
+        b.append(&ls::zeile(
+            "Verzögerung bis zur Wiederholung (Millisekunden):",
+            &verzoegerung,
+        ));
         let rate = gtk4::SpinButton::with_range(1.0, 100.0, 1.0);
         b.append(&ls::zeile("Geschwindigkeit (Zeichen pro Sekunde):", &rate));
         let probe = gtk4::Entry::new();
@@ -123,7 +152,9 @@ impl Bereich for Tastatur {
 
         let numlock = gtk4::CheckButton::with_label("Num-Taste beim Anmelden einschalten");
         inhalt.append(&numlock);
-        inhalt.append(&ls::grau("Die Num-Taste setzt labwc, wenn eine Tastatur erkannt wird (Anmeldung, Anstecken)."));
+        inhalt.append(&ls::grau(
+            "Die Num-Taste setzt labwc, wenn eine Tastatur erkannt wird (Anmeldung, Anstecken).",
+        ));
 
         let t = Tastatur {
             belegung: Rc::new(RefCell::new((String::new(), String::new()))),
@@ -134,10 +165,16 @@ impl Bereich for Tastatur {
             liste,
         };
         {
-            let (belegung, name, liste, g) = (t.belegung.clone(), t.name.clone(), t.liste.clone(), geaendert.clone());
+            let (belegung, name, liste, g) = (
+                t.belegung.clone(),
+                t.name.clone(),
+                t.liste.clone(),
+                geaendert.clone(),
+            );
             aendern.connect_clicked(move |k| {
                 let eltern = k.root().and_then(|r| r.downcast::<gtk4::Window>().ok());
-                let (belegung, name, liste2, g) = (belegung.clone(), name.clone(), liste.clone(), g.clone());
+                let (belegung, name, liste2, g) =
+                    (belegung.clone(), name.clone(), liste.clone(), g.clone());
                 let aktuell = belegung.borrow().clone();
                 auswahl(eltern, liste.clone(), aktuell, move |l, v| {
                     *belegung.borrow_mut() = (l, v);
@@ -235,7 +272,9 @@ pub fn auswahl(
         let i: usize = z.widget_name().parse().unwrap_or(0);
         t.is_empty()
             || l2.get(i).is_some_and(|b| {
-                b.name.to_lowercase().contains(&t) || b.layout == t || b.variante.to_lowercase() == t
+                b.name.to_lowercase().contains(&t)
+                    || b.layout == t
+                    || b.variante.to_lowercase() == t
             })
     });
     let lb2 = lb.clone();
@@ -264,7 +303,10 @@ pub fn auswahl(
             if let Some(z) = lb.selected_row() {
                 let i: usize = z.widget_name().parse().unwrap_or(0);
                 if let Some(b) = liste.get(i) {
-                    eprintln!("querencia-einstellungen: Tastatur: gewählt {} ({}:{})", b.name, b.layout, b.variante);
+                    eprintln!(
+                        "querencia-einstellungen: Tastatur: gewählt {} ({}:{})",
+                        b.name, b.layout, b.variante
+                    );
                     fertig(b.layout.clone(), b.variante.clone());
                 }
             }
@@ -285,7 +327,11 @@ mod tests {
     use std::collections::BTreeMap;
 
     fn stand(rc: &str, env: &[(&str, &str)], vorgabe_env: &[(&str, &str)]) -> Stand {
-        let m = |l: &[(&str, &str)]| l.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect::<BTreeMap<_, _>>();
+        let m = |l: &[(&str, &str)]| {
+            l.iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect::<BTreeMap<_, _>>()
+        };
         Stand {
             rc: rc.into(),
             quelle: Quelle::Benutzer,
@@ -298,7 +344,11 @@ mod tests {
 
     #[test]
     fn lesen_mit_standardwerten() {
-        let st = stand("<labwc_config/>", &[("XKB_DEFAULT_LAYOUT", "de")], &[("XKB_DEFAULT_LAYOUT", "de")]);
+        let st = stand(
+            "<labwc_config/>",
+            &[("XKB_DEFAULT_LAYOUT", "de")],
+            &[("XKB_DEFAULT_LAYOUT", "de")],
+        );
         let w = Tastatur::lesen(&st);
         assert_eq!(
             w,
@@ -314,7 +364,11 @@ mod tests {
 
     #[test]
     fn nur_geaenderte_werte_schreiben() {
-        let st = stand("<labwc_config>\n</labwc_config>\n", &[("XKB_DEFAULT_LAYOUT", "de")], &[("XKB_DEFAULT_LAYOUT", "de")]);
+        let st = stand(
+            "<labwc_config>\n</labwc_config>\n",
+            &[("XKB_DEFAULT_LAYOUT", "de")],
+            &[("XKB_DEFAULT_LAYOUT", "de")],
+        );
         let alt = Tastatur::lesen(&st);
         let mut neu = alt.clone();
         neu.rate = 40;
@@ -330,9 +384,16 @@ mod tests {
         neu.variante = "intl".into();
         assert_eq!(
             Tastatur::env_aenderungen(&neu, &alt, &st),
-            vec![("XKB_DEFAULT_LAYOUT", Some("us".into())), ("XKB_DEFAULT_VARIANT", Some("intl".into()))]
+            vec![
+                ("XKB_DEFAULT_LAYOUT", Some("us".into())),
+                ("XKB_DEFAULT_VARIANT", Some("intl".into()))
+            ]
         );
-        let zurueck = Werte { layout: "de".into(), variante: String::new(), ..neu.clone() };
+        let zurueck = Werte {
+            layout: "de".into(),
+            variante: String::new(),
+            ..neu.clone()
+        };
         assert_eq!(
             Tastatur::env_aenderungen(&zurueck, &neu, &st),
             vec![("XKB_DEFAULT_LAYOUT", None), ("XKB_DEFAULT_VARIANT", None)]

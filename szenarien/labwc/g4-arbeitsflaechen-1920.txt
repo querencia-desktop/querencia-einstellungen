@@ -1,23 +1,26 @@
 extent 1920 1080
 wait 3500
-move 580 663
+move 600 662
 click
 wait 1200
 shot 01-arbeitsflaechen.png
-move 1079 402
+move 807 717
+click
+wait 200
+move 1064 397
 click
 wait 120
 click
 wait 120
-move 1100 507
+move 1090 498
 click
 type Post
-move 1100 587
+move 1090 578
 click
 type Web
 wait 500
 shot 02-geaendert.png
-move 1332 823
+move 1315 823
 click
 wait 2500
 shot 03-uebernommen.png

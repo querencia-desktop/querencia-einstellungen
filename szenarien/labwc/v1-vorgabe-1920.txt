@@ -1,0 +1,10 @@
+extent 1920 1080
+wait 3500
+move 600 548
+click
+wait 1200
+shot 01-vorgabe-kasten.png
+move 888 498
+click
+wait 2000
+shot 02-uebernommen.png

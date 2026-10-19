@@ -1,10 +1,10 @@
 extent 1024 768
 wait 3500
-move 140 392
+move 152 392
 click
 wait 1200
 shot 01-vorgabe-kasten.png
-move 463 354
+move 440 342
 click
 wait 2000
 shot 02-uebernommen.png

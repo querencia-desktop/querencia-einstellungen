@@ -1,0 +1,29 @@
+extent 1920 1080
+wait 3500
+move 600 548
+click
+wait 1200
+shot 01-tastatur-geaendert.png
+move 891 823
+click
+wait 600
+shot 02-standard.png
+move 1315 823
+click
+wait 2000
+shot 03-uebernommen.png
+move 600 586
+click
+wait 1000
+move 1080 560
+scroll 5
+wait 600
+shot 04-maus-gerollt.png
+move 999 647
+click
+wait 400
+shot 05-maus-gross.png
+move 1315 823
+click
+wait 2000
+shot 06-maus-uebernommen.png
