@@ -1,6 +1,6 @@
 # desktop.ini – Gruppen `[Icons]` und `[Volumes]` (QD-042, G2-X)
 
-**Stand:** 19.10.2026 · **Version des Formats:** 1 · **Schreiber:** Querencia Einstellungen ab 0.0.3 (Bereich „Arbeitsfläche“) · **Leser:** Querencia Desktop ab QE-04 (Zweig `desktop-volumes`).
+**Stand:** 19.10.2026 · **Version des Formats:** 1 · **Schreiber:** Querencia Einstellungen ab 0.0.4 (Bereich „Symbole der Arbeitsfläche“, direkt unter „Hintergrundbild“; 0.0.3 hieß er noch „Arbeitsfläche“) · **Leser:** Querencia Desktop ab QE-04 (Zweig `desktop-volumes`).
 
 Diese Datei legt fest, wie Querencia Einstellungen und Querencia Desktop die Arbeitsflächen-Symbole in
 `~/.config/querencia/desktop.ini` (genauer: `$XDG_CONFIG_HOME/querencia/desktop.ini`) austauschen.
@@ -49,10 +49,22 @@ Die Symbole von Dateien und Ordnern in `~/Schreibtisch` sind keine festen Symbol
 | `Network` | `true` | Netzlaufwerke (eingehängte Freigaben: SMB, SFTP, FTP, WebDAV, NFS, AFP) |
 | `Internal` | `false` | Eingebaute Laufwerke (interne Festplatten und Partitionen, die der Benutzer eingehängt hat) |
 
-> **Standardwerte: Vorschlag (GNOME 2), Entscheidung des Besitzers offen** (Frage an die Status-Session vom 19.10.).
-> Sie stehen an genau einer Stelle je Programm: `ArbeitsflaecheEinstellung::default()` in
-> `src/arbeitsflaeche_modell.rs` (Einstellungen) und die entsprechende Konstante im Desktop. Ändern sich
+> **Standardwerte entschieden am 19.10.2026** (Status-Session, vom Besitzer übertragen), wie GNOME 2:
+> Wechseldatenträger, optische Medien und Netzlaufwerke an, eingebaute Laufwerke aus; Rechner, Persönlicher
+> Ordner und Papierkorb an; Größe 48 (Stufen 32/48/72/96).
+> Sie stehen an genau einer Stelle je Programm: `Arbeitsflaeche::default()` in
+> `src/arbeitsflaeche_modell.rs` (Einstellungen) und `IconSettings::default()` in `config.rs` (Desktop). Ändern sich
 > die Standards, müssen beide Stellen und diese Tabelle gleichzeitig geändert werden.
+
+### 3.0 Was das auf der VM entwicklungs-vm bedeutet (gemessen 19.10.2026, `gio mount -li`, `findmnt`)
+
+| Mount | GIO-Fakten | Typ (§3.1) | QE-03 heute | mit QE-04 und Standardwerten |
+|---|---|---|---|---|
+| `cidata` → `/run/media/user/cidata` (`/dev/sr0`, iso9660) | Volume Klasse `device`, Laufwerk „QEMU DVD-ROM“ removable, auswerfbar, Symbol `media-optical-cd-rom` | Optical | sichtbar | **bleibt sichtbar** |
+| `user on nas-test.local` → `smb://nas-test.local/user/` | GDaemonMount ohne Volume, aushängbar, Symbol `folder-remote` | Network | nicht sichtbar | **erscheint neu** |
+| `/`, `/boot`, `/boot/efi` (`/dev/sda1`, `sda13`, `sda15`) | Systempfade; udisks meldet für `sda` keine Volumes | nie | nicht sichtbar | nicht sichtbar |
+| selbst eingehängte eingebaute Partitionen | **gibt es auf der VM nicht** (keine weiteren sda-Partitionen eingehängt) | Internal | wären sichtbar (`can_unmount`) | würden **verschwinden** (Internal aus) – heute betrifft das nichts |
+| `/run/user/1001/doc` (Portal), `/run/user/1001/gvfs` und GVfs-FUSE-Reste isolierter Läufe | Portal/FUSE-Hilfsmounts | nie | nicht sichtbar | nicht sichtbar |
 
 ### 3.1 Einordnung eines eingehängten Laufwerks (für den Desktop, verbindlich)
 
@@ -97,7 +109,7 @@ geht der Datei vor. Dasselbe gilt für `QUERENCIA_DESKTOP_ICONS=0`, das alle Sym
 ## 5. Schreiben – jede Stelle schreibt nur ihre eigenen Gruppen
 
 1. Ein Schreiber ersetzt **nur seine Gruppen**. Der Hintergrund-Dialog ersetzt `[Background]`, der Bereich
-   „Arbeitsfläche“ ersetzt `[Icons]` und `[Volumes]`. Alles andere bleibt **byte-gleich**: andere Gruppen,
+   „Symbole der Arbeitsfläche“ ersetzt `[Icons]` und `[Volumes]`. Alles andere bleibt **byte-gleich**: andere Gruppen,
    Kommentare vor der ersten Gruppe, Reihenfolge.
 2. Zum Block einer Gruppe gehören die Kopfzeile und alle Zeilen bis zur letzten Schlüsselzeile vor der
    nächsten Kopfzeile. Kommentar- und Leerzeilen direkt vor der nächsten Gruppe gehören zu dieser. Eine
@@ -122,7 +134,7 @@ geht der Datei vor. Dasselbe gilt für `QUERENCIA_DESKTOP_ICONS=0`, das alle Sym
   auch `[Icons]` und `[Volumes]` und baut die Symbolschicht neu. Es braucht keinen Neustart.
 - `querencia-desktop --faehigkeiten` gibt ab QE-04 zusätzlich diese Wörter aus:
   `volumes-types` (die vier Typen aus §3), `icons-visible` (die drei Kästchen aus §2), `icon-size` (`Size`).
-- Fehlt ein Wort, zeigen die Einstellungen im Bereich „Arbeitsfläche“ einen Hinweis: „Der laufende Desktop
+- Fehlt ein Wort, zeigen die Einstellungen im Bereich „Symbole der Arbeitsfläche“ einen Hinweis: „Der laufende Desktop
   wertet … noch nicht aus“. Übernehmen bleibt trotzdem möglich, weil die Gruppen alte Desktops nicht stören
   (§4). Die Werte gelten, sobald ein passender Desktop läuft.
 
@@ -132,7 +144,7 @@ geht der Datei vor. Dasselbe gilt für `QUERENCIA_DESKTOP_ICONS=0`, das alle Sym
 |---|---|---|
 | F1 | keine Datei | alle Standards; Desktop wie QE-03, außer Netz/eingebaut laut §3 |
 | F2 | nur `[Background]` (QE-01-Datei) | Hintergrund unverändert; Symbole nach Standard |
-| F3 | Einstellungen „Arbeitsfläche“ übernimmt auf F2 | `[Background]` byte-gleich, `[Icons]`/`[Volumes]` angehängt |
+| F3 | Einstellungen „Symbole der Arbeitsfläche“ übernimmt auf F2 | `[Background]` byte-gleich, `[Icons]`/`[Volumes]` angehängt |
 | F4 | Hintergrund-Dialog übernimmt auf F3 | `[Icons]`/`[Volumes]` byte-gleich |
 | F5 | `Size=50`, `Removable=vielleicht`, `Foo=1` | Standard je Schlüssel, je eine Protokollzeile, kein Abbruch |
 | F6 | QE-03-Desktop mit F3-Datei | Hintergrund wie in F2, keine neue Protokollzeile, Verhalten wie QE-03 |

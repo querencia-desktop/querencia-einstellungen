@@ -8,7 +8,7 @@
 //!                                           einstellungen setzen (Sitzungsstart,
 //!                                           ohne Fenster)
 //!   querencia-einstellungen --bildschirm-zeigen     Ausgaben als Text (Prüfung)
-//!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Arbeitsfläche“
+//!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Symbole der Arbeitsfläche“
 //!                                           (G2-X: Symbole und Laufwerke)
 //!
 //! Beide Einstiege benutzen denselben Dialog (`hintergrund::oeffnen`). Keine

@@ -2,7 +2,7 @@
 //! tatsächlichen Ist-Zustand aus der jeweiligen Quelle, nur lesend. Was noch
 //! kein Backend hat, steht als „Noch nicht verfügbar“ mit dem Grund – ohne
 //! Schaltflächen, die nichts tun. Funktionen: „Hintergrund …“ (QE-01),
-//! „Bildschirm“ (G2-G) und „Arbeitsfläche“ (G2-X).
+//! „Bildschirm“ (G2-G) und „Symbole der Arbeitsfläche“ (G2-X).
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
@@ -24,7 +24,7 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
             seite: hintergrundbild(app),
         },
         Bereich {
-            name: "Arbeitsfläche",
+            name: crate::arbeitsflaeche::NAME,
             seite: crate::arbeitsflaeche::seite(),
         },
         Bereich {

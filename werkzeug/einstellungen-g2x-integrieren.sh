@@ -1,12 +1,12 @@
 #!/bin/bash
-# Querencia Einstellungen 0.0.3 (G2-X: Bereich „Arbeitsfläche“ – Rechner,
+# Querencia Einstellungen 0.0.4 (G2-X: Bereich „Symbole der Arbeitsfläche“ – Rechner,
 # Persönlicher Ordner, Papierkorb, Symbolgröße, Laufwerkstypen; schreibt
 # desktop.ini [Icons]/[Volumes], QD-042): Versionswechsel der Live-Ablage.
 # NUR NACH FREIGABE (Status-Session prüft und gibt frei).
 #
 #   bash einstellungen-g2x-integrieren.sh pruefen      nur lesen
-#   bash einstellungen-g2x-integrieren.sh aktivieren   0.0.2 (G2-G) → 0.0.3 (G2-X)
-#   bash einstellungen-g2x-integrieren.sh zurueck      0.0.3 → 0.0.2
+#   bash einstellungen-g2x-integrieren.sh aktivieren   0.0.2 (G2-G) → 0.0.4 (G2-X)
+#   bash einstellungen-g2x-integrieren.sh zurueck      0.0.4 → 0.0.2
 #
 # Ausgang ist der Endstand von einstellungen-g2g-integrieren.sh: Link
 # ~/opt/querencia/bin/querencia-einstellungen → Ablage 03c6dec5e63966b9, im
@@ -48,7 +48,7 @@ DESK=$APPS/$DESKNAME
 PROTO=$OPT/protokoll.txt
 
 PROG_ALT=03c6dec5e63966b9088b97c02311d6e3cec0f662831a315e3a436669e0fd0a9b
-PROG_NEU=1aa74ac5e069376c961af91434d7e3c2a6c36e58e4256d8e0ea613b9184b8ffc
+PROG_NEU=e5acdbead9555b6f9ca1578b27f7a07086531bb01a2b4a0d59b072b7a4a52d1a
 ALT16=${PROG_ALT:0:16}
 NEU16=${PROG_NEU:0:16}
 ABLAGE_ALT=$OPT/einstellungen/$ALT16
@@ -106,8 +106,8 @@ invarianten() {
     [ -d "$APPS" ] || die "kein Anwendungsordner: $APPS"
     [ "$(summe "$ABLAGE_ALT/$PROG")" = $PROG_ALT ] || die "0.0.2-Ablage fehlt oder verändert (Rückfallziel): $ABLAGE_ALT"
     if [ -e "$ABLAGE_NEU" ] || [ -L "$ABLAGE_NEU" ]; then
-        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "0.0.3-Ablage ist kein Ordner: $ABLAGE_NEU"
-        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "0.0.3-Ablage verändert: $ABLAGE_NEU"
+        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "0.0.4-Ablage ist kein Ordner: $ABLAGE_NEU"
+        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "0.0.4-Ablage verändert: $ABLAGE_NEU"
     fi
 }
 
@@ -175,7 +175,7 @@ ablage_anlegen() {
         mkdir -- "$tmp" && cp -- "$VORSCHLAG/$PROG" "$tmp/$PROG" &&
             [ "$(summe "$tmp/$PROG")" = "$PROG_NEU" ] &&
             chmod 0555 "$tmp/$PROG" "$tmp" && mv -T -- "$tmp" "$ABLAGE_NEU" || { [ -e "$tmp" ] && chmod -R u+w -- "$tmp" && rm -rf -- "$tmp"; return 1; }
-        echo "Quelle: $VORSCHLAG/$PROG (Repo ~/projects/querencia-einstellungen, Tag einstellungen/0.0.3)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
+        echo "Quelle: $VORSCHLAG/$PROG (Repo ~/projects/querencia-einstellungen, Tag einstellungen/0.0.4)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
     fi
     [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] && [ -x "$ABLAGE_NEU/$PROG" ]
 }
@@ -245,12 +245,12 @@ pruefen() {
     invarianten
     case $(alle) in
     "alt alt") melde "Stand: alt – Querencia Einstellungen 0.0.2 ($ALT16, Hintergrund + Bildschirm)" ;;
-    "neu neu") melde "Stand: neu – Querencia Einstellungen 0.0.3 ($NEU16, dazu Arbeitsfläche)" ;;
+    "neu neu") melde "Stand: neu – Querencia Einstellungen 0.0.4 ($NEU16, dazu Symbole der Arbeitsfläche)" ;;
     *) melde "Stand: gemischt ($(alle))" ;;
     esac
     melde "Programm-Link $LINK: $(zustand_p) → $(readlink "$LINK" 2>/dev/null || echo '-')"
     melde "Menüeintrag   $DESK: $(zustand_d) ($(grep -m1 '^Icon=' "$DESK" 2>/dev/null || echo 'Icon=-'), wird nie verändert)"
-    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.0.3  $ABLAGE_NEU: vorhanden"; else melde "Ablage 0.0.3  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
+    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.0.4  $ABLAGE_NEU: vorhanden"; else melde "Ablage 0.0.4  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
     melde "Ablage 0.0.2  $ABLAGE_ALT: vorhanden (Rückfallziel)"
     local ini=${XDG_CONFIG_HOME:-$HOME/.config}/querencia/desktop.ini
     if [ -f "$ini" ]; then
@@ -281,8 +281,8 @@ aktivieren() {
     (invarianten) || zurueckrollen "Invarianten nach der Aktivierung verletzt"
     desktop-file-validate "$DESK" >/dev/null 2>&1 || zurueckrollen "Menüeintrag ungültig"
     trap - INT TERM HUP
-    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; 0.0.3 Arbeitsfläche; Menüeintrag $DESK nur Exec/TryExec/Comment; G2-X)"
-    journal "aktiviert (Querencia Einstellungen 0.0.3 $NEU16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2x-integrieren.sh zurueck"
+    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; 0.0.4 Symbole der Arbeitsfläche; Menüeintrag $DESK nur Exec/TryExec/Comment; G2-X)"
+    journal "aktiviert (Querencia Einstellungen 0.0.4 $NEU16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2x-integrieren.sh zurueck"
     melde "aktiviert (geändert: ${GEAENDERT[*]:-nichts}). Gilt für jeden neuen Start; ein offenes Fenster läuft als 0.0.2 weiter."
 }
 

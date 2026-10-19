@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""G2-X: Auswertung der isolierten Läufe g2x-a1 … g2x-a11 (Bereich „Arbeitsfläche“).
+"""G2-X: Auswertung der isolierten Läufe g2x-a1 … g2x-a11 (Bereich „Symbole der Arbeitsfläche“).
 
 Prüft desktop.ini nachher byte-genau gegen die Erwartung der Spezifikation
 (docs/desktop-ini-arbeitsflaeche.md), die Protokollzeilen der App und des
@@ -70,7 +70,7 @@ L = "a1-aendern-1920"
 ini = lesen(L, "desktop.ini.nachher")
 pruefe("1.1", "a1: Szenario vollständig, Bilder 01–03", szenario_ende(L) and all(bild(L, b) for b in ["01-start.png", "02-geaendert.png", "03-uebernommen.png"]))
 pruefe("1.2", "a1: ohne Datei geladen = Standard (Rechner/Persönlich/Papierkorb an, 48, Wechsel/Optisch/Netz an, Eingebaut aus)",
-       "Arbeitsfläche geladen: Rechner an Persönlich an Papierkorb an Größe 48 | Wechsel an Optisch an Netz an Eingebaut aus" in app_log(L))
+       "Symbole der Arbeitsfläche geladen: Rechner an Persönlich an Papierkorb an Größe 48 | Wechsel an Optisch an Netz an Eingebaut aus" in app_log(L))
 pruefe("1.3", "a1: desktop.ini = genau [Icons]/[Volumes] mit Papierkorb aus, 72, Netz aus, Eingebaut an",
        ini == bloecke(t=False, s=72, net=False, intern=True), repr(ini))
 pruefe("1.4", "a1: keine Sicherung (Datei war neu)", "desktop.ini.vorher" not in (lesen(L, "konfigordner-nachher.txt") or ""), lesen(L, "konfigordner-nachher.txt"))
@@ -93,7 +93,7 @@ pruefe("2.5", "a2: Bild 01", bild(L, "01-uebernommen.png") and szenario_ende(L))
 L = "a3-standard"
 ini = lesen(L, "desktop.ini.nachher") or ""
 erwartet = GEMISCHT.split("[Icons]")[0] + bloecke() + "\n[Fremd]\nX=1\n"
-pruefe("3.1", "a3: gemischte Datei korrekt gelesen", "Arbeitsfläche geladen: Rechner aus Persönlich an Papierkorb aus Größe 96 | Wechsel aus Optisch an Netz aus Eingebaut an" in app_log(L))
+pruefe("3.1", "a3: gemischte Datei korrekt gelesen", "Symbole der Arbeitsfläche geladen: Rechner aus Persönlich an Papierkorb aus Größe 96 | Wechsel aus Optisch an Netz aus Eingebaut an" in app_log(L))
 pruefe("3.2", "a3: Standard + Übernehmen: Kommentar, [Background], [Fremd] byte-gleich, Gruppen = Standard", ini == erwartet, repr(ini))
 pruefe("3.3", "a3: Bilder 01–03", all(bild(L, b) for b in ["01-geladen.png", "02-standard.png", "03-uebernommen.png"]) and szenario_ende(L))
 
@@ -110,14 +110,14 @@ pruefe("4.3", "a4: Bilder 01–03", all(bild(L, b) for b in ["01-konflikt.png", 
 L = "a5-fremder-hintergrund"
 ini = lesen(L, "desktop.ini.nachher") or ""
 pruefe("5.1", "a5: fremd geänderter Hintergrund blockiert nicht und bleibt erhalten", ini == GEMISCHT.replace("Color=#242424", "Color=#8f1b1b").replace("Internal=true", "Internal=false"), repr(ini))
-pruefe("5.2", "a5: kein Konflikt gemeldet", "Konflikt" not in app_log(L) and "Arbeitsfläche übernommen" in app_log(L))
+pruefe("5.2", "a5: kein Konflikt gemeldet", "Konflikt" not in app_log(L) and "Symbole der Arbeitsfläche übernommen" in app_log(L))
 
 # ---------------------------------------------------------------- a6
 L = "a6-kaputt"
 ini = lesen(L, "desktop.ini.nachher") or ""
 a = app_log(L)
 probleme = [z for z in a.splitlines() if z.startswith("querencia-einstellungen: desktop.ini: [")]
-pruefe("6.1", "a6: ungültige Einträge gemeldet (Size=50, Computer=vielleicht, Foo, Zeile ohne =), kein Abbruch", len(probleme) == 4 and "Arbeitsfläche geladen" in a, probleme)
+pruefe("6.1", "a6: ungültige Einträge gemeldet (Size=50, Computer=vielleicht, Foo, Zeile ohne =), kein Abbruch", len(probleme) == 4 and "Symbole der Arbeitsfläche geladen" in a, probleme)
 pruefe("6.2", "a6: Standard + Übernehmen ersetzt nur die beiden Gruppen",
        ini == "[Background]\nFile=\nMode=zoom\nColor=#1c4e96\n\n" + bloecke().replace("\n\n[Volumes]", "\n\n[Volumes]"), repr(ini))
 pruefe("6.3", "a6: Bilder", bild(L, "01-hinweis.png") and bild(L, "02-uebernommen.png") and szenario_ende(L))

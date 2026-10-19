@@ -1,5 +1,5 @@
 #!/bin/bash
-# Probe für einstellungen-g2x-integrieren.sh (0.0.2 → 0.0.3) in Wegwerf-
+# Probe für einstellungen-g2x-integrieren.sh (0.0.2 → 0.0.4) in Wegwerf-
 # Umgebungen nachweis/profile/integration-g2x/<fall>. Jede Umgebung bildet
 # den Live-Stand nach G2-G nach: Ablage 03c6dec5e63966b9 (Kopie der echten),
 # Link darauf, Menüeintrag = Kopie des ECHTEN Menüeintrags (mit dem Icon=,
@@ -10,6 +10,7 @@ set -uo pipefail
 P=~/projects/querencia-einstellungen
 S=${QE_SKRIPT:-$P/werkzeug/einstellungen-g2x-integrieren.sh}
 G2G=$P/werkzeug/einstellungen-g2g-integrieren.sh
+SYM=~/projects/querencia-symbole/integration/symbole-integrieren.sh
 V=$P/integration/g2x/vorschlag
 BASIS=$P/nachweis/profile/integration-g2x
 EO=~/opt/querencia
@@ -35,7 +36,7 @@ echt() {
     sha256sum "$EO/protokoll.txt" "$EO/einstellungen/$ALT/querencia-einstellungen"
     readlink "$EO/bin/querencia-desktop" "$EO/bin/querencia-panel" "$EO/bin/querencia-einstellungen"
     ls -lai "$EO/bin" "$EO/einstellungen"
-    [ ! -e "$EO/einstellungen/$NEU" ] && echo "keine 0.0.3-Ablage live"
+    [ ! -e "$EO/einstellungen/$NEU" ] && echo "keine 0.0.4-Ablage live"
 }
 echt_vorher=$(echt)
 
@@ -66,6 +67,12 @@ stand() {
 }
 zustand() { bash "$S" pruefen 2>&1 | grep -oE '(Programm-Link|Menüeintrag) +[^ ]+: [a-z]+' | awk '{print $NF}' | tr '\n' ' '; }
 zustand_g2g() { bash "$G2G" pruefen 2>&1 | grep -oE '(Programm-Link|Menüeintrag) +[^ ]+: [a-z]+' | awk '{print $NF}' | tr '\n' ' '; }
+# G2-V 0.2: was meldet symbole-integrieren.sh pruefen (umgelenkt) für den Starter?
+sym_starter() {
+    mkdir -p "$U/icons/hicolor"
+    SYM_OPT=$U/opt SYM_APPS=$U/apps SYM_ICONS=$U/icons SYM_STATE=$U/state bash "$SYM" pruefen 2>&1 |
+        grep -oE '^symbole-integrieren: Starter +[^ ]+: [a-z]+' | awk '{print $NF}'
+}
 keine_reste() { [ -z "$(find "$U" -name '*.g2x-tmp*' 2>/dev/null)" ]; }
 lauf() { bash "$S" "$@" >"$U/ausgabe.txt" 2>&1; echo $?; }
 # alles außer Exec/TryExec/Comment gleich wie im Ausgang (Icon= von G2-V!)
@@ -94,21 +101,23 @@ echo "=== 3 normale Aktivierung"
 umgebung t03; n=$(wc -l <"$U/opt/protokoll.txt")
 rc=$(lauf aktivieren); cat "$U/ausgabe.txt"
 pruef "aktivieren: Exit 0, neu neu" "[ $rc = 0 ] && [ \"\$(zustand)\" = '$N2' ]"
-pruef "Ablage $NEU: 0555, byte-gleich mit dem Release-Binary 0.0.3, Herkunft" "[ \$(stat -c %a $U/opt/einstellungen/$NEU) = 555 ] && [ \$(stat -c %a $U/opt/einstellungen/$NEU/querencia-einstellungen) = 555 ] && cmp -s $U/opt/einstellungen/$NEU/querencia-einstellungen $V/querencia-einstellungen && grep -q '^Quelle: ' $U/opt/einstellungen/$NEU.herkunft"
-pruef "Link → 0.0.3; --version meldet 0.0.3" "[ \"\$(readlink $U/opt/bin/querencia-einstellungen)\" = $U/opt/einstellungen/$NEU/querencia-einstellungen ] && [ \"\$($U/opt/bin/querencia-einstellungen --version)\" = 'querencia-einstellungen 0.0.3' ]"
+pruef "Ablage $NEU: 0555, byte-gleich mit dem Release-Binary 0.0.4, Herkunft" "[ \$(stat -c %a $U/opt/einstellungen/$NEU) = 555 ] && [ \$(stat -c %a $U/opt/einstellungen/$NEU/querencia-einstellungen) = 555 ] && cmp -s $U/opt/einstellungen/$NEU/querencia-einstellungen $V/querencia-einstellungen && grep -q '^Quelle: ' $U/opt/einstellungen/$NEU.herkunft"
+pruef "Link → 0.0.4; --version meldet 0.0.4" "[ \"\$(readlink $U/opt/bin/querencia-einstellungen)\" = $U/opt/einstellungen/$NEU/querencia-einstellungen ] && [ \"\$($U/opt/bin/querencia-einstellungen --version)\" = 'querencia-einstellungen 0.0.4' ]"
 pruef "Menüeintrag: gültig, Exec und TryExec auf $NEU, Comment nennt Symbole" "desktop-file-validate $U/apps/$DESKNAME && grep -qx 'Exec=~/opt/querencia/einstellungen/$NEU/querencia-einstellungen' $U/apps/$DESKNAME && grep -qx 'TryExec=~/opt/querencia/einstellungen/$NEU/querencia-einstellungen' $U/apps/$DESKNAME && grep -q '^Comment=.*Symbole der Arbeitsfläche' $U/apps/$DESKNAME"
 pruef "Menüeintrag: alle anderen Zeilen byte-gleich, Icon= unverändert ($ECHT_ICON)" "rest_gleich && grep -qxF '$ECHT_ICON' $U/apps/$DESKNAME && [ \$(wc -l <$U/apps/$DESKNAME) = \$(wc -l <$U/menueeintrag-ausgang.desktop) ]"
+pruef "G2-V symbole-integrieren.sh pruefen (umgelenkt) meldet nach aktivieren weiter „Starter neu“" "[ \"\$(sym_starter)\" = neu ] && [ \$(grep -c '^Icon=' $U/apps/$DESKNAME) = 1 ]"
 pruef "0.0.2-Ablage bleibt, genau eine Protokollzeile" "cmp -s $U/opt/einstellungen/$ALT/querencia-einstellungen $EO/einstellungen/$ALT/querencia-einstellungen && [ \$(wc -l <$U/opt/protokoll.txt) = $((n+1)) ]"
 pruef "Sicherung (alt alt, Linkziel 0.0.2, Menüeintrag Ausgang, Schritte P D) und Journal" "s=\$(ls -d $U/state/sicherung-einstellungen-g2x-aktivieren-*) && [ \"\$(cat \$s/zustand-vorher.txt)\" = 'alt alt' ] && grep -q $ALT \$s/programm-link.txt && cmp -s \$s/$DESKNAME $U/menueeintrag-ausgang.desktop && [ \"\$(tr '\n' ' ' <\$s/schritte.txt)\" = 'P D ' ] && grep -q 'einstellungen-g2x: aktiviert' $U/state/panel-rueckfall.txt"
-pruef "G2-G-Skript verweigert auf dem 0.0.3-Stand, nichts geändert" "v=\$(stand); bash $G2G zurueck >/dev/null 2>&1; [ \$? = 2 ] && [ \"\$(stand)\" = \"\$v\" ]"
+pruef "G2-G-Skript verweigert auf dem 0.0.4-Stand, nichts geändert" "v=\$(stand); bash $G2G zurueck >/dev/null 2>&1; [ \$? = 2 ] && [ \"\$(stand)\" = \"\$v\" ]"
 
 echo "=== 4 erneut, zurück, wiederholt"
 nsich=$(ls -d $U/state/sicherung-einstellungen-g2x-* | wc -l); neu=$(stand)
 rc=$(lauf aktivieren)
 pruef "zweites aktivieren: bereits aktiv, keine neue Sicherung" "[ $rc = 0 ] && grep -q 'bereits aktiv' $U/ausgabe.txt && [ \"\$(stand)\" = \"$neu\" ] && [ \$(ls -d $U/state/sicherung-einstellungen-g2x-* | wc -l) = $nsich ]"
 rc=$(lauf zurueck)
-pruef "zurueck: Exit 0, Link 0.0.2, Menüeintrag byte-gleich mit dem Ausgang, Ablage 0.0.3 bleibt, Reihenfolge D P" "[ $rc = 0 ] && [ \"\$(zustand)\" = '$A2' ] && [ \"\$(readlink $U/opt/bin/querencia-einstellungen)\" = $U/opt/einstellungen/$ALT/querencia-einstellungen ] && cmp -s $U/apps/$DESKNAME $U/menueeintrag-ausgang.desktop && [ -x $U/opt/einstellungen/$NEU/querencia-einstellungen ] && [ \"\$(tr '\n' ' ' <\$(ls -d $U/state/sicherung-einstellungen-g2x-zurueck-*)/schritte.txt)\" = 'D P ' ]"
+pruef "zurueck: Exit 0, Link 0.0.2, Menüeintrag byte-gleich mit dem Ausgang, Ablage 0.0.4 bleibt, Reihenfolge D P" "[ $rc = 0 ] && [ \"\$(zustand)\" = '$A2' ] && [ \"\$(readlink $U/opt/bin/querencia-einstellungen)\" = $U/opt/einstellungen/$ALT/querencia-einstellungen ] && cmp -s $U/apps/$DESKNAME $U/menueeintrag-ausgang.desktop && [ -x $U/opt/einstellungen/$NEU/querencia-einstellungen ] && [ \"\$(tr '\n' ' ' <\$(ls -d $U/state/sicherung-einstellungen-g2x-zurueck-*)/schritte.txt)\" = 'D P ' ]"
 pruef "nach zurueck sieht das G2-G-Skript seinen Endstand (neu neu), sofern der echte Menüeintrag noch der G2-G-Vorlage gleicht" "if cmp -s $U/menueeintrag-ausgang.desktop $P/integration/g2g/vorschlag/$DESKNAME; then [ \"\$(zustand_g2g)\" = '$N2' ]; else echo '  (Menüeintrag live schon von G2-V geändert – G2-G-Skript sieht ihn als fremd, erwartet)'; true; fi"
+pruef "G2-V symbole-integrieren.sh pruefen meldet auch nach zurueck „Starter neu“" "[ \"\$(sym_starter)\" = neu ]"
 rc=$(lauf zurueck)
 pruef "zweites zurueck: nichts zu tun" "[ $rc = 0 ] && grep -q 'nichts zu tun' $U/ausgabe.txt"
 rc=$(lauf aktivieren); rc2=$(lauf zurueck); rc3=$(lauf aktivieren)
@@ -159,7 +168,7 @@ rc=$(lauf aktivieren)
 pruef "0.0.2-Ablage fehlt (Rückfallziel): verweigert" "[ $rc = 2 ] && grep -q '0.0.2-Ablage' $U/ausgabe.txt"
 umgebung t06j; mkdir -p "$U/opt/einstellungen/$NEU"; echo x >"$U/opt/einstellungen/$NEU/querencia-einstellungen"; vorher=$(stand)
 rc=$(lauf aktivieren)
-pruef "vorhandene 0.0.3-Ablage mit falschem Inhalt: verweigert" "[ $rc = 2 ] && grep -q '0.0.3-Ablage verändert' $U/ausgabe.txt && [ \"\$(stand)\" = \"$vorher\" ]"
+pruef "vorhandene 0.0.4-Ablage mit falschem Inhalt: verweigert" "[ $rc = 2 ] && grep -q '0.0.4-Ablage verändert' $U/ausgabe.txt && [ \"\$(stand)\" = \"$vorher\" ]"
 umgebung t06k; lauf aktivieren >/dev/null; sed -i 's/^Comment=.*/Comment=anders/' "$U/apps/$DESKNAME"; vorher=$(stand)
 rc=$(lauf zurueck)
 pruef "fremder Comment nach Aktivierung: zurueck ändert nichts" "[ $rc = 2 ] && [ \"\$(stand)\" = \"$vorher\" ]"
@@ -177,7 +186,7 @@ lauf aktivieren >/dev/null; rc=$(lauf pruefen); cp "$U/ausgabe.txt" "$U/ausgabe-
 pruef "desktop.ini byte-gleich, pruefen nennt ihre Gruppen" "[ $rc = 0 ] && [ \"\$(sha256sum <$U/config/querencia/desktop.ini)\" = \"$d\" ] && grep -q 'Gruppen: \[Background\] \[Volumes\]' $U/ausgabe-pruefen.txt"
 unset XDG_CONFIG_HOME
 
-pruef "echte Dateien unverändert (Inhalt, Inode); live keine 0.0.3-Ablage" "[ \"\$echt_vorher\" = \"\$(echt)\" ] && echo \"\$echt_vorher\" | grep -q 'keine 0.0.3-Ablage live'"
+pruef "echte Dateien unverändert (Inhalt, Inode); live keine 0.0.4-Ablage" "[ \"\$echt_vorher\" = \"\$(echt)\" ] && echo \"\$echt_vorher\" | grep -q 'keine 0.0.4-Ablage live'"
 # Hinweis: Ändert eine andere Session (z. B. G2-V) während der Probe live den
 # Menüeintrag oder protokoll.txt, schlagen die beiden letzten Prüfungen an,
 # ohne dass dieses Skript etwas geändert hat – dann Zeitstempel im Protokoll ansehen.

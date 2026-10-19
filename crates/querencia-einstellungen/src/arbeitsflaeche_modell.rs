@@ -1,4 +1,4 @@
-//! Datenmodell des Bereichs „Arbeitsfläche“ (QD-042, G2-X), ohne GTK.
+//! Datenmodell des Bereichs „Symbole der Arbeitsfläche“ (QD-042, G2-X), ohne GTK.
 //!
 //! Gruppen `[Icons]` und `[Volumes]` in `~/.config/querencia/desktop.ini`;
 //! das Format steht in `docs/desktop-ini-arbeitsflaeche.md`:
@@ -73,9 +73,10 @@ pub struct Arbeitsflaeche {
 
 impl Default for Arbeitsflaeche {
     /// Standard ohne `desktop.ini` – **an genau dieser Stelle** (und im Desktop,
-    /// siehe Spezifikation §3). Vorschlag wie GNOME 2: Wechsel-, optische und
+    /// siehe Spezifikation §3). Wie GNOME 2: Wechsel-, optische und
     /// Netzlaufwerke an, eingebaute aus; feste Symbole an, 48 Pixel.
-    /// Entscheidung des Besitzers offen (G2-X, Frage an die Status-Session).
+    /// Entschieden am 19.10.2026 (Status-Session, vom Besitzer übertragen):
+    /// genau diese Werte.
     fn default() -> Self {
         Self {
             rechner: true,

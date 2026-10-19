@@ -1,4 +1,4 @@
-//! Bereich „Arbeitsfläche“ (QD-042, G2-X): welche Symbole und eingehängten
+//! Bereich „Symbole der Arbeitsfläche“ (QD-042, G2-X; Name: [`NAME`]): welche Symbole und eingehängten
 //! Laufwerke der Desktop zeigt und wie groß. Schreibt erst bei „Übernehmen“
 //! die Gruppen `[Icons]` und `[Volumes]` in `~/.config/querencia/desktop.ini`
 //! (atomar, mit Sicherung, `[Background]` und alles andere bleibt byte-gleich);
@@ -18,7 +18,16 @@ use crate::arbeitsflaeche_modell::{self as am, Arbeitsflaeche, Symbolgroesse};
 use crate::modell::Faehigkeiten;
 use crate::{faehigkeiten, hintergrund, ini};
 
-pub const TITEL: &str = "Querencia – Arbeitsfläche";
+/// Name des Bereichs – **nur hier** ändern (Seitenleiste, Überschrift,
+/// Fenstertitel, Protokoll). Entscheidung 19.10.2026: „Symbole der
+/// Arbeitsfläche“ (nicht „Arbeitsfläche“, zu nah an „Arbeitsflächen“).
+macro_rules! bereichsname {
+    () => {
+        "Symbole der Arbeitsfläche"
+    };
+}
+pub const NAME: &str = bereichsname!();
+pub const TITEL: &str = concat!("Querencia – ", bereichsname!());
 
 struct Oberflaeche {
     rechner: gtk4::CheckButton,
@@ -105,13 +114,16 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     aussen.set_margin_start(14);
     aussen.set_margin_end(14);
     let ueberschrift = gtk4::Label::new(None);
-    ueberschrift.set_markup("<b><big>Arbeitsfläche</big></b>");
+    ueberschrift.set_markup(&format!(
+        "<b><big>{}</big></b>",
+        glib::markup_escape_text(NAME)
+    ));
     ueberschrift.set_xalign(0.0);
     aussen.append(&ueberschrift);
 
     // Symbolgröße zuoberst: die Liste klappt nach unten auf (nach oben
     // geklappte Listen bekommen unter labwc 0.9.8 keine Klicks, G2-G).
-    let (f_symbole, b_symbole) = rahmen("Symbole auf der Arbeitsfläche");
+    let (f_symbole, b_symbole) = rahmen("Feste Symbole");
     let groessenzeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
     groessenzeile.append(&gtk4::Label::new(Some("Symbolgröße:")));
     let groesse = gtk4::DropDown::from_strings(
@@ -130,7 +142,7 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     b_symbole.append(&z);
     aussen.append(&f_symbole);
 
-    let (f_laufwerke, b_laufwerke) = rahmen("Eingehängte Laufwerke auf der Arbeitsfläche zeigen");
+    let (f_laufwerke, b_laufwerke) = rahmen("Eingehängte Laufwerke zeigen");
     let (wechsel, z) = kaestchen(
         "Wechseldatenträger",
         "USB-Sticks, Speicherkarten, externe Festplatten",
@@ -279,10 +291,7 @@ impl Oberflaeche {
                 probleme.len()
             )
         });
-        eprintln!(
-            "querencia-einstellungen: Arbeitsfläche geladen: {}",
-            kurz(&a)
-        );
+        eprintln!("querencia-einstellungen: {NAME} geladen: {}", kurz(&a));
     }
 
     fn zeigen(&self, a: &Arbeitsflaeche) {
@@ -348,7 +357,7 @@ impl Oberflaeche {
         }
         if fehlt.is_empty() {
             self.hinweis.set_visible(false);
-            eprintln!("querencia-einstellungen: Arbeitsfläche: Desktop wertet alles aus");
+            eprintln!("querencia-einstellungen: {NAME}: Desktop wertet alles aus");
             return;
         }
         let was = if fehlt.len() == 3 {
@@ -359,7 +368,7 @@ impl Oberflaeche {
         let text = format!(
             "Hinweis: Der laufende Desktop wertet {was} noch nicht aus. Sie werden trotzdem gespeichert und gelten, sobald ein neuerer Querencia Desktop läuft."
         );
-        eprintln!("querencia-einstellungen: Arbeitsfläche: {text}");
+        eprintln!("querencia-einstellungen: {NAME}: {text}");
         self.hinweis.set_text(&text);
         self.hinweis.set_visible(true);
     }
@@ -372,9 +381,9 @@ impl Oberflaeche {
         // ein inzwischen geänderter Hintergrund bleibt einfach erhalten.
         if am::eigene_gruppen(&jetzt) != self.geladen.borrow().1 {
             self.status.set_text(
-                "Die Einstellungen der Arbeitsfläche in desktop.ini wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.",
+                "Die Symbol-Einstellungen in desktop.ini wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.",
             );
-            eprintln!("querencia-einstellungen: Arbeitsfläche: Konflikt, nicht geschrieben");
+            eprintln!("querencia-einstellungen: {NAME}: Konflikt, nicht geschrieben");
             return;
         }
         let text = neu.in_datei(&jetzt);
@@ -393,14 +402,11 @@ impl Oberflaeche {
                     ),
                     None => format!("Übernommen um {uhr}."),
                 });
-                eprintln!(
-                    "querencia-einstellungen: Arbeitsfläche übernommen: {}",
-                    kurz(&neu)
-                );
+                eprintln!("querencia-einstellungen: {NAME} übernommen: {}", kurz(&neu));
             }
             Err(err) => {
                 self.status.set_text(&format!("Nicht gespeichert: {err}"));
-                eprintln!("querencia-einstellungen: Arbeitsfläche nicht gespeichert: {err}");
+                eprintln!("querencia-einstellungen: {NAME} nicht gespeichert: {err}");
             }
         }
     }
@@ -427,4 +433,18 @@ fn kurz(a: &Arbeitsflaeche) -> String {
         j(a.netz),
         j(a.eingebaut)
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Entscheidung 19.10.2026: Name und Fenstertitel; nicht „Arbeitsfläche“
+    /// allein (zu nah an „Arbeitsflächen“, den virtuellen Arbeitsflächen).
+    #[test]
+    fn name_wie_entschieden() {
+        assert_eq!(NAME, "Symbole der Arbeitsfläche");
+        assert_eq!(TITEL, "Querencia – Symbole der Arbeitsfläche");
+        assert_ne!(NAME, "Arbeitsflächen");
+    }
 }
