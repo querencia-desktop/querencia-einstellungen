@@ -20,11 +20,14 @@ pub fn ermitteln() -> Faehigkeiten {
         Some(programm) => {
             let f = abfragen(&programm);
             eprintln!(
-                "querencia-einstellungen: Desktop {} – Farbe {}, Zentrieren {}, Kacheln {}",
+                "querencia-einstellungen: Desktop {} – Farbe {}, Zentrieren {}, Kacheln {}, Laufwerkstypen {}, Symbole {}, Symbolgröße {}",
                 programm.display(),
                 f.farbe,
                 f.zentrieren,
-                f.kacheln
+                f.kacheln,
+                f.laufwerkstypen,
+                f.symbole_sichtbar,
+                f.symbolgroesse
             );
             f
         }

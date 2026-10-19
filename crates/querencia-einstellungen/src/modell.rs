@@ -155,6 +155,11 @@ pub struct Faehigkeiten {
     pub farbe: bool,
     pub zentrieren: bool,
     pub kacheln: bool,
+    /// G2-X: wertet `[Volumes]` aus (Wörter `volumes-types`, `icons-visible`,
+    /// `icon-size`; Spezifikation `docs/desktop-ini-arbeitsflaeche.md` §6).
+    pub laufwerkstypen: bool,
+    pub symbole_sichtbar: bool,
+    pub symbolgroesse: bool,
 }
 
 impl Faehigkeiten {
@@ -163,6 +168,9 @@ impl Faehigkeiten {
         farbe: false,
         zentrieren: false,
         kacheln: false,
+        laufwerkstypen: false,
+        symbole_sichtbar: false,
+        symbolgroesse: false,
     };
 
     /// Ausgabe von `--faehigkeiten` (Wörter, Reihenfolge egal, Unbekanntes ignoriert).
@@ -173,6 +181,9 @@ impl Faehigkeiten {
                 "type-color" => f.farbe = true,
                 "mode-centered" => f.zentrieren = true,
                 "mode-tiled" => f.kacheln = true,
+                "volumes-types" => f.laufwerkstypen = true,
+                "icons-visible" => f.symbole_sichtbar = true,
+                "icon-size" => f.symbolgroesse = true,
                 _ => {}
             }
         }
@@ -481,9 +492,16 @@ mod tests {
             Faehigkeiten {
                 farbe: true,
                 zentrieren: true,
-                kacheln: true
+                kacheln: true,
+                ..Faehigkeiten::HMP10A
             }
         );
+        // G2-X: QE-03 meldet nur die drei QE-01-Wörter; ein QE-04-Desktop mehr
+        assert!(!alle.laufwerkstypen && !alle.symbole_sichtbar && !alle.symbolgroesse);
+        let qe04 = Faehigkeiten::aus_ausgabe(
+            "type-color mode-centered mode-tiled volumes-types icons-visible icon-size",
+        );
+        assert!(qe04.laufwerkstypen && qe04.symbole_sichtbar && qe04.symbolgroesse && qe04.farbe);
         assert_eq!(Faehigkeiten::aus_ausgabe(""), Faehigkeiten::HMP10A);
         assert_eq!(
             Faehigkeiten::aus_ausgabe("unsinn mode-tiled"),

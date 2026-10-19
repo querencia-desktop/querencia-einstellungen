@@ -2,6 +2,8 @@
 //! Bild, Farbe, Darstellung, Schaltflächen. Schreibt erst bei „Übernehmen“
 //! nach `~/.config/querencia/desktop.ini` (atomar, mit Sicherung der
 //! vorherigen Datei); die Vorschau ändert den echten Desktop nie.
+//! G2-X: ersetzt nur die Gruppe `[Background]`; `[Icons]`, `[Volumes]` und
+//! alles andere bleiben byte-gleich (`ini.rs`).
 use std::cell::{Cell, RefCell};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -10,6 +12,7 @@ use gtk4::prelude::*;
 use gtk4::{gdk, gio, glib};
 
 use crate::faehigkeiten;
+use crate::ini;
 use crate::modell::{self, Darstellung, Faehigkeiten, Farbe, Hintergrund, Typ};
 use crate::vorschau::Vorschau;
 
@@ -642,9 +645,11 @@ impl Oberflaeche {
         {
             return;
         }
-        // Nicht unbemerkt überschreiben: Hat jemand die Datei seit dem Öffnen geändert?
+        // Nicht unbemerkt überschreiben: Hat jemand den Hintergrund seit dem
+        // Öffnen geändert? (G2-X: nur die eigene Gruppe zählt; geänderte
+        // Arbeitsflächen-Einstellungen bleiben beim Schreiben einfach erhalten.)
         let jetzt = std::fs::read_to_string(&pfad).unwrap_or_default();
-        if jetzt != geladener_text {
+        if ini::gruppe(&jetzt, GRUPPE) != ini::gruppe(&geladener_text, GRUPPE) {
             self.status.set_text(
                 "desktop.ini wurde inzwischen von anderer Stelle geändert – nicht überschrieben. \
                  Bitte den Dialog schließen und neu öffnen.",
@@ -655,7 +660,7 @@ impl Oberflaeche {
             Ok(sicherung) => {
                 let mut z = self.zustand.borrow_mut();
                 z.geladen = neu.clone();
-                z.geladener_text = neu.schreiben();
+                z.geladener_text = ini::ersetzen(&jetzt, GRUPPE, &neu.schreiben());
                 drop(z);
                 let zeit = glib::DateTime::now_local()
                     .ok()
@@ -677,27 +682,19 @@ impl Oberflaeche {
     }
 }
 
+/// Die Gruppe dieses Dialogs in `desktop.ini`.
+const GRUPPE: &str = "Background";
+
 /// Schreibt die Einstellung atomar (temporäre Datei, `rename`); eine vorhandene
-/// Datei wird vorher als `desktop.ini.vorher-<Zeit>` gesichert.
+/// Datei wird vorher als `desktop.ini.vorher-<Zeit>` gesichert. G2-X: nur
+/// `[Background]` wird ersetzt, der Rest von `bisher` bleibt byte-gleich; ohne
+/// andere Gruppen entsteht genau der Text wie bisher.
 pub fn schreiben(pfad: &Path, neu: &Hintergrund, bisher: &str) -> std::io::Result<Option<PathBuf>> {
-    if let Some(eltern) = pfad.parent() {
-        std::fs::create_dir_all(eltern)?;
-    }
-    let mut sicherung = None;
-    if !bisher.is_empty() && pfad.exists() {
-        let zeit = glib::DateTime::now_local()
-            .ok()
-            .and_then(|d| d.format("%Y%m%d-%H%M%S").ok())
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| "0".into());
-        let ziel = pfad.with_file_name(format!("desktop.ini.vorher-{zeit}"));
-        if !ziel.exists() {
-            std::fs::copy(pfad, &ziel)?;
-            sicherung = Some(ziel);
-        }
-    }
-    let temporaer = pfad.with_extension("ini.neu");
-    std::fs::write(&temporaer, neu.schreiben())?;
-    std::fs::rename(&temporaer, pfad)?;
-    Ok(sicherung)
+    let zeit = glib::DateTime::now_local()
+        .ok()
+        .and_then(|d| d.format("%Y%m%d-%H%M%S").ok())
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| "0".into());
+    let text = ini::ersetzen(bisher, GRUPPE, &neu.schreiben());
+    ini::schreiben(pfad, &text, bisher, &zeit)
 }

@@ -17,3 +17,8 @@
 !/nachweis/*SHA256SUMS
 !/nachweis/*.txt
 !/nachweis/*.log
+# G2-X: Textnachweise unter nachweis/g2x/ ins Repo, Binaries/Bilder/Läufe nicht
+!/nachweis/g2x/
+/nachweis/g2x/**/*.png
+/nachweis/g2x/**/querencia-einstellungen
+/nachweis/g2x/laeufe/

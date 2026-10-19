@@ -1,7 +1,8 @@
 //! Die Bereiche des Kontrollzentrums (Phase 2, Prototyp). Jede Seite zeigt den
 //! tatsächlichen Ist-Zustand aus der jeweiligen Quelle, nur lesend. Was noch
 //! kein Backend hat, steht als „Noch nicht verfügbar“ mit dem Grund – ohne
-//! Schaltflächen, die nichts tun. Einzige Funktion: „Hintergrund …“ (QE-01).
+//! Schaltflächen, die nichts tun. Funktionen: „Hintergrund …“ (QE-01),
+//! „Bildschirm“ (G2-G) und „Arbeitsfläche“ (G2-X).
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
@@ -21,6 +22,10 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
         Bereich {
             name: "Hintergrundbild",
             seite: hintergrundbild(app),
+        },
+        Bereich {
+            name: "Arbeitsfläche",
+            seite: crate::arbeitsflaeche::seite(),
         },
         Bereich {
             name: "Fensterdesign",

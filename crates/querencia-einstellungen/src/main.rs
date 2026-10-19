@@ -8,17 +8,22 @@
 //!                                           einstellungen setzen (Sitzungsstart,
 //!                                           ohne Fenster)
 //!   querencia-einstellungen --bildschirm-zeigen     Ausgaben als Text (Prüfung)
+//!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Arbeitsfläche“
+//!                                           (G2-X: Symbole und Laufwerke)
 //!
 //! Beide Einstiege benutzen denselben Dialog (`hintergrund::oeffnen`). Keine
 //! libadwaita, keine Kopfleiste: labwc zeichnet die Titelleiste (wie Panel
 //! und Desktop). Eindeutigkeit ist absichtlich aus (NON_UNIQUE), damit der
 //! Desktop-Menüpunkt und das Kontrollzentrum unabhängig starten können.
+mod arbeitsflaeche;
+mod arbeitsflaeche_modell;
 mod ausgaben;
 mod bereiche;
 mod bildschirm;
 mod bildschirm_modell;
 mod faehigkeiten;
 mod hintergrund;
+mod ini;
 mod logo;
 mod modell;
 mod vorschau;
@@ -38,8 +43,8 @@ fn main() -> glib::ExitCode {
     if args.iter().any(|a| a == "--faehigkeiten-zeigen") {
         let f = faehigkeiten::ermitteln();
         println!(
-            "farbe={} zentrieren={} kacheln={}",
-            f.farbe, f.zentrieren, f.kacheln
+            "farbe={} zentrieren={} kacheln={} laufwerkstypen={} symbole={} symbolgroesse={}",
+            f.farbe, f.zentrieren, f.kacheln, f.laufwerkstypen, f.symbole_sichtbar, f.symbolgroesse
         );
         return glib::ExitCode::SUCCESS;
     }
@@ -51,6 +56,7 @@ fn main() -> glib::ExitCode {
     }
     let nur_hintergrund = args.iter().any(|a| a == "--hintergrund");
     let nur_bildschirm = args.iter().any(|a| a == "--bildschirm");
+    let nur_arbeitsflaeche = args.iter().any(|a| a == "--arbeitsflaeche");
     let app = gtk4::Application::builder()
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
@@ -60,6 +66,8 @@ fn main() -> glib::ExitCode {
             hintergrund::oeffnen(app).present();
         } else if nur_bildschirm {
             bildschirm::oeffnen(app).present();
+        } else if nur_arbeitsflaeche {
+            arbeitsflaeche::oeffnen(app).present();
         } else {
             kontrollzentrum(app).present();
         }
