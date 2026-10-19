@@ -61,7 +61,7 @@ fn namen_zeigen(name: &gtk4::Label, liste: &[xkb::Belegung], belegung: &(String,
 impl Bereich for Tastatur {
     type Werte = Werte;
     const NAME: &'static str = "Tastatur";
-    const QUELLE: &'static str = "~/.config/querencia/labwc: rc.xml <keyboard> (Wiederholung, Num-Taste), environment.d/querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT; Vorgabe in environment).";
+    const QUELLE: &'static str = "~/.config/querencia/labwc: rc.xml <keyboard> (Wiederholung, Num-Taste), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT; Vorgabe in environment).";
 
     fn lesen(st: &Stand) -> Werte {
         Werte {

@@ -97,7 +97,7 @@ def gemeinsam(lauf, sofort=True):
 
 for A in ("1920", "1024"):
     bp = BP[A]
-    L = f"g1-tastatur-{A}"; gemeinsam(L); rc = nachher(L, "rc.xml"); env = nachher(L, "environment.d/querencia-einstellungen.env")
+    L = f"g1-tastatur-{A}"; gemeinsam(L); rc = nachher(L, "rc.xml"); env = nachher(L, "environment.d/zz-querencia-einstellungen.env")
     pruef(L, "repeatRate 30, repeatDelay 500, numlock on",
           "<repeatRate>30</repeatRate>" in rc and "<repeatDelay>500</repeatDelay>" in rc and "<numlock>on</numlock>" in rc)
     pruef(L, "Belegung ch (Deutsch (Schweiz)) in environment.d", "XKB_DEFAULT_LAYOUT=ch" in env and "gewählt Deutsch (Schweiz) (ch:)" in app(L))
@@ -134,14 +134,14 @@ for A in ("1920", "1024"):
     u1, u3 = png_pixel(f"{b}/01-arbeitsflaechen.png", *bp["umschalter6"]), png_pixel(f"{b}/03-uebernommen.png", *bp["umschalter6"])
     pruef(L, "Panel-Umschalter: vorher 4, nachher 6 Knöpfe", not orange(u1) and orange(u3), f"{u1} → {u3}")
 
-    L = f"k1-standard-{A}"; gemeinsam(L); rc = nachher(L, "rc.xml"); env = nachher(L, "environment.d/querencia-einstellungen.env"); b = f"{N}/g2ag-{L}"
+    L = f"k1-standard-{A}"; gemeinsam(L); rc = nachher(L, "rc.xml"); env = nachher(L, "environment.d/zz-querencia-einstellungen.env"); b = f"{N}/g2ag-{L}"
     pruef(L, "vorher Rate 40 / us intl / 48",
-          "<repeatRate>40</repeatRate>" in lesen(f"{b}/labwc-vorher/rc.xml") and "XKB_DEFAULT_VARIANT=intl" in lesen(f"{b}/labwc-vorher/environment.d/querencia-einstellungen.env"))
+          "<repeatRate>40</repeatRate>" in lesen(f"{b}/labwc-vorher/rc.xml") and "XKB_DEFAULT_VARIANT=intl" in lesen(f"{b}/labwc-vorher/environment.d/zz-querencia-einstellungen.env"))
     pruef(L, "Standard: repeatRate 25", "<repeatRate>25</repeatRate>" in rc)
     pruef(L, "Standard: eigene Belegung entfernt (Vorgabe de gilt)", "XKB_DEFAULT_LAYOUT" not in env and "XKB_DEFAULT_VARIANT" not in env)
     pruef(L, "Zeigergröße 32", "XCURSOR_SIZE=32" in env)
     pruef(L, "Sicherungen der .env enden nicht auf .env",
-          [f for f in ls(f"{b}/labwc-nachher/environment.d") if f.endswith(".env")] == ["querencia-einstellungen.env"])
+          [f for f in ls(f"{b}/labwc-nachher/environment.d") if f.endswith(".env")] == ["zz-querencia-einstellungen.env"])
 
     L = f"v1-vorgabe-{A}"; a = app(L); rc = nachher(L, "rc.xml"); b = f"{N}/g2ag-{L}"
     pruef(L, "Szenario fertig", "szenario exit=0" in lesen(f"{b}/logs/eingabe.log"))

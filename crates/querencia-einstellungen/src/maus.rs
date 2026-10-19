@@ -80,7 +80,7 @@ pub struct Maus {
 impl Bereich for Maus {
     type Werte = Werte;
     const NAME: &'static str = "Maus";
-    const QUELLE: &'static str = "~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE).";
+    const QUELLE: &'static str = "~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE).";
 
     fn lesen(st: &Stand) -> Werte {
         let g = |k: &str| lx::wert(&st.rc, lx::GERAET, k);

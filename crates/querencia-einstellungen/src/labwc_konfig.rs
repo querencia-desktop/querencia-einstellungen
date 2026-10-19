@@ -5,7 +5,7 @@
 //! (Runtime-Repo, gleichlautend in `docs/` dieses Repos). Kurz:
 //! - geschrieben wird nur die Benutzerkopie `$XDG_CONFIG_HOME/querencia/labwc/`
 //!   (`rc.xml` gezielt über [`crate::labwc_xml`], Umgebung nur in
-//!   `environment.d/querencia-einstellungen.env`), nie die Vorgabe im
+//!   `environment.d/zz-querencia-einstellungen.env`), nie die Vorgabe im
 //!   Runtime-Repo (labwc las sie bis Teil A live);
 //! - fehlt die Benutzerkopie, wird die Vorgabe gelesen; das erste Schreiben
 //!   legt die Benutzerkopie an und notiert die Vorgabe in `.vorgabe/rc.xml`,
@@ -23,8 +23,11 @@ use crate::labwc_xml;
 /// Vorgaben im Runtime-Repo (nur lesen). Für Prüfungen: `QE_LABWC_VORGABE`.
 pub const VORGABE_STANDARD: &str =
     "~/projects/querencia-runtime/session/querencia/labwc";
-/// Eigene Umgebungsdatei; labwc liest `environment.d/*.env` nach `environment`.
-pub const ENV_DATEI: &str = "querencia-einstellungen.env";
+/// Eigene Umgebungsdatei. labwc liest `environment.d/*.env` nach
+/// `environment`, alphabetisch (scandir/alphasort), die letzte Angabe gilt;
+/// „zz-“ hält die Wahl des Benutzers hinter den Vorgaben anderer
+/// Querencia-Teile (z. B. `querencia-erscheinungsbild.env`, Thema-3).
+pub const ENV_DATEI: &str = "zz-querencia-einstellungen.env";
 /// So viele Sicherungen je Datei bleiben liegen.
 const SICHERUNGEN: usize = 10;
 

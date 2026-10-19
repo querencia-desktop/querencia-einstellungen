@@ -207,7 +207,7 @@ pruef "zweiter Lauf während eines ersten: verweigert" "[ $rc = 2 ] && grep -q '
 echo "=== 8 mimeapps.list, desktop.ini und labwc-Benutzerkopie werden nie angefasst"
 umgebung t08; mkdir -p "$U/config/querencia"
 printf '[Background]\nFile=\nMode=zoom\nColor=#1c4e96\n\n[Volumes]\nNetwork=false\n' >"$U/config/querencia/desktop.ini"; d=$(sha256sum <"$U/config/querencia/desktop.ini")
-mkdir -p "$U/config/querencia/labwc/environment.d"; printf '<labwc_config/>\n' >"$U/config/querencia/labwc/rc.xml"; echo 'XCURSOR_SIZE=32' >"$U/config/querencia/labwc/environment.d/querencia-einstellungen.env"
+mkdir -p "$U/config/querencia/labwc/environment.d"; printf '<labwc_config/>\n' >"$U/config/querencia/labwc/rc.xml"; echo 'XCURSOR_SIZE=32' >"$U/config/querencia/labwc/environment.d/zz-querencia-einstellungen.env"
 l=$(cd "$U/config/querencia" && find labwc -type f | sort | xargs sha256sum)
 lauf aktivieren >/dev/null; rc=$(lauf pruefen); cp "$U/ausgabe.txt" "$U/ausgabe-pruefen.txt"; lauf zurueck >/dev/null
 pruef "mimeapps.list, desktop.ini und labwc-Benutzerkopie byte-gleich" "[ $rc = 0 ] && mime_gleich && [ \"\$(sha256sum <$U/config/querencia/desktop.ini)\" = \"$d\" ] && [ \"\$(cd $U/config/querencia && find labwc -type f | sort | xargs sha256sum)\" = \"$l\" ]"
