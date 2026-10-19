@@ -9,7 +9,7 @@
 # Fenster werden per SIGTERM geschlossen. Gespeichert werden nur Ausschnitte der
 # App-Fenster (labwc legt neue Fenster mittig an); das Vollbild wird sofort gelöscht.
 set -uo pipefail
-P=~/projects/querencia-werkstatt-w6-einstellungen
+P=~/projects/querencia-einstellungen
 N=$P/nachweis/live-g2g; mkdir -p "$N"; cd "$N"
 S=/tmp/werkstatt
 export XDG_RUNTIME_DIR=/run/user/1001 WAYLAND_DISPLAY=wayland-0 XDG_CURRENT_DESKTOP=X-Querencia LANG=en_US.UTF-8 LANGUAGE=de

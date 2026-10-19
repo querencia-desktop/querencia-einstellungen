@@ -3,7 +3,7 @@
 # QE-01-Desktop: r9–r12 (16), r1–r8 (40), r13/r14 (Direktstart, 5).
 # Produktiver Stand vorher/nachher; Auswertung mit PIL aus dem Boot-Splash-Projekt.
 set -uo pipefail
-P=~/projects/querencia-werkstatt-w6-einstellungen
+P=~/projects/querencia-einstellungen
 cd "$P"
 # Standard: Release 0.0.1 (G2-C); mit QE_APP_BIN=<pfad> ein anderes Binary (G2-G: 0.0.2)
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/release/querencia-einstellungen}

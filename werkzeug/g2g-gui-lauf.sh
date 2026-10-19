@@ -3,7 +3,7 @@
 # (HEADLESS-1 1920×1080 über qausgabe, HEADLESS-2 1280×720), Läufe b0–b11,
 # danach Auswertung. QE_APP_BIN wählt das Binary (Standard: Debug).
 set -uo pipefail
-P=~/projects/querencia-werkstatt-w6-einstellungen
+P=~/projects/querencia-einstellungen
 cd "$P"
 export QE_DESKTOP=~/projects/querencia-werkstatt-w1-desktop/qe01/nachweis/bin/querencia-desktop-qe01 QE_DESKTOP_SHA16=9a599a8b521a5a4d
 echo "App: ${QE_APP_BIN:-$P/target/debug/querencia-einstellungen} $(sha256sum "${QE_APP_BIN:-$P/target/debug/querencia-einstellungen}" | cut -c1-16)"

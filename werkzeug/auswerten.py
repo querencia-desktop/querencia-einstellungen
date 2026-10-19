@@ -98,7 +98,7 @@ def symbole_gleich(lauf):
 
 
 STANDARD_TEXT = "[Background]\nFile=\nMode=zoom\nColor=#1c4e96\n"
-MUSTER = "~/projects/querencia-werkstatt-w6-einstellungen/nachweis/testbilder/muster-4zu3"
+MUSTER = "~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3"
 
 def main():
     # ---------------------------------------------------------------- R1 Bild

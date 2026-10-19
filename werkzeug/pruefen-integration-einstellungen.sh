@@ -7,7 +7,7 @@
 # künstliche Fehler über QE_PROBE=1 und QE_FEHLER. Die echten Dateien werden
 # nur gelesen (Prüfsumme und Inode vorher/nachher).
 set -uo pipefail
-P=~/projects/querencia-werkstatt-w6-einstellungen
+P=~/projects/querencia-einstellungen
 S=${QE_SKRIPT:-$P/werkzeug/einstellungen-integrieren.sh}
 V=$P/integration/vorschlag
 BASIS=$P/nachweis/profile/integration

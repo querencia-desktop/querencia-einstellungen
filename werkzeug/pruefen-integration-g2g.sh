@@ -6,7 +6,7 @@
 # Das Skript wird über QE_OPT, QE_APPS, QE_STATE umgelenkt; Fehler über
 # QE_PROBE=1 und QE_FEHLER. Echte Dateien werden nur gelesen.
 set -uo pipefail
-P=~/projects/querencia-werkstatt-w6-einstellungen
+P=~/projects/querencia-einstellungen
 S=${QE_SKRIPT:-$P/werkzeug/einstellungen-g2g-integrieren.sh}
 G2C=$P/werkzeug/einstellungen-integrieren.sh
 V=$P/integration/g2g/vorschlag

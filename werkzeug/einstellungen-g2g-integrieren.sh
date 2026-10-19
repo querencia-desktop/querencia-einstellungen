@@ -33,9 +33,9 @@
 # Exit 0 erledigt, 1 zurückgerollt, 2 verweigert, 3 Rückrollen unvollständig.
 # Nur für die Probe: QE_OPT, QE_APPS, QE_STATE; QE_PROBE=1 mit QE_FEHLER=<Stelle>.
 set -uo pipefail
-HIER=~/projects/querencia-werkstatt-w6-einstellungen/werkzeug
-VORSCHLAG=~/projects/querencia-werkstatt-w6-einstellungen/integration/g2g/vorschlag
-AUSGANG=~/projects/querencia-werkstatt-w6-einstellungen/integration/g2g/ausgang
+HIER=~/projects/querencia-einstellungen/werkzeug
+VORSCHLAG=~/projects/querencia-einstellungen/integration/g2g/vorschlag
+AUSGANG=~/projects/querencia-einstellungen/integration/g2g/ausgang
 OPT=${QE_OPT:-~/opt/querencia}
 APPS=${QE_APPS:-~/.local/share/applications}
 STATE=${QE_STATE:-~/.local/state/querencia}

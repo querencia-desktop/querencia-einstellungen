@@ -40,8 +40,8 @@
 # QE_PROBE=1 (nur zusammen mit QE_OPT) löst QE_FEHLER=<Stelle> einen
 # künstlichen Fehler aus.
 set -uo pipefail
-HIER=~/projects/querencia-werkstatt-w6-einstellungen/werkzeug
-VORSCHLAG=~/projects/querencia-werkstatt-w6-einstellungen/integration/vorschlag
+HIER=~/projects/querencia-einstellungen/werkzeug
+VORSCHLAG=~/projects/querencia-einstellungen/integration/vorschlag
 OPT=${QE_OPT:-~/opt/querencia}
 APPS=${QE_APPS:-~/.local/share/applications}
 STATE=${QE_STATE:-~/.local/state/querencia}
