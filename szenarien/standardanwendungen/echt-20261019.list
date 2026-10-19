@@ -1,0 +1,20 @@
+[Default Applications]
+text/plain=org.querencia.Editor.desktop
+text/markdown=org.querencia.Editor.desktop
+text/x-markdown=org.querencia.Editor.desktop
+application/json=org.querencia.Editor.desktop
+application/xml=org.querencia.Editor.desktop
+text/xml=org.querencia.Editor.desktop
+application/x-shellscript=org.querencia.Editor.desktop
+text/x-shellscript=org.querencia.Editor.desktop
+text/x-python=org.querencia.Editor.desktop
+text/x-python3=org.querencia.Editor.desktop
+text/rust=org.querencia.Editor.desktop
+text/x-csrc=org.querencia.Editor.desktop
+text/x-chdr=org.querencia.Editor.desktop
+image/png=org.querencia.Bilder.desktop
+image/jpeg=org.querencia.Bilder.desktop
+image/gif=org.querencia.Bilder.desktop
+image/webp=org.querencia.Bilder.desktop
+image/bmp=org.querencia.Bilder.desktop
+image/svg+xml=org.querencia.Bilder.desktop

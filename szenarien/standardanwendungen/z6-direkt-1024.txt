@@ -1,0 +1,3 @@
+extent 1024 768
+wait 3500
+shot 01-direkt-1024.png

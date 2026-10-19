@@ -10,6 +10,9 @@
 //!   querencia-einstellungen --bildschirm-zeigen     Ausgaben als Text (Prüfung)
 //!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Symbole der Arbeitsfläche“
 //!                                           (G2-X: Symbole und Laufwerke)
+//!   querencia-einstellungen --standardanwendungen   nur „Querencia – Standardanwendungen“
+//!                                           (G2-Z, schreibt über GIO ~/.config/mimeapps.list)
+//!   querencia-einstellungen --standardanwendungen-zeigen   Ist-Stand als Text (Prüfung)
 //!
 //! Beide Einstiege benutzen denselben Dialog (`hintergrund::oeffnen`). Keine
 //! libadwaita, keine Kopfleiste: labwc zeichnet die Titelleiste (wie Panel
@@ -26,6 +29,8 @@ mod hintergrund;
 mod ini;
 mod logo;
 mod modell;
+mod standardanwendungen;
+mod standardanwendungen_modell;
 mod vorschau;
 
 use gtk4::prelude::*;
@@ -54,9 +59,13 @@ fn main() -> glib::ExitCode {
     if args.iter().any(|a| a == "--bildschirm-zeigen") {
         return glib::ExitCode::from(bildschirm::zeigen() as u8);
     }
+    if args.iter().any(|a| a == "--standardanwendungen-zeigen") {
+        return glib::ExitCode::from(standardanwendungen::zeigen() as u8);
+    }
     let nur_hintergrund = args.iter().any(|a| a == "--hintergrund");
     let nur_bildschirm = args.iter().any(|a| a == "--bildschirm");
     let nur_arbeitsflaeche = args.iter().any(|a| a == "--arbeitsflaeche");
+    let nur_standardanwendungen = args.iter().any(|a| a == "--standardanwendungen");
     let app = gtk4::Application::builder()
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
@@ -68,6 +77,8 @@ fn main() -> glib::ExitCode {
             bildschirm::oeffnen(app).present();
         } else if nur_arbeitsflaeche {
             arbeitsflaeche::oeffnen(app).present();
+        } else if nur_standardanwendungen {
+            standardanwendungen::oeffnen(app).present();
         } else {
             kontrollzentrum(app).present();
         }

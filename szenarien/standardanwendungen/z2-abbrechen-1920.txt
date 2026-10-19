@@ -1,0 +1,24 @@
+extent 1920 1080
+wait 3500
+shot 01-start.png
+move 1191 502
+click
+wait 1200
+shot 02-bilder-dialog.png
+move 982 726
+click
+wait 800
+move 1191 590
+click
+wait 1200
+shot 03-dateimanager-dialog.png
+key Escape
+wait 800
+move 1191 398
+click
+wait 1200
+shot 04-email-dialog.png
+move 1112 726
+click
+wait 1000
+shot 05-ende.png

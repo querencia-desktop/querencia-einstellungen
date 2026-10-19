@@ -53,6 +53,12 @@ sed -i "s#\$HOME/schreibtisch#$PROFIL/schreibtisch#; s#\$HOME/bilder#$PROFIL/bil
 if [ -n "$INI" ]; then cp "$INI" "$PROFIL/config/querencia/desktop.ini"; fi
 # G2-G: gespeicherte Bildschirmkonfiguration ins Profil (für --bildschirm-anwenden)
 if [ -n "${QE_BILDSCHIRM_INI:-}" ]; then cp "$QE_BILDSCHIRM_INI" "$PROFIL/config/querencia/bildschirm.ini"; fi
+# G2-Z: mimeapps.list ins Profil (GIO liest und schreibt $XDG_CONFIG_HOME/mimeapps.list);
+# ohne Variable gibt es dort keine Datei. Die Starter liest GIO weiter (nur lesend)
+# aus ~/.local/share/applications, weil XDG_DATA_HOME ungesetzt bleibt.
+if [ -n "${QE_MIMEAPPS:-}" ]; then cp "$QE_MIMEAPPS" "$PROFIL/config/mimeapps.list"; cp "$QE_MIMEAPPS" "$N/mimeapps.list.vorher"; fi
+# G2-Z: vorrangige Liste des Desktops (XDG_CURRENT_DESKTOP=X-Querencia), Prüfung der Warnung
+if [ -n "${QE_MIMEAPPS_VORRANG:-}" ]; then cp "$QE_MIMEAPPS_VORRANG" "$PROFIL/config/x-querencia-mimeapps.list"; fi
 mkdir -p "$HOME/.cache/qe01"; RT=$(mktemp -d "$HOME/.cache/qe01/hmp05-runtime-XXXXXX"); chmod 0700 "$RT"; echo "$RT" > "$N/laufzeitordner.txt"
 # PT-1 (nach SW-6, QD-037): keine Portale im Wegwerf-Bus. Sonst startet
 # xdg-document-portal und sein FUSE-Mount $RT/doc erscheint im echten Querencia
@@ -120,7 +126,9 @@ HOME_REAL=$HOME
   timeout 180 dbus-run-session -- "$LABWC" -C "$PROFIL/labwc" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
 )
 cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.nachher" 2>/dev/null || true
+cp "$PROFIL/config/mimeapps.list" "$N/mimeapps.list.nachher" 2>/dev/null || true
 ls "$PROFIL/config/querencia/" > "$N/konfigordner-nachher.txt"
+ls -A "$PROFIL/config/" > "$N/konfig-wurzel-nachher.txt"
 echo "--- fertig: $N"; ls "$N" | tr '\n' ' '; echo; tail -3 "$N/logs/eingabe.log"
 # PT-1: falls doch ein Portal lief, nur den eigenen doc-Mount aushängen
 # (über /proc/self/mounts, ein toter FUSE-Mount lässt sich nicht stat'en).

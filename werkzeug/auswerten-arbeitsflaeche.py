@@ -10,7 +10,7 @@ Ohne PIL: Bilder werden nur auf Vorhandensein geprüft, gesichtet werden sie von
 import os
 import sys
 
-P = "~/projects/querencia-einstellungen"
+P = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # G2-Z: auch im Worktree
 N = os.path.join(P, "nachweis")
 Z = os.path.join(P, "szenarien", "arbeitsflaeche")
 ziel = sys.argv[1] if len(sys.argv) > 1 else os.path.join(N, "g2x", "arbeitsflaeche-g2x.tsv")

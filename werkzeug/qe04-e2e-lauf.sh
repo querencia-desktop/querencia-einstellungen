@@ -3,7 +3,8 @@
 # isolierten labwc (isoliert.sh); Gegenprobe q1 mit dem Live-Desktop QE-03.
 #   QE04_BIN=<desktop qe-04> bash werkzeug/qe04-e2e-lauf.sh
 set -uo pipefail
-P=~/projects/querencia-einstellungen
+# G2-Z: Ordner des Skripts (läuft auch im Worktree)
+P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 Z=szenarien/arbeitsflaeche
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2x/release/querencia-einstellungen}

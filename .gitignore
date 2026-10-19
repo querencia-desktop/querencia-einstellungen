@@ -22,3 +22,8 @@
 /nachweis/g2x/**/*.png
 /nachweis/g2x/**/querencia-einstellungen
 /nachweis/g2x/laeufe/
+# G2-Z: wie G2-X – Textnachweise unter nachweis/g2z/ ins Repo, Binaries/Bilder/Läufe nicht
+!/nachweis/g2z/
+/nachweis/g2z/**/*.png
+/nachweis/g2z/**/querencia-einstellungen
+/nachweis/g2z/gui-kette.fertig

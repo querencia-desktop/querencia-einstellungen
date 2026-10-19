@@ -1,0 +1,25 @@
+extent 1920 1080
+wait 3500
+shot 01-start.png
+move 1191 438
+click
+wait 1200
+shot 02-dialog.png
+move 960 503
+click
+wait 300
+move 1112 726
+click
+wait 1200
+shot 03-vim.png
+move 1191 438
+click
+wait 1200
+shot 04-dialog-vim-aktuell.png
+move 960 455
+click
+wait 300
+move 1112 726
+click
+wait 1200
+shot 05-editor.png

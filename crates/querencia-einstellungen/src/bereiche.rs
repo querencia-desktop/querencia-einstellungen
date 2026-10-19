@@ -2,7 +2,8 @@
 //! tatsächlichen Ist-Zustand aus der jeweiligen Quelle, nur lesend. Was noch
 //! kein Backend hat, steht als „Noch nicht verfügbar“ mit dem Grund – ohne
 //! Schaltflächen, die nichts tun. Funktionen: „Hintergrund …“ (QE-01),
-//! „Bildschirm“ (G2-G) und „Symbole der Arbeitsfläche“ (G2-X).
+//! „Bildschirm“ (G2-G), „Symbole der Arbeitsfläche“ (G2-X) und
+//! „Standardanwendungen“ (G2-Z).
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
@@ -56,8 +57,8 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
             seite: arbeitsflaechen(),
         },
         Bereich {
-            name: "Standardanwendungen",
-            seite: standardanwendungen(),
+            name: crate::standardanwendungen::NAME,
+            seite: crate::standardanwendungen::seite(),
         },
         Bereich {
             name: "Informationen über Querencia",
@@ -68,7 +69,7 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
 
 // ------------------------------------------------------------------ Bausteine
 
-fn seite(titel: &str) -> gtk4::Box {
+pub(crate) fn seite(titel: &str) -> gtk4::Box {
     let b = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     b.set_margin_top(12);
     b.set_margin_bottom(12);
@@ -104,7 +105,7 @@ fn werte(zeilen: &[(&str, String)]) -> gtk4::Grid {
     g
 }
 
-fn quelle(text: &str) -> gtk4::Label {
+pub(crate) fn quelle(text: &str) -> gtk4::Label {
     let l = gtk4::Label::new(Some(&format!("Quelle: {text}")));
     l.set_xalign(0.0);
     l.set_wrap(true);
@@ -550,47 +551,6 @@ fn arbeitsflaechen() -> gtk4::Widget {
     s.append(&noch_nicht(
         "Anzahl und Namen ändern: rc.xml und „labwc --reconfigure“.",
     ));
-    s.upcast()
-}
-
-fn standardanwendungen() -> gtk4::Widget {
-    let s = seite("Standardanwendungen");
-    let app_name = |a: Option<gio::AppInfo>| {
-        a.map(|a| a.name().to_string())
-            .unwrap_or_else(|| "(keine)".into())
-    };
-    s.append(&werte(&[
-        (
-            "Webbrowser:",
-            app_name(gio::AppInfo::default_for_uri_scheme("http")),
-        ),
-        (
-            "E-Mail:",
-            app_name(gio::AppInfo::default_for_uri_scheme("mailto")),
-        ),
-        (
-            "Ordner:",
-            app_name(gio::AppInfo::default_for_type("inode/directory", false)),
-        ),
-        (
-            "Textdateien:",
-            app_name(gio::AppInfo::default_for_type("text/plain", false)),
-        ),
-        (
-            "Bilder (PNG):",
-            app_name(gio::AppInfo::default_for_type("image/png", false)),
-        ),
-        (
-            "PDF:",
-            app_name(gio::AppInfo::default_for_type("application/pdf", false)),
-        ),
-        (
-            "Terminal:",
-            "Querencia Terminal (Panel-Menü; kein MIME-Standard)".into(),
-        ),
-    ]));
-    s.append(&quelle("GIO (mimeapps.list in ~/.config, sonst Systemstandard). ~/.config/mimeapps.list existiert noch nicht."));
-    s.append(&noch_nicht("Ändern über gio::AppInfo::set_as_default_for_type ist technisch bereit (schreibt ~/.config/mimeapps.list) – wartet auf Freigabe als eigener Meilenstein."));
     s.upcast()
 }
 
