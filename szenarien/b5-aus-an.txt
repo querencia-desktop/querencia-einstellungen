@@ -1,0 +1,27 @@
+extent 3200 1080
+wait 4000
+move 414 194
+click
+wait 700
+shot 01-aus-gewaehlt.png
+move 949 654
+click
+wait 2000
+extent 1280 720
+shot 02-dialog-aus.png
+move 869 417
+click
+wait 1500
+shot 03-aus.png
+move 414 194
+click
+wait 700
+move 949 654
+click
+wait 2000
+extent 3200 1080
+shot 04-dialog-an.png
+move 869 417
+click
+wait 1500
+shot 05-an.png

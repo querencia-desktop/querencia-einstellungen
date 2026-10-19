@@ -1,0 +1,36 @@
+extent 3200 1080
+wait 4000
+move 520 232
+click
+wait 900
+key Down
+wait 300
+key Return
+wait 900
+shot 01-aufloesung-down-return.png
+move 520 346
+click
+wait 900
+key Down
+wait 300
+key Down
+wait 300
+key Return
+wait 900
+shot 02-skalierung-down2-return.png
+move 520 308
+click
+wait 900
+key Up
+wait 300
+key Return
+wait 900
+shot 03-drehung-up-return.png
+move 700 156
+click
+wait 900
+key Down
+wait 300
+key Return
+wait 900
+shot 04-monitor-down-return.png

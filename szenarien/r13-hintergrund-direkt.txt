@@ -1,0 +1,3 @@
+extent 1920 1080
+wait 4000
+shot 01-dialog-direkt.png

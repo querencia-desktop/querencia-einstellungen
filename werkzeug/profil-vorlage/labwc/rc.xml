@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Isolierte Prüfung QE-01: wie die Runtime (4 Arbeitsflächen, Querencia-Klassisch), ohne Druck-Belegungen. -->
+<labwc_config>
+  <desktops number="4" popupTime="0" prefix="Arbeitsfläche" />
+  <keyboard><default /></keyboard>
+  <theme><name>Querencia-Klassisch</name></theme>
+</labwc_config>

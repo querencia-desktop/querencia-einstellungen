@@ -1,0 +1,37 @@
+extent 1920 1080
+run $QE_APP --hintergrund
+wait 2500
+move 1054 635
+click
+wait 2500
+combo ctrl+l
+wait 300
+type ~/projects/querencia-werkstatt-w6-einstellungen/nachweis/testbilder/kachel-160x120.png
+key Return
+wait 1500
+move 810 675
+click
+wait 700
+move 770 860
+click
+wait 700
+shot 01-kacheln.png
+move 1054 635
+click
+wait 2500
+combo ctrl+l
+wait 300
+type ~/projects/querencia-werkstatt-w6-einstellungen/nachweis/testbilder/muster-4zu3.webp
+key Return
+wait 1500
+move 810 675
+click
+wait 700
+move 770 724
+click
+wait 700
+shot 02-webp-ausfuellen.png
+move 1244 906
+click
+wait 2000
+shot 03-webp-uebernommen.png

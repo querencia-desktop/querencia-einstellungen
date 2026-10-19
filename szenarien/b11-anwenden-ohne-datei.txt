@@ -1,0 +1,3 @@
+extent 3200 1080
+wait 3000
+shot 01-ende.png

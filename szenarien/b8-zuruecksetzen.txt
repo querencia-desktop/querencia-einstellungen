@@ -1,0 +1,13 @@
+extent 3200 1080
+wait 4000
+move 520 232
+click
+wait 700
+move 470 382
+click
+wait 700
+shot 01-geaendert.png
+move 340 654
+click
+wait 1000
+shot 02-zurueckgesetzt.png

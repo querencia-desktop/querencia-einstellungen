@@ -1,0 +1,11 @@
+extent 1920 1080
+run $QE_APP --hintergrund
+wait 2500
+move 724 906
+click
+wait 700
+shot 01-standard-vorschau.png
+move 1244 906
+click
+wait 2000
+shot 02-standard-uebernommen.png

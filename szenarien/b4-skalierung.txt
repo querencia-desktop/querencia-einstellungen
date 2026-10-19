@@ -1,0 +1,18 @@
+extent 3200 1080
+wait 4000
+move 520 346
+click
+wait 700
+move 470 496
+click
+wait 700
+shot 01-gewaehlt.png
+move 949 654
+click
+wait 2000
+extent 2240 720
+shot 02-dialog.png
+move 869 417
+click
+wait 1500
+shot 03-behalten.png

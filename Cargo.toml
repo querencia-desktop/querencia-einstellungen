@@ -1,0 +1,12 @@
+[workspace]
+resolver = "3"
+members = ["crates/querencia-einstellungen"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.92"
+license = "GPL-3.0-or-later"
+
+# Die Suche im 60-MB-Desktop-Binary auch im Debug-Build schnell halten.
+[profile.dev.package.memchr]
+opt-level = 3

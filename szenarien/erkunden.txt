@@ -1,0 +1,21 @@
+extent 1920 1080
+run $QE_APP --hintergrund
+wait 2500
+move 810 675
+click
+wait 800
+shot e2-darstellung-liste.png
+key Escape
+wait 400
+move 1054 635
+click
+wait 2500
+shot e3-dateidialog.png
+combo ctrl+l
+wait 400
+type ~/projects/querencia-werkstatt-w6-einstellungen/nachweis/testbilder/muster-4zu3.png
+wait 500
+shot e4-dateidialog-pfad.png
+key Return
+wait 1500
+shot e5-bild-gewaehlt.png

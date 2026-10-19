@@ -1,0 +1,10 @@
+# Layout-Lauf: Dialog und Kontrollzentrum nur anzeigen
+extent 1920 1080
+mark Dialog starten
+run $QE_APP --hintergrund
+wait 2500
+shot layout-dialog.png
+run $QE_APP
+wait 2500
+shot layout-kontrollzentrum.png
+mark Ende

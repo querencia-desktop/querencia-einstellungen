@@ -1,0 +1,19 @@
+# Build
+/target/
+
+# Werkzeug-Builds (neu erzeugbar mit werkzeug/bauen-werkzeug.sh)
+/werkzeug/bin/
+
+# Vorlagen-Binaries der Integrationsskripte: Artefakte, Prüfsummen stehen in
+# den Skripten und in nachweis/*SHA256SUMS; nicht ins Repo.
+/integration/**/querencia-einstellungen
+
+# Nachweise: Läufe, Profile, Bilder und Binaries bleiben lokal.
+# Ins Repo kommen nur die Testbilder (isoliert.sh braucht sie) und die
+# kleinen Textergebnisse direkt in nachweis/ (TSV, Prüfsummen, Protokolle).
+/nachweis/*
+!/nachweis/testbilder/
+!/nachweis/*.tsv
+!/nachweis/*SHA256SUMS
+!/nachweis/*.txt
+!/nachweis/*.log

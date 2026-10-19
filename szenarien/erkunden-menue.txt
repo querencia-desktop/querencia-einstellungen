@@ -1,0 +1,6 @@
+extent 1920 1080
+wait 800
+move 1000 600
+rclick
+wait 900
+shot m1-desktopmenue.png

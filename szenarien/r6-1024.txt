@@ -1,0 +1,7 @@
+extent 1024 768
+run $QE_APP --hintergrund
+wait 2500
+shot 01-dialog-1024.png
+run $QE_APP
+wait 2500
+shot 02-kontrollzentrum-1024.png

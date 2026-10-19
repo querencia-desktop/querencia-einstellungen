@@ -1,0 +1,20 @@
+[package]
+name = "querencia-einstellungen"
+version = "0.0.2"
+description = "Querencia Einstellungen – Kontrollzentrum im Stil von GNOME 2 (Hintergrund QE-01, Bildschirm G2-G)"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+# Wie querencia-panel/-desktop: GTK 4 ohne libadwaita, labwc zeichnet die Titelleiste.
+gtk4 = { version = "0.11", features = ["v4_10"] }
+# rc.xml nur lesen (Ist-Werte der Bereiche); liegt im Cargo-Cache (offline).
+roxmltree = "0.21"
+# schnelle Suche nach „--faehigkeiten“ im Desktop-Binary (liegt bereits im Lockfile)
+memchr = "2.8"
+# Bereich Bildschirm (G2-G): wlr-output-management direkt am Compositor, wie
+# der Screenshot 0.2.5 (liegt im Cargo-Cache, offline).
+wayland-client = "0.31"
+wayland-protocols-wlr = { version = "0.3", features = ["client"] }

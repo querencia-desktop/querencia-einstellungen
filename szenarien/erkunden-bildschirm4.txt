@@ -1,0 +1,48 @@
+extent 3200 1080
+wait 4000
+move 520 488
+click
+wait 900
+move 470 571
+wait 300
+click
+wait 900
+shot 01-drehung-klick.png
+key Escape
+wait 500
+move 520 526
+click
+wait 900
+move 430 483
+wait 300
+click
+wait 900
+shot 02-skalierung-klick.png
+key Escape
+wait 500
+move 700 336
+click
+wait 900
+move 600 419
+wait 300
+click
+wait 900
+shot 03-monitor-klick.png
+move 520 412
+click
+wait 900
+key Down
+wait 200
+key Return
+wait 900
+shot 04-aufloesung-tastatur.png
+key Escape
+wait 300
+move 520 412
+click
+wait 900
+move 470 267
+wait 300
+dclick
+wait 900
+shot 05-aufloesung-dclick.png

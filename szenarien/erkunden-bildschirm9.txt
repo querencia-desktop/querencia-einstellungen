@@ -1,0 +1,34 @@
+extent 3200 1080
+wait 4000
+move 520 308
+click
+wait 900
+move 470 390
+wait 300
+click
+wait 900
+shot 01-drehung.png
+move 700 156
+click
+wait 900
+move 600 238
+wait 300
+click
+wait 900
+shot 02-monitor.png
+move 520 346
+click
+wait 900
+move 470 462
+wait 300
+click
+wait 900
+shot 03-skalierung.png
+move 520 232
+click
+wait 900
+move 470 382
+wait 300
+click
+wait 900
+shot 04-aufloesung.png

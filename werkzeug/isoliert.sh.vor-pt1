@@ -1,0 +1,106 @@
+#!/bin/bash
+# Isolierte GUI-Prüfung für QE-01: eigener headless labwc 0.9.8 (pixman), eigener
+# D-Bus, eigenes Profil (XDG_CONFIG_HOME/STATE_HOME), eigener XDG_RUNTIME_DIR.
+# Darin laufen der ECHTE Desktop (HMP-10a) und das ECHTE Panel (QREL-04c) aus
+# ~/opt (nur gelesen) sowie der Dialog aus diesem Projekt. Eingaben kommen
+# ausschließlich über qe-eingabe (verweigert außerhalb von hmp05-runtime-*).
+# Die produktive Sitzung wird nie berührt: HOME bleibt (Themen, Bilder lesen),
+# aber alles Geschriebene landet im Profil.
+#
+#   isoliert.sh <name> <BREITExHÖHE> <szenario.txt> [desktop.ini-Vorlage]
+#
+# Ergebnis: nachweis/<name>/ mit logs/, bildern (shot …), desktop.ini nachher.
+set -euo pipefail
+P=$(dirname "$(dirname "$(readlink -f "$0")")")
+NAME=${1:?Name}; AUFL=${2:?BREITExHÖHE}; SZENARIO=$(readlink -f "${3:?Szenario}"); INI=${4:-}
+# Desktop: Standard HMP-10a aus der Ablage; für die Nachprüfung mit W1s neuem
+# Build: QE_DESKTOP=<pfad> QE_DESKTOP_SHA16=<sha16> isoliert.sh …
+DESKTOP_BIN=${QE_DESKTOP:-~/opt/querencia/desktop/2b46a7b90b3412bb/querencia-desktop}
+DESKTOP_SHA16=${QE_DESKTOP_SHA16:-2b46a7b90b3412bb}
+PANEL_BIN=~/opt/querencia/panel/696b8797a3a35eb8/querencia-panel
+LABWC=~/opt/labwc-0.9.8/bin/labwc
+# G2-C: Release-Build über QE_APP_BIN=<pfad>; ohne Variable der Debug-Build wie bisher.
+# G2-G: QE_OUTPUTS=2 gibt dem headless labwc zwei Ausgaben (die zweite 1280x720, rechts).
+APP=${QE_APP_BIN:-$P/target/debug/querencia-einstellungen}
+WERK=$P/werkzeug/bin
+WERKSTATT_WERK=~/projects/querencia-panel-werkstatt/arbeitsflaechen-4/werkzeug/bin
+for f in "$DESKTOP_BIN" "$PANEL_BIN" "$LABWC" "$APP" "$WERK/qe-eingabe" "$WERKSTATT_WERK/qausgabe"; do
+    [ -x "$f" ] || { echo "fehlt: $f" >&2; exit 2; }
+done
+[ "$(sha256sum "$DESKTOP_BIN" | cut -c1-16)" = "$DESKTOP_SHA16" ] || { echo "Desktop-Binary unerwartet" >&2; exit 2; }
+[ "$(sha256sum "$PANEL_BIN" | cut -c1-16)" = 696b8797a3a35eb8 ] || { echo "Panel-Binary unerwartet" >&2; exit 2; }
+
+N=$P/nachweis/$NAME; rm -rf "$N"; mkdir -p "$N/logs" "$N/profil"
+PROFIL=$N/profil
+cp -r "$P/werkzeug/profil-vorlage/." "$PROFIL/"
+mkdir -p "$PROFIL/state" "$PROFIL/schreibtisch" "$PROFIL/bilder" "$PROFIL/bin"
+# A3: querencia-einstellungen über PATH (nur in dieser isolierten Sitzung)
+ln -s "$APP" "$PROFIL/bin/querencia-einstellungen"
+echo "Desktop: $DESKTOP_BIN ($DESKTOP_SHA16)" > "$N/desktop-binary.txt"
+# Testbilder ins Profil (der Dateidialog startet dort)
+cp "$P"/nachweis/testbilder/*.png "$P"/nachweis/testbilder/*.jpg "$P"/nachweis/testbilder/*.webp "$PROFIL/bilder/"
+sed -i "s#\$HOME/schreibtisch#$PROFIL/schreibtisch#; s#\$HOME/bilder#$PROFIL/bilder#" "$PROFIL/config/user-dirs.dirs"
+if [ -n "$INI" ]; then cp "$INI" "$PROFIL/config/querencia/desktop.ini"; fi
+# G2-G: gespeicherte Bildschirmkonfiguration ins Profil (für --bildschirm-anwenden)
+if [ -n "${QE_BILDSCHIRM_INI:-}" ]; then cp "$QE_BILDSCHIRM_INI" "$PROFIL/config/querencia/bildschirm.ini"; fi
+mkdir -p "$HOME/.cache/qe01"; RT=$(mktemp -d "$HOME/.cache/qe01/hmp05-runtime-XXXXXX"); chmod 0700 "$RT"; echo "$RT" > "$N/laufzeitordner.txt"
+cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.vorher" 2>/dev/null || true
+
+cat > "$N/start.sh" <<EOF
+#!/bin/bash
+# läuft innerhalb des isolierten labwc (-S), WAYLAND_DISPLAY gesetzt
+set -u
+cd "$N"
+"$WERKSTATT_WERK/qausgabe" "$AUFL" >> logs/qausgabe.log 2>&1; sleep 0.5
+"$DESKTOP_BIN" >> logs/desktop.log 2>&1 &
+DPID=\$!
+sleep 1.5
+"$PANEL_BIN" >> logs/panel.log 2>&1 &
+PPID_=\$!
+sleep 2
+cp "\$XDG_STATE_HOME/querencia/desktop-symbole" symbole-start 2>/dev/null || echo fehlt > symbole-start
+"$APP" --faehigkeiten-zeigen > logs/faehigkeiten.log 2>&1 || true
+# G2-G: Ausgaben am Anfang und am Ende (wlr-output-management, nur lesend).
+# Nur ab 0.0.2: 0.0.1 kennt die Option nicht, ignoriert sie und öffnet das
+# Kontrollzentrum (blockiert bis zur Zeitgrenze des Laufs). Die Version kommt
+# aus --version (0.0.1 antwortet ohne Fenster); ein grep im Binary versagt,
+# weil der Release-Build kurze Konstanten als Direktwerte vergleicht.
+if [ "\$("$APP" --version 2>/dev/null)" != "querencia-einstellungen 0.0.1" ]; then
+    timeout 10 "$APP" --bildschirm-zeigen > logs/ausgaben-start.txt 2>>logs/ausgaben.log || true
+fi
+# G2-C: mit QE_APP_ARGS wird die App vor dem Szenario direkt gestartet (z. B.
+# "--hintergrund" oder "-" für das Kontrollzentrum ohne Argument).
+if [ -n "\$QE_APP_ARGS" ]; then
+    if [ "\$QE_APP_ARGS" = "-" ]; then "$APP" >> logs/app-direkt.log 2>&1 &
+    else "$APP" \$QE_APP_ARGS >> logs/app-direkt.log 2>&1 & fi
+    echo "app direkt gestartet: \$QE_APP_ARGS" >> logs/app-direkt.log
+fi
+"$WERK/qe-eingabe" < "$SZENARIO" >> logs/eingabe.log 2>&1
+echo "szenario exit=\$?" >> logs/eingabe.log
+sleep 0.5
+# nur Prozesse DIESER isolierten Sitzung (gleiches XDG_RUNTIME_DIR) beenden
+for p in \$(pgrep -f "^$APP"); do grep -qz "^XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR\$" /proc/\$p/environ 2>/dev/null && kill -TERM \$p; done
+if [ "\$("$APP" --version 2>/dev/null)" != "querencia-einstellungen 0.0.1" ]; then
+    timeout 10 "$APP" --bildschirm-zeigen > logs/ausgaben-ende.txt 2>>logs/ausgaben.log || true
+fi
+cp "\$XDG_CONFIG_HOME/querencia/bildschirm.ini" bildschirm.ini.nachher 2>/dev/null || true
+kill -TERM \$PPID_ \$DPID 2>/dev/null || true
+sleep 1
+cp "\$XDG_STATE_HOME/querencia/desktop-symbole" symbole-ende 2>/dev/null || echo fehlt > symbole-ende
+EOF
+chmod +x "$N/start.sh"
+echo "Profil $PROFIL, Laufzeit $RT, Auflösung $AUFL"
+HOME_REAL=$HOME
+(
+  export XDG_RUNTIME_DIR="$RT" XDG_CONFIG_HOME="$PROFIL/config" XDG_STATE_HOME="$PROFIL/state" XDG_CACHE_HOME="$PROFIL/cache"
+  export WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_HEADLESS_OUTPUTS="${QE_OUTPUTS:-1}" WLR_LIBINPUT_NO_DEVICES=1
+  export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
+  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" PATH="$PROFIL/bin:$PATH"
+  unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
+  mkdir -p "$PROFIL/state/querencia" "$PROFIL/cache"
+  timeout 180 dbus-run-session -- "$LABWC" -C "$PROFIL/labwc" -S "$N/start.sh" > "$N/logs/labwc.log" 2>&1 || echo "labwc exit=$?" >> "$N/logs/labwc.log"
+)
+cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.nachher" 2>/dev/null || true
+ls "$PROFIL/config/querencia/" > "$N/konfigordner-nachher.txt"
+echo "--- fertig: $N"; ls "$N" | tr '\n' ' '; echo; tail -3 "$N/logs/eingabe.log"
+rm -rf "$RT"

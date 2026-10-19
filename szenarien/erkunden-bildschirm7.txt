@@ -1,0 +1,51 @@
+extent 3200 1080
+wait 4000
+move 520 232
+click
+wait 900
+move 470 382
+wait 300
+click
+wait 900
+shot 01-a-move-wait-click.png
+key Escape
+wait 500
+move 520 232
+click
+wait 900
+move 470 450
+wait 300
+down
+wait 100
+up
+wait 900
+shot 02-b-down-up.png
+key Escape
+wait 500
+move 520 232
+click
+wait 900
+glide 470 416 400
+wait 300
+click
+wait 900
+shot 03-c-glide-click.png
+key Escape
+wait 500
+move 520 308
+click
+wait 900
+move 470 390
+click
+wait 900
+shot 04-d-drehung.png
+key Escape
+wait 500
+move 520 232
+click
+wait 900
+move 470 484
+wait 300
+dclick
+wait 900
+shot 05-e-dclick.png

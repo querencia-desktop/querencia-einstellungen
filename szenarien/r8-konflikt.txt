@@ -1,0 +1,15 @@
+extent 1920 1080
+run $QE_APP --hintergrund
+wait 2500
+run sh -c 'printf "[Background]\nFile=\nMode=stretched\nColor=#000000\n" > "$XDG_CONFIG_HOME/querencia/desktop.ini"'
+wait 1500
+move 810 675
+click
+wait 700
+move 770 758
+click
+wait 700
+move 1244 906
+click
+wait 1000
+shot 01-konflikt.png

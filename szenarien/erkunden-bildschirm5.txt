@@ -1,0 +1,27 @@
+extent 3200 1080
+wait 4000
+shot 00-start.png
+move 520 200
+click
+wait 900
+shot 01-aufloesung-offen.png
+key Escape
+wait 500
+move 520 314
+click
+wait 900
+shot 02-skalierung-offen.png
+key Escape
+wait 500
+move 520 276
+click
+wait 900
+shot 03-drehung-offen.png
+key Escape
+wait 500
+move 700 124
+click
+wait 900
+shot 04-monitor-offen.png
+key Escape
+wait 500
