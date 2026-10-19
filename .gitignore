@@ -31,3 +31,7 @@
 !/nachweis/g2aa/
 /nachweis/g2aa/**/*.png
 /nachweis/g2aa/**/querencia-einstellungen
+# G2-AF: wie G2-Z – Textnachweise unter nachweis/g2af/ ins Repo, Binaries/Bilder/Läufe nicht
+!/nachweis/g2af/
+/nachweis/g2af/**/*.png
+/nachweis/g2af/**/querencia-einstellungen

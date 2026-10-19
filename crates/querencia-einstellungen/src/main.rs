@@ -26,6 +26,7 @@ mod bildschirm;
 mod bildschirm_modell;
 mod faehigkeiten;
 mod hintergrund;
+mod hintergrund_katalog;
 mod ini;
 mod logo;
 mod modell;

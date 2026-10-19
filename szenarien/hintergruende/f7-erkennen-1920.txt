@@ -1,0 +1,15 @@
+extent 1920 1080
+wait 4000
+shot 01-start-erde-markiert.png
+move 685 676
+click
+wait 1200
+shot 02-blau.png
+move 1244 906
+click
+wait 2000
+shot 03-uebernommen.png
+move 1116 906
+click
+wait 2500
+shot 04-desktop.png

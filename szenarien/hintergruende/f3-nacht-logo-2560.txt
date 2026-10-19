@@ -1,0 +1,15 @@
+extent 2560 1440
+wait 4000
+shot 01-start.png
+move 1416 948
+click
+wait 1200
+shot 02-gewaehlt.png
+move 1564 1085
+click
+wait 2000
+shot 03-uebernommen.png
+move 1435 1085
+click
+wait 2500
+shot 04-desktop.png

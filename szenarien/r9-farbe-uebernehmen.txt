@@ -1,10 +1,13 @@
 extent 1920 1080
 run $QE_APP --hintergrund
 wait 3500
-move 792 557
+move 960 700
+scroll 10
+wait 800
+move 792 306
 click
 wait 500
-move 856 781
+move 856 766
 click
 wait 600
 shot 01-dialog-farbe.png
@@ -19,7 +22,10 @@ shot 03-desktop-farbe.png
 run $QE_APP --hintergrund
 wait 3500
 shot 04-dialog-neu-geladen.png
-move 630 557
+move 960 700
+scroll 10
+wait 800
+move 630 306
 click
 wait 500
 move 1244 906

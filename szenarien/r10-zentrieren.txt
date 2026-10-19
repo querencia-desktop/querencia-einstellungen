@@ -1,7 +1,10 @@
 extent 1920 1080
 run $QE_APP --hintergrund
 wait 3500
-move 1054 635
+move 960 700
+scroll 10
+wait 800
+move 1054 620
 click
 wait 2500
 combo ctrl+l
@@ -9,10 +12,10 @@ wait 300
 type ~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3.png
 key Return
 wait 1500
-move 810 675
+move 810 660
 click
 wait 700
-move 770 792
+move 770 777
 click
 wait 700
 shot 01-dialog.png

@@ -4,6 +4,9 @@
 //! vorherigen Datei); die Vorschau ändert den echten Desktop nie.
 //! G2-X: ersetzt nur die Gruppe `[Background]`; `[Icons]`, `[Volumes]` und
 //! alles andere bleiben byte-gleich (`ini.rs`).
+//! G2-AF: Galerie der eingebauten Bilder (`hintergrund_katalog.rs`); gewählt
+//! wird die 4:3- oder 16:9-Fassung passend zum Bildschirm, die Vorschau zeigt
+//! die Fassung für die gewählte Vorschaugröße.
 use std::cell::{Cell, RefCell};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -12,6 +15,7 @@ use gtk4::prelude::*;
 use gtk4::{gdk, gio, glib};
 
 use crate::faehigkeiten;
+use crate::hintergrund_katalog::{self as katalog, Format, Wahl};
 use crate::ini;
 use crate::modell::{self, Darstellung, Faehigkeiten, Farbe, Hintergrund, Typ};
 use crate::vorschau::Vorschau;
@@ -26,17 +30,48 @@ pub fn konfig_pfad() -> PathBuf {
         .join("desktop.ini")
 }
 
-/// Das eingebaute Bild, gesucht wie im Desktop: `querencia/hintergruende/`
-/// in den XDG-Datenordnern.
-pub fn eingebautes_bild() -> Option<PathBuf> {
+/// Ordner der eingebauten Bilder wie im Desktop: `querencia/hintergruende/`
+/// in den XDG-Datenordnern, der des Benutzers zuerst.
+pub fn eingebaute_ordner() -> Vec<PathBuf> {
     std::iter::once(glib::user_data_dir())
         .chain(glib::system_data_dirs())
-        .map(|d| {
-            d.join("querencia")
-                .join("hintergruende")
-                .join(modell::EINGEBAUT)
-        })
+        .map(|d| d.join("querencia").join("hintergruende"))
+        .collect()
+}
+
+/// Das eingebaute Bild „Querencia Blau“ (der Standard).
+pub fn eingebautes_bild() -> Option<PathBuf> {
+    eingebaute_ordner()
+        .into_iter()
+        .map(|o| o.join(modell::EINGEBAUT))
         .find(|p| p.is_file())
+}
+
+/// G2-AF: Datei einer Galerie-Kachel für ein Format; „Querencia Blau“ ist
+/// `None` (leeres `File=`, wie bisher der Standard).
+fn eingebaut_datei(wahl: Wahl, format: Format) -> Option<PathBuf> {
+    if wahl == Wahl::STANDARD {
+        return None;
+    }
+    wahl.finden(format, &eingebaute_ordner(), Path::is_file)
+}
+
+/// Kachel zur Einstellung: leeres `File=` ist „Querencia Blau“.
+fn erkannt(datei: Option<&Path>) -> Option<Wahl> {
+    match datei {
+        None => Some(Wahl::STANDARD),
+        Some(p) => katalog::erkennen(p),
+    }
+}
+
+/// Format des (ersten) Bildschirms; ohne Bildschirm 16:9.
+fn bildschirm_format() -> Format {
+    gdk::Display::default()
+        .and_then(|d| d.monitors().iter::<gdk::Monitor>().find_map(Result::ok))
+        .map_or(Format::Breit, |m| {
+            let g = m.geometry();
+            Format::fuer(f64::from(g.width()), f64::from(g.height()))
+        })
 }
 
 struct Zustand {
@@ -47,6 +82,8 @@ struct Zustand {
     geladener_text: String,
     textur: Option<gdk::Texture>,
     bildfehler: Option<String>,
+    /// G2-AF: Format der gewählten Vorschaugröße (Fassung in der Vorschau).
+    vorschau_format: Format,
 }
 
 struct Oberflaeche {
@@ -67,6 +104,11 @@ struct Oberflaeche {
     uebernehmen: gtk4::Button,
     bildzeile: gtk4::Box,
     darstellungszeile: gtk4::Box,
+    /// G2-AF: Galerie der eingebauten Bilder und ihre Kacheln.
+    galerie: gtk4::FlowBox,
+    kacheln: Vec<(Wahl, gtk4::FlowBoxChild)>,
+    /// Format dieses Bildschirms: diese Fassung wird geschrieben.
+    bildschirm: Format,
     /// Was der laufende Desktop kann; bis die Abfrage im Hintergrund fertig ist
     /// `None` (dann bleibt alles gesperrt, was HMP-10a nicht kann).
     faehigkeiten: Cell<Option<Faehigkeiten>>,
@@ -129,6 +171,19 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     let bild_rahmen = gtk4::Frame::new(Some("Hintergrundbild"));
     let bild_box = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
     rand(&bild_box);
+    let bildschirm = bildschirm_format();
+    let (galerie, kacheln) = galerie_bauen(bildschirm);
+    let galerie_titel = gtk4::Label::new(Some("Eingebaute Bilder:"));
+    galerie_titel.set_xalign(0.0);
+    bild_box.append(&galerie_titel);
+    bild_box.append(&galerie);
+    let galerie_hinweis = gtk4::Label::new(Some(&format!(
+        "Für diesen Bildschirm wird die {}-Fassung verwendet.",
+        bildschirm.beschriftung()
+    )));
+    galerie_hinweis.set_xalign(0.0);
+    galerie_hinweis.add_css_class("dim-label");
+    bild_box.append(&galerie_hinweis);
     let bildzeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
     let bild_name = gtk4::Label::new(None);
     bild_name.set_hexpand(true);
@@ -226,7 +281,10 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     aussen.append(&unten);
     fenster.set_child(Some(&aussen));
 
-    let textur = textur_fuer(&geladen);
+    let vorschau_format = aufloesungen
+        .first()
+        .map_or(bildschirm, |(_, b, h)| Format::fuer(*b, *h));
+    let textur = textur_fuer(&geladen, vorschau_format);
     let ui = Rc::new(Oberflaeche {
         fenster: fenster.clone(),
         zustand: RefCell::new(Zustand {
@@ -235,6 +293,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
             geladener_text,
             textur: textur.0,
             bildfehler: textur.1,
+            vorschau_format,
         }),
         stumm: Cell::new(false),
         vorschau,
@@ -251,6 +310,9 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
         uebernehmen,
         bildzeile,
         darstellungszeile,
+        galerie,
+        kacheln,
+        bildschirm,
         faehigkeiten: Cell::new(None),
     });
 
@@ -326,7 +388,31 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
         aufloesung.connect_selected_notify(move |dd| {
             if let Some((_, b, h)) = aufloesungen.get(dd.selected() as usize) {
                 ui2.vorschau.set_flaeche(*b, *h);
+                // G2-AF: eingebautes Bild in der Fassung für diese Größe zeigen
+                let format = Format::fuer(*b, *h);
+                if ui2.zustand.borrow().vorschau_format != format {
+                    ui2.zustand.borrow_mut().vorschau_format = format;
+                    ui2.bild_laden();
+                    ui2.aktualisieren();
+                }
             }
+        });
+    }
+
+    // G2-AF: Galerie
+    {
+        let ui2 = ui.clone();
+        ui.galerie.connect_child_activated(move |_, kind| {
+            let Some(&(wahl, _)) = ui2.kacheln.iter().find(|(_, k)| k == kind) else {
+                return;
+            };
+            {
+                let mut z = ui2.zustand.borrow_mut();
+                z.aktuell.datei = eingebaut_datei(wahl, ui2.bildschirm);
+                z.aktuell.typ = Typ::Bild;
+            }
+            ui2.bild_laden();
+            ui2.aktualisieren();
         });
     }
 
@@ -437,6 +523,87 @@ fn rand(b: &gtk4::Box) {
     b.set_margin_end(8);
 }
 
+/// Größe der Vorschaubilder in der Galerie (16:9).
+const KACHEL: (i32, i32) = (112, 63);
+
+/// G2-AF: Galerie mit je einer Kachel (Vorschaubild, Name) für jedes
+/// installierte eingebaute Bild; die Vorschaubilder lädt ein Hintergrundfaden.
+fn galerie_bauen(bildschirm: Format) -> (gtk4::FlowBox, Vec<(Wahl, gtk4::FlowBoxChild)>) {
+    let galerie = gtk4::FlowBox::new();
+    galerie.set_selection_mode(gtk4::SelectionMode::Single);
+    galerie.set_activate_on_single_click(true);
+    galerie.set_homogeneous(true);
+    galerie.set_min_children_per_line(3);
+    galerie.set_max_children_per_line(5);
+    galerie.set_column_spacing(4);
+    galerie.set_row_spacing(4);
+    let mut kacheln = Vec::new();
+    for wahl in katalog::kacheln() {
+        let Some(bild) = wahl.finden(Format::Breit, &eingebaute_ordner(), Path::is_file) else {
+            continue;
+        };
+        let feld = gtk4::Box::new(gtk4::Orientation::Vertical, 2);
+        let vorschau = gtk4::Picture::new();
+        vorschau.set_size_request(KACHEL.0, KACHEL.1);
+        vorschau.set_halign(gtk4::Align::Center);
+        vorschau.set_valign(gtk4::Align::Center);
+        vorschau.set_content_fit(gtk4::ContentFit::Cover);
+        // Kurzname in einer Zeile, damit alle Kacheln gleich hoch sind; der
+        // volle Name steht im Tooltip.
+        let name = gtk4::Label::new(Some(&wahl.kurzname()));
+        name.set_ellipsize(gtk4::pango::EllipsizeMode::End);
+        name.set_max_width_chars(16);
+        feld.append(&vorschau);
+        feld.append(&name);
+        let kind = gtk4::FlowBoxChild::new();
+        kind.set_child(Some(&feld));
+        let datei = eingebaut_datei(wahl, bildschirm)
+            .and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
+            .unwrap_or_else(|| modell::EINGEBAUT.to_string());
+        kind.set_tooltip_text(Some(&format!("{} – {datei}", wahl.name())));
+        galerie.insert(&kind, -1);
+        kacheln.push((wahl, kind));
+        let auftrag = gio::spawn_blocking(move || vorschaubild(&bild));
+        glib::spawn_future_local(async move {
+            if let Ok(Some(textur)) = auftrag.await {
+                vorschau.set_paintable(Some(&textur.textur()));
+            }
+        });
+    }
+    (galerie, kacheln)
+}
+
+/// Verkleinertes Bild als Rohdaten (im Hintergrundfaden erzeugt, `Send`).
+struct Vorschaubild {
+    breite: i32,
+    hoehe: i32,
+    zeile: usize,
+    alpha: bool,
+    daten: glib::Bytes,
+}
+
+impl Vorschaubild {
+    fn textur(&self) -> gdk::Texture {
+        let format = if self.alpha {
+            gdk::MemoryFormat::R8g8b8a8
+        } else {
+            gdk::MemoryFormat::R8g8b8
+        };
+        gdk::MemoryTexture::new(self.breite, self.hoehe, format, &self.daten, self.zeile).upcast()
+    }
+}
+
+fn vorschaubild(pfad: &Path) -> Option<Vorschaubild> {
+    let pb = gtk4::gdk_pixbuf::Pixbuf::from_file_at_scale(pfad, KACHEL.0, KACHEL.1, true).ok()?;
+    Some(Vorschaubild {
+        breite: pb.width(),
+        hoehe: pb.height(),
+        zeile: usize::try_from(pb.rowstride()).ok()?,
+        alpha: pb.has_alpha(),
+        daten: pb.read_pixel_bytes(),
+    })
+}
+
 pub fn bildschirmhoehe() -> Option<i32> {
     let display = gdk::Display::default()?;
     let m = display
@@ -475,8 +642,14 @@ fn laden() -> (Hintergrund, String, Vec<String>) {
 
 /// Textur für die Einstellung: die Datei, sonst das eingebaute Bild. Der
 /// zweite Wert ist eine Fehlermeldung für ein unlesbares oder fehlendes Bild.
-fn textur_fuer(h: &Hintergrund) -> (Option<gdk::Texture>, Option<String>) {
-    match &h.datei {
+/// G2-AF: Ein eingebautes Bild erscheint in der Fassung für `format`.
+fn textur_fuer(h: &Hintergrund, format: Format) -> (Option<gdk::Texture>, Option<String>) {
+    let fassung = h
+        .datei
+        .as_deref()
+        .and_then(katalog::erkennen)
+        .and_then(|w| eingebaut_datei(w, format));
+    match fassung.as_ref().or(h.datei.as_ref()) {
         Some(pfad) => match gdk::Texture::from_filename(pfad) {
             Ok(t) => (Some(t), None),
             Err(err) => (
@@ -512,7 +685,10 @@ fn kurz(s: &str) -> String {
 
 impl Oberflaeche {
     fn bild_laden(&self) {
-        let (t, fehler) = textur_fuer(&self.zustand.borrow().aktuell);
+        let (t, fehler) = {
+            let z = self.zustand.borrow();
+            textur_fuer(&z.aktuell, z.vorschau_format)
+        };
         let mut z = self.zustand.borrow_mut();
         z.textur = t;
         z.bildfehler = fehler;
@@ -559,10 +735,27 @@ impl Oberflaeche {
             let a = &z.aktuell;
             self.typ_bild.set_active(a.typ == Typ::Bild);
             self.typ_farbe.set_active(a.typ == Typ::Farbe);
-            self.bild_name.set_text(&match &a.datei {
-                Some(p) => p.display().to_string(),
-                None => format!("Eingebautes Bild „Querencia Blau“ ({})", modell::EINGEBAUT),
-            });
+            self.bild_name
+                .set_text(&match (&a.datei, erkannt(a.datei.as_deref())) {
+                    (Some(p), Some(w)) => format!(
+                        "Eingebautes Bild „{}“ ({})",
+                        w.name(),
+                        p.file_name()
+                            .map(|n| n.to_string_lossy())
+                            .unwrap_or_default()
+                    ),
+                    (Some(p), None) => p.display().to_string(),
+                    (None, _) => {
+                        format!("Eingebautes Bild „Querencia Blau“ ({})", modell::EINGEBAUT)
+                    }
+                });
+            // G2-AF: Kachel der Einstellung markieren (fremdes Bild: keine)
+            match erkannt(a.datei.as_deref())
+                .and_then(|w| self.kacheln.iter().find(|(k, _)| *k == w))
+            {
+                Some((_, kind)) => self.galerie.select_child(kind),
+                None => self.galerie.unselect_all(),
+            }
             self.bild_hinweis
                 .set_text(z.bildfehler.as_deref().unwrap_or(""));
             if let Some(i) = Darstellung::ALLE.iter().position(|d| *d == a.darstellung) {

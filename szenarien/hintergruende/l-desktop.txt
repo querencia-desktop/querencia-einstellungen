@@ -1,0 +1,2 @@
+wait 4500
+shot 01-desktop.png

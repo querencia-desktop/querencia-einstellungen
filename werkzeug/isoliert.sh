@@ -36,6 +36,13 @@ cp -r "$P/werkzeug/profil-vorlage/." "$PROFIL/"
 # PT-1: Ohne Settings-Portal nimmt GTK seine eingebaute Schrift (kleiner als
 # live, verschiebt Layouts und Klickziele). Die Schrift der echten Sitzung
 # (nur gelesen) kommt deshalb ins Profil, außer es hat eine eigene.
+# G2-AG: QE_GTK_SCHRIFT="<Schrift Größe>" legt die Schrift fest (gleiche
+# Klickpunkte auch nach einer Änderung der Live-Schrift, z. B. 20.10. 01:02
+# Erscheinungsbild Variante A → DejaVu Sans 10).
+if [ -n "${QE_GTK_SCHRIFT:-}" ]; then
+    mkdir -p "$PROFIL/config/gtk-4.0"
+    printf '[Settings]\ngtk-font-name=%s\n' "$QE_GTK_SCHRIFT" > "$PROFIL/config/gtk-4.0/settings.ini"
+fi
 if [ ! -e "$PROFIL/config/gtk-4.0/settings.ini" ]; then
     SCHRIFT=$(gsettings get org.gnome.desktop.interface font-name 2>/dev/null | tr -d "'" || true)
     if [ -n "$SCHRIFT" ]; then
