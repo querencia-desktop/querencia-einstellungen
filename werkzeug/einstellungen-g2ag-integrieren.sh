@@ -1,16 +1,16 @@
 #!/bin/bash
-# Querencia Einstellungen 0.0.7 (G2-AG: Bereiche „Tastatur“, „Maus“,
+# Querencia Einstellungen 0.0.8 (G2-AG: Bereiche „Tastatur“, „Maus“,
 # „Fensterdesign“, „Arbeitsflächen“ schreiben die labwc-Konfiguration in die
 # Benutzerkopie ~/.config/querencia/labwc, QD-046 ②③⑤): Versionswechsel der
 # Live-Ablage. NUR NACH FREIGABE (Status-Session prüft und gibt frei).
 #
 #   bash einstellungen-g2ag-integrieren.sh pruefen      nur lesen
-#   bash einstellungen-g2ag-integrieren.sh aktivieren   aktueller Stand → 0.0.7
-#   bash einstellungen-g2ag-integrieren.sh zurueck      0.0.7 → Stand vor aktivieren
+#   bash einstellungen-g2ag-integrieren.sh aktivieren   aktueller Stand → 0.0.8
+#   bash einstellungen-g2ag-integrieren.sh zurueck      0.0.8 → Stand vor aktivieren
 #
 # Ausgang („alt“) ist der dann aktuelle Live-Stand: Link
 # ~/opt/querencia/bin/querencia-einstellungen → Ablage einer der Versionen in
-# PROG_ALT_LISTE (0.0.5 G2-Z; 0.0.6 G2-AA, falls vorher aktiviert), im
+# PROG_ALT_LISTE (0.0.7 G2-AF, live seit 20.10. 03:37; 0.0.6 G2-AA; 0.0.5 G2-Z), im
 # Menüeintrag Exec/TryExec auf dieselbe Ablage. aktivieren merkt sich diesen
 # Stand in $STATE/einstellungen-g2ag-vorher.txt; zurueck stellt genau ihn
 # wieder her. Dieses Skript verwaltet im Menüeintrag NUR Exec= und TryExec=;
@@ -34,7 +34,7 @@
 # Benutzerkopie (wirkt, sobald Teil A aktiv ist).
 #
 # Rückbau-Reihenfolge: zuerst dieses Skript `zurueck`, dann die Skripte der
-# vorigen Versionen (G2-AA, G2-Z, G2-X), ganz zuletzt G2-V.
+# vorigen Versionen (G2-AF, G2-AA, G2-Z, G2-X), ganz zuletzt G2-V.
 #
 # Aufbau wie einstellungen-g2z-integrieren.sh: Sperre (gemeinsam mit den
 # anderen einstellungen-*-integrieren.sh), Vorprüfung (jede Komponente „alt“
@@ -55,8 +55,8 @@ LINK=$OPT/bin/$PROG
 DESK=$APPS/$DESKNAME
 PROTO=$OPT/protokoll.txt
 
-# Zulässige Ausgangsstände (volle SHA256): 0.0.5 (G2-Z, live seit 19.10.)
-# und – nach G2-AA – 0.0.6; weitere nur nach Prüfung eintragen.
+# Zulässige Ausgangsstände (volle SHA256) stehen in alt-erlaubt.txt der
+# Vorlage (0.0.7 G2-AF, 0.0.6 G2-AA, 0.0.5 G2-Z); weitere nur nach Prüfung.
 PROG_ALT_LISTE=$(grep -v '^#' "$VORSCHLAG/alt-erlaubt.txt" 2>/dev/null | cut -d' ' -f1)
 PROG_NEU=$(grep " $PROG\$" "$VORSCHLAG/SHA256SUMS" 2>/dev/null | cut -d' ' -f1)
 NEU16=${PROG_NEU:0:16}
@@ -131,8 +131,8 @@ invarianten() {
     [ -d "$APPS" ] || die "kein Anwendungsordner: $APPS"
     [ "$(summe "$ABLAGE_ALT/$PROG")" = "$PROG_ALT" ] || die "Ablage des Ausgangsstands fehlt oder verändert (Rückfallziel): $ABLAGE_ALT"
     if [ -e "$ABLAGE_NEU" ] || [ -L "$ABLAGE_NEU" ]; then
-        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "0.0.7-Ablage ist kein Ordner: $ABLAGE_NEU"
-        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "0.0.7-Ablage verändert: $ABLAGE_NEU"
+        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "0.0.8-Ablage ist kein Ordner: $ABLAGE_NEU"
+        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "0.0.8-Ablage verändert: $ABLAGE_NEU"
     fi
 }
 
@@ -199,7 +199,7 @@ ablage_anlegen() {
         mkdir -- "$tmp" && cp -- "$VORSCHLAG/$PROG" "$tmp/$PROG" &&
             [ "$(summe "$tmp/$PROG")" = "$PROG_NEU" ] &&
             chmod 0555 "$tmp/$PROG" "$tmp" && mv -T -- "$tmp" "$ABLAGE_NEU" || { [ -e "$tmp" ] && chmod -R u+w -- "$tmp" && rm -rf -- "$tmp"; return 1; }
-        echo "Quelle: $VORSCHLAG/$PROG (Worktree ~/projects/querencia-einstellungen-wt-labwc, Zweig labwc-baustein, Tag einstellungen/0.0.7)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
+        echo "Quelle: $VORSCHLAG/$PROG (Worktree ~/projects/querencia-einstellungen-wt-labwc, Zweig labwc-baustein, Tag einstellungen/0.0.8)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
     fi
     [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] && [ -x "$ABLAGE_NEU/$PROG" ]
 }
@@ -269,12 +269,12 @@ pruefen() {
     invarianten
     case $(alle) in
     "alt alt") melde "Stand: alt – Querencia Einstellungen $ALT16 (Ausgangsstand)" ;;
-    "neu neu") melde "Stand: neu – Querencia Einstellungen 0.0.7 ($NEU16, Tastatur, Maus, Fensterdesign, Arbeitsflächen)" ;;
+    "neu neu") melde "Stand: neu – Querencia Einstellungen 0.0.8 ($NEU16, Tastatur, Maus, Fensterdesign, Arbeitsflächen)" ;;
     *) melde "Stand: gemischt ($(alle))" ;;
     esac
     melde "Programm-Link $LINK: $(zustand_p) → $(readlink "$LINK" 2>/dev/null || echo '-')"
     melde "Menüeintrag   $DESK: $(zustand_d) (verwaltet nur Exec/TryExec; $(grep -m1 '^Icon=' "$DESK" 2>/dev/null || echo 'Icon=-') und Comment= werden nie verändert)"
-    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.0.7  $ABLAGE_NEU: vorhanden"; else melde "Ablage 0.0.7  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
+    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.0.8  $ABLAGE_NEU: vorhanden"; else melde "Ablage 0.0.8  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
     melde "Ausgangsstand $ABLAGE_ALT: vorhanden (Rückfallziel)"
     local l=${XDG_CONFIG_HOME:-$HOME/.config}/querencia/labwc
     melde "labwc-Benutzerkopie $l: $([ -d "$l" ] && echo vorhanden || echo 'fehlt (Teil A legt sie bei der Anmeldung an)'); wird vom Skript nie angefasst"
@@ -304,8 +304,8 @@ aktivieren() {
     desktop-file-validate "$DESK" >/dev/null 2>&1 || zurueckrollen "Menüeintrag ungültig"
     trap - INT TERM HUP
     echo "$PROG_ALT $ABLAGE_ALT" >"$VORHER_DATEI"
-    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; 0.0.7 Tastatur, Maus, Fensterdesign, Arbeitsflächen über ~/.config/querencia/labwc; Menüeintrag $DESK nur Exec/TryExec; vorher $ALT16; G2-AG); Rückfall: bash $HIER/einstellungen-g2ag-integrieren.sh zurueck"
-    journal "aktiviert (Querencia Einstellungen 0.0.7 $NEU16, vorher $ALT16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2ag-integrieren.sh zurueck"
+    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; 0.0.8 Tastatur, Maus, Fensterdesign, Arbeitsflächen über ~/.config/querencia/labwc; Menüeintrag $DESK nur Exec/TryExec; vorher $ALT16; G2-AG); Rückfall: bash $HIER/einstellungen-g2ag-integrieren.sh zurueck"
+    journal "aktiviert (Querencia Einstellungen 0.0.8 $NEU16, vorher $ALT16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2ag-integrieren.sh zurueck"
     melde "aktiviert (geändert: ${GEAENDERT[*]:-nichts}). Gilt für jeden neuen Start; ein offenes Fenster läuft in der alten Version weiter."
 }
 

@@ -1,0 +1,22 @@
+# Querencia Desktop session environment, read by labwc before anything else
+# (labwc -C, see session/querencia-session). Values override the login
+# environment, e.g. XDG_SESSION_TYPE=tty from a console login.
+#
+# labwc also exports XDG_CURRENT_DESKTOP and XDG_SESSION_TYPE (with
+# WAYLAND_DISPLAY, DISPLAY and LABWC_PID) to the D-Bus and systemd
+# activation environment and clears them again on a normal exit. The other
+# values only reach labwc's own children: autostart, panel, launched apps.
+XDG_SESSION_TYPE=wayland
+XDG_CURRENT_DESKTOP=X-Querencia
+XDG_SESSION_DESKTOP=querencia
+LANG=en_US.UTF-8
+LANGUAGE=de
+
+# German keyboard layout
+XKB_DEFAULT_LAYOUT=de
+
+# Mauszeiger (QD-046 ④, 20.10.2026, Variante A wie Ubuntu 10.04): gilt für
+# labwc (Fensterrahmen, Arbeitsfläche) und die aus der Sitzung gestarteten
+# Programme; fehlt das Thema, nimmt labwc den Standardzeiger.
+XCURSOR_THEME=DMZ-White
+XCURSOR_SIZE=24

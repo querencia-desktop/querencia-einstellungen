@@ -11,7 +11,12 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 Z=szenarien/labwc
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2ag/release/querencia-einstellungen}
-export QE_DESKTOP=~/opt/querencia/desktop/2c78da3ad2b68a30/querencia-desktop QE_DESKTOP_SHA16=2c78da3ad2b68a30
+# Desktop: Standard QE-04a (live bis zur Neuanmeldung); G2-AD v2 mit
+# QE_DESKTOP=<pfad> QE_DESKTOP_SHA16=<sha16> (Läufe heißen dann *-<sha16>)
+export QE_DESKTOP=${QE_DESKTOP:-~/opt/querencia/desktop/f48795676f867b82/querencia-desktop}
+export QE_DESKTOP_SHA16=${QE_DESKTOP_SHA16:-f48795676f867b82}
+# feste Vorgabe (Kopie main bb90803), damit Vorgabenänderungen die Läufe nicht verschieben
+export QE_LABWC_VORGABE_QUELLE=${QE_LABWC_VORGABE_QUELLE:-$P/szenarien/labwc/vorgabe}
 # Schrift wie live seit 20.10. 01:02 (Erscheinungsbild Variante A), fest für gleiche Klickpunkte
 export QE_GTK_SCHRIFT=${QE_GTK_SCHRIFT:-DejaVu Sans 10}
 mkdir -p nachweis/g2ag
@@ -35,4 +40,4 @@ for a in 1920 1024; do
 done
 werkzeug/produktiv-stand.sh > nachweis/g2ag/produktiv-nachher.txt
 if diff nachweis/g2ag/produktiv-vorher.txt nachweis/g2ag/produktiv-nachher.txt; then echo "PRODUKTIV UNVERÄNDERT"; else echo "PRODUKTIV VERÄNDERT"; fi
-python3 werkzeug/auswerten-g2ag.py nachweis/g2ag/gui-g2ag.tsv; echo "auswertung exit=$?"
+python3 -I werkzeug/auswerten-g2ag.py "nachweis/g2ag/gui-g2ag-${QE_DESKTOP_SHA16:0:8}.tsv"; echo "auswertung exit=$?"
