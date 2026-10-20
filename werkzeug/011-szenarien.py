@@ -15,12 +15,23 @@ _spec.loader.exec_module(sz010)
 sz010.HIER = W.parent / "szenarien" / "011"
 Szenario, UEBERNEHMEN, STANDARD = sz010.Szenario, sz010.UEBERNEHMEN, sz010.STANDARD
 
-VERZ_PLUS, VERZ_MINUS = (1221, 542), (1196, 542)  # Tastatur: Verzögerung ± 10 ms
-RATE_PLUS = (1147, 578)  # Tastatur: Geschwindigkeit + 1
-BESCHLEUNIGUNG = (797, 515)  # Maus
-RADIUS_PLUS, RADIUS_MINUS = (1046, 498), (1021, 498)  # Fensterdesign: Eckenradius ± 1
-SCHATTEN = (797, 531)  # Fensterdesign
-EINBLENDEN = (797, 681)  # Arbeitsflächen: Namen kurz einblenden
+# Klickpunkte je Oberflächensprache (1920; Englisch: schmalere Seitenleiste,
+# einzeiliger Hinweis – gemessen an den a1-en-Bildern von 0.1.0)
+PUNKTE = {
+    "de": {
+        "verz_plus": (1221, 542), "verz_minus": (1196, 542), "rate_plus": (1147, 578),
+        "beschleunigung": (797, 515), "radius_plus": (1046, 498), "radius_minus": (1021, 498),
+        "schatten": (797, 531), "einblenden": (797, 681), "uebernehmen": UEBERNEHMEN,
+    },
+    "en": {
+        "verz_plus": (1126, 526), "verz_minus": (1101, 526),
+        "beschleunigung": (786, 499), "radius_plus": (1039, 482), "radius_minus": (1014, 482),
+        "einblenden": (786, 665), "uebernehmen": (1343, 825),
+    },
+}
+# Ohne Benutzerkopie ist der Hinweis oben eine Zeile länger (16 px), bis die
+# Seite nach ihrem ersten „Übernehmen“ neu lädt (dann wie mit Kopie).
+OHNE_DY = 16
 LABWC = '"$XDG_CONFIG_HOME/querencia/labwc"'
 
 
@@ -33,45 +44,56 @@ def festhalten(s, n):
     )
 
 
-def uebernehmen(s, n, bild):
+def uebernehmen(s, n, bild, punkt=UEBERNEHMEN):
     s.marke(f"uebernehmen {n}")
-    s.klick(*UEBERNEHMEN, 2000)
+    s.klick(*punkt, 2000)
     s.bild(bild)
     festhalten(s, n)
 
 
-def rueckstellung(breite):
+def rueckstellung(breite, sprache="de", ohne=False):
     """Werkstatt QREL-06 A17.6 in einem Programmlauf: Tastatur 600→610→600, Maus
     Beschleunigung aus/an, Fensterdesign Eckenradius 8→9→8, Arbeitsflächen
     Namen einblenden an/aus, jeweils mit „Übernehmen“."""
+    k = PUNKTE[sprache]
+    dy = OHNE_DY if ohne else 0
+
+    def p(name, erster):
+        x, y = k[name]
+        return x, y + (dy if erster else 0)
+
+    def ue(n, bild):
+        uebernehmen(s, n, bild, k["uebernehmen"])
+
     s = Szenario(breite)
     festhalten(s, 0)
     s.seite("tastatur")
     s.bild("01-tastatur.png")
-    s.klick(*VERZ_PLUS, 500)
+    s.klick(*p("verz_plus", True), 500)
     s.bild("02-verzoegerung-610.png")
-    uebernehmen(s, 1, "03-uebernommen.png")
-    s.klick(*VERZ_MINUS, 500)
-    uebernehmen(s, 2, "04-zurueck-600.png")
+    ue(1, "03-uebernommen.png")
+    s.klick(*p("verz_minus", False), 500)
+    ue(2, "04-zurueck-600.png")
     s.seite("maus")
-    s.klick(*BESCHLEUNIGUNG, 500)
+    s.klick(*p("beschleunigung", True), 500)
     s.bild("05-beschleunigung-aus.png")
-    uebernehmen(s, 3, "06-uebernommen.png")
-    s.klick(*BESCHLEUNIGUNG, 500)
-    uebernehmen(s, 4, "07-beschleunigung-an.png")
+    ue(3, "06-uebernommen.png")
+    s.klick(*p("beschleunigung", False), 500)
+    ue(4, "07-beschleunigung-an.png")
     s.seite("fensterdesign")
-    s.klick(*RADIUS_PLUS, 500)
+    s.klick(*p("radius_plus", True), 500)
     s.bild("08-radius-9.png")
-    uebernehmen(s, 5, "09-uebernommen.png")
-    s.klick(*RADIUS_MINUS, 500)
-    uebernehmen(s, 6, "10-radius-8.png")
+    ue(5, "09-uebernommen.png")
+    s.klick(*p("radius_minus", False), 500)
+    ue(6, "10-radius-8.png")
     s.seite("arbeitsflaechen")
-    s.klick(*EINBLENDEN, 500)
+    s.klick(*p("einblenden", True), 500)
     s.bild("11-einblenden-an.png")
-    uebernehmen(s, 7, "12-uebernommen.png")
-    s.klick(*EINBLENDEN, 500)
-    uebernehmen(s, 8, "13-einblenden-aus.png")
-    s.schreiben("r1-rueckstellung")
+    ue(7, "12-uebernommen.png")
+    s.klick(*p("einblenden", False), 500)
+    ue(8, "13-einblenden-aus.png")
+    name = "r1-rueckstellung" + ("-en" if sprache == "en" else "") + ("-ohne" if ohne else "")
+    s.schreiben(name)
 
 
 def standard(breite):
@@ -80,15 +102,16 @@ def standard(breite):
     s = Szenario(breite)
     festhalten(s, 0)
     s.seite("tastatur")
+    k = PUNKTE["de"]
     for _ in range(3):
-        s.klick(*VERZ_PLUS, 200)
-    s.klick(*RATE_PLUS, 200)
-    s.klick(*RATE_PLUS, 400)
+        s.klick(*k["verz_plus"], 200)
+    s.klick(*k["rate_plus"], 200)
+    s.klick(*k["rate_plus"], 400)
     s.bild("01-tastatur-eigen.png")
     uebernehmen(s, 1, "02-uebernommen.png")
     s.seite("fensterdesign")
-    s.klick(*RADIUS_MINUS, 200)
-    s.klick(*SCHATTEN, 400)
+    s.klick(*k["radius_minus"], 200)
+    s.klick(*k["schatten"], 400)
     s.bild("03-fensterdesign-eigen.png")
     uebernehmen(s, 2, "04-uebernommen.png")
     s.seite("tastatur")
@@ -115,6 +138,8 @@ def erscheinungsbild(breite):
 if __name__ == "__main__":
     for b in (1920, 1024):
         rueckstellung(b)
+        rueckstellung(b, "en")
+        rueckstellung(b, ohne=True)
         standard(b)
         erscheinungsbild(b)
         sz010.alle_seiten(b)

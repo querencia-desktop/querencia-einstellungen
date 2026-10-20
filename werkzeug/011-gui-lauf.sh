@@ -26,8 +26,8 @@ for a in 1920 1024; do
     s=$([ $a = 1920 ] && echo 1920x1080 || echo 1024x768)
     bash werkzeug/g2aj-lauf.sh "$V-r1-bb90803-$a" $s $Z/r1-rueckstellung-$a.txt
     QE_LABWC_VORGABE_QUELLE=$V548 bash werkzeug/g2aj-lauf.sh "$V-r1-548483c-$a" $s $Z/r1-rueckstellung-$a.txt
-    QE_LABWC_VORGABE_QUELLE=$V548 QE_LABWC_DATEIEN=$EN bash werkzeug/g2aj-lauf.sh "$V-r1-en-$a" $s $Z/r1-rueckstellung-$a.txt
-    QE_LABWC_VORGABE_QUELLE=$V548 QE_LABWC=ohne bash werkzeug/g2aj-lauf.sh "$V-r1-ohne-$a" $s $Z/r1-rueckstellung-$a.txt
+    QE_LABWC_VORGABE_QUELLE=$V548 QE_LABWC_DATEIEN=$EN bash werkzeug/g2aj-lauf.sh "$V-r1-en-$a" $s $Z/r1-rueckstellung-en-$a.txt
+    QE_LABWC_VORGABE_QUELLE=$V548 QE_LABWC=ohne bash werkzeug/g2aj-lauf.sh "$V-r1-ohne-$a" $s $Z/r1-rueckstellung-ohne-$a.txt
     QE_LABWC_VORGABE_QUELLE=$V548 bash werkzeug/g2aj-lauf.sh "$V-r2-$a" $s $Z/r2-standard-$a.txt
     bash werkzeug/g2aj-lauf.sh "$V-eb1-de-$a" $s $Z/eb1-erscheinungsbild-$a.txt
     QE_LABWC_DATEIEN=$EN bash werkzeug/g2aj-lauf.sh "$V-eb1-en-$a" $s $Z/eb1-erscheinungsbild-$a.txt
