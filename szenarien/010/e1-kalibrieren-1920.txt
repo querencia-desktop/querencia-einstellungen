@@ -1,0 +1,23 @@
+extent 1920 1080
+wait 3500
+move 600 484
+click
+wait 1200
+move 1100 560
+scroll 10
+wait 800
+shot k01-unten.png
+move 877 434
+click
+wait 1500
+shot k02-dialog.png
+type schweiz
+wait 1000
+shot k03-suche.png
+move 900 367
+click
+wait 400
+move 1152 798
+click
+wait 1200
+shot k04-hinzugefuegt.png

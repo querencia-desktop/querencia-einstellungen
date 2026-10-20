@@ -1,0 +1,18 @@
+extent 1024 768
+wait 3500
+move 152 328
+click
+wait 1200
+shot tastatur-oben.png
+move 652 404
+scroll 10
+wait 800
+shot tastatur-unten.png
+move 152 468
+click
+wait 1200
+shot sprache-oben.png
+move 652 404
+scroll 10
+wait 800
+shot sprache-unten.png

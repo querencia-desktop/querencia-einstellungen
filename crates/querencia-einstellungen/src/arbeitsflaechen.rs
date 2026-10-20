@@ -8,6 +8,7 @@ use std::rc::Rc;
 
 use gtk4::prelude::*;
 
+use crate::i18n::{gettext, gettext_noop};
 use crate::labwc_konfig::Stand;
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
@@ -66,8 +67,10 @@ pub struct Arbeitsflaechen {
 
 impl Bereich for Arbeitsflaechen {
     type Werte = Werte;
-    const NAME: &'static str = "Arbeitsflächen";
-    const QUELLE: &'static str = "~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); der Umschalter im Panel folgt ext-workspace.";
+    const NAME: &'static str = gettext_noop("Workspaces");
+    const QUELLE: &'static str = gettext_noop(
+        "~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); the switcher in the panel follows ext-workspace.",
+    );
 
     fn lesen(st: &Stand) -> Werte {
         let a = |k: &str| lx::wert(&st.rc, lx::ARBEITSFLAECHEN, k);
@@ -119,12 +122,12 @@ impl Bereich for Arbeitsflaechen {
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
         let anzahl = gtk4::SpinButton::with_range(1.0, HOECHSTENS as f64, 1.0);
-        inhalt.append(&ls::zeile("Anzahl der Arbeitsflächen:", &anzahl));
-        inhalt.append(&ls::grau(
-            "Fenster auf wegfallenden Arbeitsflächen kommen auf die erste.",
-        ));
+        inhalt.append(&ls::zeile(&gettext("Number of workspaces:"), &anzahl));
+        inhalt.append(&ls::grau(&gettext(
+            "Windows on removed workspaces move to the first one.",
+        )));
 
-        let (f, b) = ls::rahmen("Namen");
+        let (f, b) = ls::rahmen(&gettext("Names"));
         let mut namen = Vec::new();
         for i in 0..HOECHSTENS as usize {
             let e = gtk4::Entry::new();
@@ -133,17 +136,17 @@ impl Bereich for Arbeitsflaechen {
             b.append(&z);
             namen.push((z, e));
         }
-        b.append(&ls::grau("Leer lassen für den Standardnamen."));
+        b.append(&ls::grau(&gettext("Leave empty for the default name.")));
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Beim Wechsel");
-        let anzeige = gtk4::CheckButton::with_label("Namen der Arbeitsfläche kurz einblenden");
+        let (f, b) = ls::rahmen(&gettext("When Switching"));
+        let anzeige = gtk4::CheckButton::with_label(&gettext("Briefly show the workspace name"));
         b.append(&anzeige);
         let dauer = gtk4::SpinButton::with_range(100.0, 5000.0, 100.0);
-        b.append(&ls::zeile("Dauer (Millisekunden):", &dauer));
-        b.append(&ls::grau(
-            "Der Umschalter im Panel zeigt den Wechsel immer; die Einblendung kommt von labwc.",
-        ));
+        b.append(&ls::zeile(&gettext("Duration (milliseconds):"), &dauer));
+        b.append(&ls::grau(&gettext(
+            "The switcher in the panel always shows the switch; the overlay comes from labwc.",
+        )));
         inhalt.append(&f);
 
         let a = Arbeitsflaechen {

@@ -19,6 +19,7 @@
 //!
 //! Gelesen wird tolerant wie `[Background]`: Fehlendes und Ungültiges ergibt
 //! den Standard, `probleme` nennt es.
+use crate::i18n::gettext;
 use crate::ini;
 
 /// Symbolgröße in Pixeln (Nautilus-Stufen 66/100/150/200 %).
@@ -48,12 +49,12 @@ impl Symbolgroesse {
         Self::ALLE.into_iter().find(|g| g.pixel() == px)
     }
 
-    pub fn beschriftung(self) -> &'static str {
+    pub fn beschriftung(self) -> String {
         match self {
-            Self::Klein => "Klein (32 Pixel)",
-            Self::Normal => "Normal (48 Pixel)",
-            Self::Gross => "Groß (72 Pixel)",
-            Self::SehrGross => "Sehr groß (96 Pixel)",
+            Self::Klein => gettext("Small (32 pixels)"),
+            Self::Normal => gettext("Normal (48 pixels)"),
+            Self::Gross => gettext("Large (72 pixels)"),
+            Self::SehrGross => gettext("Very large (96 pixels)"),
         }
     }
 }

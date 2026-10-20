@@ -16,6 +16,7 @@ use crate::bereiche;
 use crate::faehigkeiten;
 use crate::hintergrund::{self as hg, GRUPPE};
 use crate::hintergrund_katalog::{Format, Wahl};
+use crate::i18n::{gettext, gettext_f};
 use crate::ini;
 use crate::modell::{self, Faehigkeiten, Hintergrund, Typ};
 use crate::vorschau::Vorschau;
@@ -43,17 +44,20 @@ struct Seite {
 /// Name der Einstellung für Menschen.
 fn beschreibung(h: &Hintergrund) -> String {
     if h.typ == Typ::Farbe {
-        return format!("Einfarbig {}", h.farbe.hex());
+        return gettext_f("Solid color {color}", &[("color", &h.farbe.hex())]);
     }
     match (&h.datei, hg::erkannt(h.datei.as_deref())) {
-        (_, Some(w)) => format!("Eingebautes Bild „{}“", w.name()),
+        (_, Some(w)) => gettext_f("Built-in image “{name}”", &[("name", &w.name())]),
         (Some(p), None) => p.display().to_string(),
-        (None, None) => format!("Eingebautes Bild „Querencia Blau“ ({})", modell::EINGEBAUT),
+        (None, None) => gettext_f(
+            "Built-in image “Querencia Blue” ({file})",
+            &[("file", modell::EINGEBAUT)],
+        ),
     }
 }
 
 pub fn seite(app: &gtk4::Application) -> gtk4::Widget {
-    let aussen = bereiche::seite("Hintergrundbild");
+    let aussen = bereiche::seite(&gettext("Background Image"));
 
     let kopf = gtk4::Box::new(gtk4::Orientation::Horizontal, 14);
     let vorschau = Vorschau::default();
@@ -67,7 +71,7 @@ pub fn seite(app: &gtk4::Application) -> gtk4::Widget {
     }
     kopf.append(&vorschau);
     let rechts = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
-    let titel = gtk4::Label::new(Some("Aktueller Hintergrund:"));
+    let titel = gtk4::Label::new(Some(&gettext("Current background:")));
     titel.set_xalign(0.0);
     titel.add_css_class("dim-label");
     rechts.append(&titel);
@@ -80,25 +84,25 @@ pub fn seite(app: &gtk4::Application) -> gtk4::Widget {
     darstellung.set_xalign(0.0);
     darstellung.add_css_class("dim-label");
     rechts.append(&darstellung);
-    let knopf = gtk4::Button::with_label("Hintergrund …");
+    let knopf = gtk4::Button::with_label(&gettext("Background …"));
     knopf.set_halign(gtk4::Align::Start);
     knopf.set_margin_top(6);
-    knopf.set_tooltip_text(Some(
-        "Eigenes Bild, einfarbiger Hintergrund und Darstellung",
-    ));
+    knopf.set_tooltip_text(Some(&gettext(
+        "Own image, solid-color background and style",
+    )));
     {
         let app = app.clone();
         knopf.connect_clicked(move |_| hg::oeffnen(&app).present());
     }
     rechts.append(&knopf);
-    let knopf_hinweis = gtk4::Label::new(Some("Eigenes Bild, Farbe und Darstellung"));
+    let knopf_hinweis = gtk4::Label::new(Some(&gettext("Own image, color and style")));
     knopf_hinweis.set_xalign(0.0);
     knopf_hinweis.add_css_class("dim-label");
     rechts.append(&knopf_hinweis);
     kopf.append(&rechts);
     aussen.append(&kopf);
 
-    let rahmen = gtk4::Frame::new(Some("Eingebaute Bilder"));
+    let rahmen = gtk4::Frame::new(Some(&gettext("Built-in Images")));
     let innen = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
     innen.set_margin_top(6);
     innen.set_margin_bottom(6);
@@ -107,9 +111,9 @@ pub fn seite(app: &gtk4::Application) -> gtk4::Widget {
     let bildschirm = hg::bildschirm_format();
     let (galerie, kacheln) = hg::galerie_bauen(bildschirm);
     innen.append(&galerie);
-    let hinweis = gtk4::Label::new(Some(&format!(
-        "Ein Klick wählt das Bild für die Vorschau, „Übernehmen“ setzt es als Hintergrund. Für diesen Bildschirm wird die {}-Fassung verwendet.",
-        bildschirm.beschriftung()
+    let hinweis = gtk4::Label::new(Some(&gettext_f(
+        "A click selects the image for the preview, “Apply” sets it as the background. The {format} version is used for this screen.",
+        &[("format", bildschirm.beschriftung())],
     )));
     hinweis.set_xalign(0.0);
     hinweis.set_wrap(true);
@@ -118,17 +122,17 @@ pub fn seite(app: &gtk4::Application) -> gtk4::Widget {
     innen.append(&hinweis);
     rahmen.set_child(Some(&innen));
     aussen.append(&rahmen);
-    aussen.append(&bereiche::quelle(
-        "~/.config/querencia/desktop.ini [Background]; Querencia Desktop zeichnet den Hintergrund und lädt die Datei bei Änderung sofort neu.",
-    ));
+    aussen.append(&bereiche::quelle(&gettext(
+        "~/.config/querencia/desktop.ini [Background]; Querencia Desktop draws the background and reloads the file immediately when it changes.",
+    )));
 
     let status = gtk4::Label::new(None);
     status.set_xalign(0.0);
     status.set_wrap(true);
     status.set_hexpand(true);
     status.set_max_width_chars(60);
-    let verwerfen = gtk4::Button::with_label("Auswahl verwerfen");
-    let uebernehmen = gtk4::Button::with_label("Übernehmen");
+    let verwerfen = gtk4::Button::with_label(&gettext("Discard Selection"));
+    let uebernehmen = gtk4::Button::with_label(&gettext("Apply"));
     uebernehmen.add_css_class("suggested-action");
     let fuss = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
     fuss.set_margin_start(14);
@@ -238,9 +242,9 @@ impl Seite {
         let (textur, fehler) = hg::textur_fuer(&h, self.bildschirm);
         self.vorschau.zeigen(&h, textur.as_ref());
         self.name.set_text(&beschreibung(&self.geladen.borrow()));
-        self.darstellung.set_text(&format!(
-            "Darstellung: {}",
-            self.geladen.borrow().darstellung.beschriftung()
+        self.darstellung.set_text(&gettext_f(
+            "Style: {style}",
+            &[("style", &self.geladen.borrow().darstellung.beschriftung())],
         ));
         self.stumm.set(true);
         match (h.typ == Typ::Bild)
@@ -273,7 +277,7 @@ impl Seite {
         let Some(neu) = self.gewaehlt.borrow().clone() else {
             self.uebernehmen.set_sensitive(false);
             self.status
-                .set_text("Ein Bild aus der Galerie wählen und „Übernehmen“.");
+                .set_text(&gettext("Choose an image from the gallery and “Apply”."));
             return;
         };
         let name = beschreibung(&neu);
@@ -283,18 +287,22 @@ impl Seite {
         ) {
             (_, Ok(())) => {
                 self.uebernehmen.set_sensitive(true);
-                self.status
-                    .set_text(&format!("Gewählt: {name} – noch nicht übernommen."));
+                self.status.set_text(&gettext_f(
+                    "Selected: {name} – not applied yet.",
+                    &[("name", &name)],
+                ));
             }
             (None, Err(_)) => {
                 self.uebernehmen.set_sensitive(false);
-                self.status
-                    .set_text("Fähigkeiten des laufenden Desktops werden ermittelt …");
+                self.status.set_text(&gettext(
+                    "Determining the capabilities of the running desktop …",
+                ));
             }
             (Some(_), Err(grund)) => {
                 self.uebernehmen.set_sensitive(false);
-                self.status.set_text(&format!(
-                    "Kann der laufende Desktop nicht darstellen: {grund}"
+                self.status.set_text(&gettext_f(
+                    "The running desktop cannot display this: {reason}",
+                    &[("reason", &grund)],
                 ));
             }
         }
@@ -313,7 +321,7 @@ impl Seite {
         let pfad = hg::konfig_pfad();
         let jetzt = std::fs::read_to_string(&pfad).unwrap_or_default();
         if ini::gruppe(&jetzt, GRUPPE) != ini::gruppe(&self.geladener_text.borrow(), GRUPPE) {
-            self.status.set_text("desktop.ini wurde inzwischen von anderer Stelle geändert – nicht überschrieben. „Auswahl verwerfen“ zeigt den aktuellen Stand.");
+            self.status.set_text(&gettext("desktop.ini has been changed elsewhere in the meantime – not overwritten. “Discard Selection” shows the current state."));
             return;
         }
         match hg::schreiben(&pfad, &neu, &jetzt) {
@@ -329,16 +337,28 @@ impl Seite {
                 );
                 self.laden();
                 self.status.set_text(&match sicherung {
-                    Some(s) => format!(
-                        "Übernommen um {zeit}; der Desktop zeigt das Bild sofort. Vorherige Einstellung gesichert als {}.",
-                        s.file_name()
-                            .map(|n| n.to_string_lossy().into_owned())
-                            .unwrap_or_default()
+                    Some(s) => gettext_f(
+                        "Applied at {time}; the desktop shows the image immediately. Previous setting saved as {name}.",
+                        &[
+                            ("time", &zeit),
+                            (
+                                "name",
+                                &s.file_name()
+                                    .map(|n| n.to_string_lossy().into_owned())
+                                    .unwrap_or_default(),
+                            ),
+                        ],
                     ),
-                    None => format!("Übernommen um {zeit}; der Desktop zeigt das Bild sofort."),
+                    None => gettext_f(
+                        "Applied at {time}; the desktop shows the image immediately.",
+                        &[("time", &zeit)],
+                    ),
                 });
             }
-            Err(e) => self.status.set_text(&format!("Nicht gespeichert: {e}")),
+            Err(e) => self.status.set_text(&gettext_f(
+                "Not saved: {error}",
+                &[("error", &e.to_string())],
+            )),
         }
     }
 }
@@ -350,8 +370,8 @@ mod tests {
     #[test]
     fn beschreibung_farbe_und_standard() {
         let mut h = Hintergrund::default();
-        assert!(beschreibung(&h).contains("Querencia Blau"));
+        assert!(beschreibung(&h).contains("Querencia Blue"));
         h.typ = Typ::Farbe;
-        assert_eq!(beschreibung(&h), format!("Einfarbig {}", h.farbe.hex()));
+        assert_eq!(beschreibung(&h), format!("Solid color {}", h.farbe.hex()));
     }
 }

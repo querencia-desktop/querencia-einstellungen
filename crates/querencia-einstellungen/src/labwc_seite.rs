@@ -16,14 +16,20 @@ use gtk4::glib;
 use gtk4::prelude::*;
 
 use crate::gsettings;
+use crate::i18n::{gettext, gettext_f};
 use crate::labwc_konfig::{self as lk, Orte, Stand, Wirkung};
 use crate::labwc_xml::Fehler;
 
 /// Ein Bereich: Werte lesen und schreiben, Oberfläche zeigen.
 pub trait Bereich: Sized + 'static {
     type Werte: Clone + PartialEq + Debug;
+    /// Name (msgid, mit `gettext_noop` markiert; angezeigt über `gettext`).
     const NAME: &'static str;
+    /// Quelle der Werte (msgid wie `NAME`).
     const QUELLE: &'static str;
+    /// `labwc --reconfigure` nach dem Schreiben, wenn labwc die Benutzerkopie
+    /// liest. „Sprache und Region“ wirkt erst ab der Anmeldung und lässt es.
+    const NEU_LADEN: bool = true;
     /// Die wirksamen Werte aus rc.xml und Umgebung.
     fn lesen(st: &Stand) -> Self::Werte;
     /// rc.xml mit den geänderten Werten (nur, was sich gegenüber `alt` unterscheidet).
@@ -208,7 +214,7 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     let ueberschrift = gtk4::Label::new(None);
     ueberschrift.set_markup(&format!(
         "<b><big>{}</big></b>",
-        glib::markup_escape_text(B::NAME)
+        glib::markup_escape_text(&gettext(B::NAME))
     ));
     ueberschrift.set_xalign(0.0);
     aussen.append(&ueberschrift);
@@ -219,11 +225,11 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     hinweis.set_max_width_chars(70);
     aussen.append(&hinweis);
 
-    let (vorgabe_kasten, vb) = rahmen("Neue Vorgabe verfügbar");
-    vb.append(&grau(
-        "Querencia hat eine neuere Vorgabe für rc.xml (z. B. neue Tastenkürzel). Ihre Datei wurde bei der Anmeldung nicht ersetzt, weil sie eigene Einstellungen enthält. „Neue Vorgabe übernehmen“ überträgt Ihre Einstellungen auf die neue Vorgabe; die bisherige Datei wird gesichert.",
-    ));
-    let vorgabe_knopf = gtk4::Button::with_label("Neue Vorgabe übernehmen");
+    let (vorgabe_kasten, vb) = rahmen(&gettext("New Default Available"));
+    vb.append(&grau(&gettext(
+        "Querencia has a newer default for rc.xml (e.g. new keyboard shortcuts). Your file was not replaced at login because it contains your own settings. “Adopt New Default” transfers your settings to the new default; the previous file is backed up.",
+    )));
+    let vorgabe_knopf = gtk4::Button::with_label(&gettext("Adopt New Default"));
     vorgabe_knopf.set_halign(gtk4::Align::Start);
     vb.append(&vorgabe_knopf);
     vorgabe_kasten.set_visible(false);
@@ -233,9 +239,9 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     status.set_xalign(0.0);
     status.set_wrap(true);
     status.set_max_width_chars(70);
-    let standard_knopf = gtk4::Button::with_label("Standard wiederherstellen");
-    let neu_laden = gtk4::Button::with_label("Neu laden");
-    let uebernehmen = gtk4::Button::with_label("Übernehmen");
+    let standard_knopf = gtk4::Button::with_label(&gettext("Restore Defaults"));
+    let neu_laden = gtk4::Button::with_label(&gettext("Reload"));
+    let uebernehmen = gtk4::Button::with_label(&gettext("Apply"));
     uebernehmen.add_css_class("suggested-action");
 
     let seite_cell: Rc<RefCell<Option<Rc<Seite<B>>>>> = Rc::new(RefCell::new(None));
@@ -247,7 +253,10 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     });
     let (bereich, inhalt) = B::bauen(geaendert);
     aussen.append(&inhalt);
-    aussen.append(&grau(&format!("Quelle: {}", B::QUELLE)));
+    aussen.append(&grau(&gettext_f(
+        "Source: {source}",
+        &[("source", &gettext(B::QUELLE))],
+    )));
 
     let fuss = gtk4::Box::new(gtk4::Orientation::Vertical, 8);
     fuss.set_margin_start(14);
@@ -281,7 +290,7 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     let s2 = s.clone();
     neu_laden.connect_clicked(move |_| {
         s2.laden();
-        s2.status.set_text("Neu geladen.");
+        s2.status.set_text(&gettext("Reloaded."));
     });
     let s2 = s.clone();
     s.uebernehmen.connect_clicked(move |_| s2.uebernehmen());
@@ -321,11 +330,19 @@ impl<B: Bereich> Seite<B> {
             B::hinweis(&wirkung, &st).unwrap_or_else(|| lk::wirkung_text(&wirkung, &st));
         if let Some(f) = &st.fehler {
             hinweis = format!(
-                "{hinweis}\nAchtung: {f}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei lesbar ist."
+                "{hinweis}\n{}",
+                gettext_f(
+                    "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable.",
+                    &[("error", f)],
+                )
             );
         } else if let Err(e) = crate::labwc_xml::gueltig(&st.rc) {
             hinweis = format!(
-                "{hinweis}\nAchtung: {e}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt rc.xml nicht, bis die Datei repariert ist (Belegung und Zeiger werden trotzdem gespeichert)."
+                "{hinweis}\n{}",
+                gettext_f(
+                    "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway).",
+                    &[("error", &e.to_string())],
+                )
             );
         }
         // erster Satz fett: wann es wirkt
@@ -351,7 +368,7 @@ impl<B: Bereich> Seite<B> {
         *self.stand.borrow_mut() = Some(st);
         self.uebernehmen.set_sensitive(false);
         self.status
-            .set_text("Änderungen gelten erst nach „Übernehmen“.");
+            .set_text(&gettext("Changes take effect only after “Apply”."));
     }
 
     fn geaendert(&self) {
@@ -360,10 +377,10 @@ impl<B: Bereich> Seite<B> {
         }
         let anders = self.geladen.borrow().as_ref() != Some(&self.bereich.aktuell());
         self.uebernehmen.set_sensitive(anders);
-        self.status.set_text(if anders {
-            "Geändert – „Übernehmen“ speichert."
+        self.status.set_text(&if anders {
+            gettext("Changed – “Apply” saves.")
         } else {
-            "Keine Änderung."
+            gettext("No change.")
         });
     }
 
@@ -389,7 +406,7 @@ impl<B: Bereich> Seite<B> {
         }
         // nicht unbemerkt überschreiben: nur die eigenen Werte zählen
         if B::lesen(&st) != alt {
-            self.status.set_text("Die Einstellungen wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.");
+            self.status.set_text(&gettext("The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."));
             eprintln!(
                 "querencia-einstellungen: {}: Konflikt, nicht geschrieben",
                 B::NAME
@@ -421,28 +438,35 @@ impl<B: Bereich> Seite<B> {
         let gs = B::gs_aenderungen(&neu, &alt);
         if let Err(e) = gsettings::schreiben(&gs) {
             return self.fehler(&if geschrieben {
-                format!("{e} (labwc-Konfiguration ist schon gespeichert)")
+                gettext_f(
+                    "{error} (labwc configuration is already saved)",
+                    &[("error", &e)],
+                )
             } else {
                 e
             });
         }
         let uhr = jetzt_text("%H:%M:%S");
-        let mut text = format!("Übernommen um {uhr}.");
+        let mut text = gettext_f("Applied at {time}.", &[("time", &uhr)]);
         if !gs.is_empty() {
-            text.push_str(" GTK-Programme, Panel und Desktop übernehmen es sofort.");
+            text.push(' ');
+            text.push_str(&gettext(
+                "GTK programs, panel and desktop pick it up immediately.",
+            ));
         }
         if geschrieben {
             let w = lk::wirkung(&self.orte);
-            match (&w, lk::neu_laden(&w)) {
-                (Wirkung::Sofort { .. }, Ok(())) => {
-                    text.push_str(" labwc hat die Konfiguration neu geladen.")
+            text.push(' ');
+            match (&w, B::NEU_LADEN.then(|| lk::neu_laden(&w))) {
+                (Wirkung::Sofort { .. }, Some(Ok(()))) => {
+                    text.push_str(&gettext("labwc has reloaded its configuration."))
                 }
-                (Wirkung::Sofort { .. }, Err(e)) => {
-                    text.push_str(&format!(" Neu laden fehlgeschlagen: {e}."))
+                (Wirkung::Sofort { .. }, Some(Err(e))) => {
+                    text.push_str(&gettext_f("Reloading failed: {error}.", &[("error", &e)]))
                 }
-                _ => text.push_str(
-                    " Gespeichert in ~/.config/querencia/labwc; wirksam ab der nächsten Anmeldung.",
-                ),
+                _ => text.push_str(&gettext(
+                    "Saved in ~/.config/querencia/labwc; effective from the next login.",
+                )),
             }
         }
         if !gesichert.is_empty() {
@@ -450,7 +474,11 @@ impl<B: Bereich> Seite<B> {
                 .iter()
                 .filter_map(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
                 .collect();
-            text.push_str(&format!(" Vorher gesichert als {}.", namen.join(", ")));
+            text.push(' ');
+            text.push_str(&gettext_f(
+                "Previously saved as {names}.",
+                &[("names", &namen.join(", "))],
+            ));
         }
         eprintln!(
             "querencia-einstellungen: {} übernommen: {neu:?} (gsettings {gs:?}) – {text}",
@@ -467,29 +495,34 @@ impl<B: Bereich> Seite<B> {
                 let w = lk::wirkung(&self.orte);
                 let geladen = matches!(w, Wirkung::Sofort { .. }) && lk::neu_laden(&w).is_ok();
                 self.laden();
-                self.status.set_text(&format!(
-                    "Neue Vorgabe übernommen, Ihre Einstellungen bleiben.{}{}",
-                    if geladen {
-                        " labwc hat neu geladen."
-                    } else {
-                        ""
-                    },
-                    s.and_then(|p| p
-                        .file_name()
-                        .map(|n| format!(" Vorher gesichert als {}.", n.to_string_lossy())))
-                        .unwrap_or_default()
-                ));
+                let mut text = gettext("New default adopted, your settings remain.");
+                if geladen {
+                    text.push(' ');
+                    text.push_str(&gettext("labwc has reloaded."));
+                }
+                if let Some(n) = s.as_ref().and_then(|p| p.file_name()) {
+                    text.push(' ');
+                    text.push_str(&gettext_f(
+                        "Previously saved as {names}.",
+                        &[("names", &n.to_string_lossy())],
+                    ));
+                }
+                self.status.set_text(&text);
                 eprintln!(
                     "querencia-einstellungen: {}: neue Vorgabe übernommen",
                     B::NAME
                 );
             }
-            Err(e) => self.fehler(&format!("Neue Vorgabe nicht übernommen: {e}")),
+            Err(e) => self.fehler(&gettext_f(
+                "New default not adopted: {error}",
+                &[("error", &e)],
+            )),
         }
     }
 
     fn fehler(&self, text: &str) {
-        self.status.set_text(&format!("Nicht gespeichert: {text}"));
+        self.status
+            .set_text(&gettext_f("Not saved: {error}", &[("error", text)]));
         eprintln!(
             "querencia-einstellungen: {}: nicht gespeichert: {text}",
             B::NAME

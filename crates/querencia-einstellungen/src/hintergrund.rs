@@ -16,11 +16,15 @@ use gtk4::{gdk, gio, glib};
 
 use crate::faehigkeiten;
 use crate::hintergrund_katalog::{self as katalog, Format, Wahl};
+use crate::i18n::{gettext, gettext_f, ngettext_f};
 use crate::ini;
 use crate::modell::{self, Darstellung, Faehigkeiten, Farbe, Hintergrund, Typ};
 use crate::vorschau::Vorschau;
 
-pub const TITEL: &str = "Querencia – Hintergrund";
+/// Fenstertitel des Dialogs (`--hintergrund`).
+pub fn titel() -> String {
+    gettext("Querencia – Background")
+}
 
 /// `~/.config/querencia/desktop.ini` – derselbe Pfad wie im Desktop
 /// (`glib::user_config_dir()`, also `XDG_CONFIG_HOME`).
@@ -125,7 +129,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     let hoehe = bildschirmhoehe().map_or(760, |h| (h - 130).clamp(480, 760));
     let fenster = gtk4::Window::builder()
         .application(app)
-        .title(TITEL)
+        .title(titel())
         .default_width(720)
         .default_height(hoehe)
         .build();
@@ -136,7 +140,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     vorschau.set_vexpand(true);
 
     // --- Vorschau
-    let vorschau_rahmen = gtk4::Frame::new(Some("Vorschau"));
+    let vorschau_rahmen = gtk4::Frame::new(Some(&gettext("Preview")));
     let vorschau_box = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
     vorschau_box.set_margin_top(6);
     vorschau_box.set_margin_bottom(6);
@@ -144,7 +148,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     vorschau_box.set_margin_end(6);
     vorschau_box.append(&vorschau);
     let aufloesung_zeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
-    aufloesung_zeile.append(&gtk4::Label::new(Some("Vorschau für:")));
+    aufloesung_zeile.append(&gtk4::Label::new(Some(&gettext("Preview for:"))));
     let aufloesungen = aufloesungen();
     let namen: Vec<String> = aufloesungen.iter().map(|(n, _, _)| n.clone()).collect();
     let namen_ref: Vec<&str> = namen.iter().map(String::as_str).collect();
@@ -157,29 +161,29 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     }
 
     // --- Hintergrundtyp
-    let typ_rahmen = gtk4::Frame::new(Some("Hintergrundtyp"));
+    let typ_rahmen = gtk4::Frame::new(Some(&gettext("Background Type")));
     let typ_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 18);
     rand(&typ_box);
-    let typ_bild = gtk4::CheckButton::with_label("Hintergrundbild");
-    let typ_farbe = gtk4::CheckButton::with_label("Einfarbige Hintergrundfarbe");
+    let typ_bild = gtk4::CheckButton::with_label(&gettext("Background image"));
+    let typ_farbe = gtk4::CheckButton::with_label(&gettext("Solid background color"));
     typ_farbe.set_group(Some(&typ_bild));
     typ_box.append(&typ_bild);
     typ_box.append(&typ_farbe);
     typ_rahmen.set_child(Some(&typ_box));
 
     // --- Hintergrundbild
-    let bild_rahmen = gtk4::Frame::new(Some("Hintergrundbild"));
+    let bild_rahmen = gtk4::Frame::new(Some(&gettext("Background image")));
     let bild_box = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
     rand(&bild_box);
     let bildschirm = bildschirm_format();
     let (galerie, kacheln) = galerie_bauen(bildschirm);
-    let galerie_titel = gtk4::Label::new(Some("Eingebaute Bilder:"));
+    let galerie_titel = gtk4::Label::new(Some(&gettext("Built-in images:")));
     galerie_titel.set_xalign(0.0);
     bild_box.append(&galerie_titel);
     bild_box.append(&galerie);
-    let galerie_hinweis = gtk4::Label::new(Some(&format!(
-        "Für diesen Bildschirm wird die {}-Fassung verwendet.",
-        bildschirm.beschriftung()
+    let galerie_hinweis = gtk4::Label::new(Some(&gettext_f(
+        "The {format} version is used for this screen.",
+        &[("format", bildschirm.beschriftung())],
     )));
     galerie_hinweis.set_xalign(0.0);
     galerie_hinweis.add_css_class("dim-label");
@@ -189,16 +193,21 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     bild_name.set_hexpand(true);
     bild_name.set_xalign(0.0);
     bild_name.set_ellipsize(gtk4::pango::EllipsizeMode::Middle);
-    let bild_waehlen = gtk4::Button::with_label("Bild auswählen …");
-    let bild_standard = gtk4::Button::with_label("Eingebautes Bild");
+    let bild_waehlen = gtk4::Button::with_label(&gettext("Choose Image …"));
+    let bild_standard = gtk4::Button::with_label(&gettext("Built-in Image"));
     bildzeile.append(&bild_name);
     bildzeile.append(&bild_waehlen);
     bildzeile.append(&bild_standard);
     bild_box.append(&bildzeile);
     let darstellungszeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
-    darstellungszeile.append(&gtk4::Label::new(Some("Darstellung:")));
-    let beschriftungen: Vec<&str> = Darstellung::ALLE.iter().map(|d| d.beschriftung()).collect();
-    let darstellung = gtk4::DropDown::from_strings(&beschriftungen);
+    darstellungszeile.append(&gtk4::Label::new(Some(&gettext("Style:"))));
+    let beschriftungen: Vec<String> = Darstellung::ALLE.iter().map(|d| d.beschriftung()).collect();
+    let darstellung = gtk4::DropDown::from_strings(
+        &beschriftungen
+            .iter()
+            .map(String::as_str)
+            .collect::<Vec<_>>(),
+    );
     darstellungszeile.append(&darstellung);
     bild_box.append(&darstellungszeile);
     let bild_hinweis = gtk4::Label::new(None);
@@ -209,7 +218,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     bild_rahmen.set_child(Some(&bild_box));
 
     // --- Hintergrundfarbe
-    let farb_rahmen = gtk4::Frame::new(Some("Hintergrundfarbe"));
+    let farb_rahmen = gtk4::Frame::new(Some(&gettext("Background Color")));
     let farb_box = gtk4::Box::new(gtk4::Orientation::Vertical, 6);
     rand(&farb_box);
     let palette = gtk4::Box::new(gtk4::Orientation::Horizontal, 4);
@@ -225,15 +234,15 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     hex_hinweis.add_css_class("dim-label");
     let farbknopf = gtk4::ColorDialogButton::new(Some(gtk4::ColorDialog::new()));
     let farbzeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
-    farbzeile.append(&gtk4::Label::new(Some("Palette:")));
+    farbzeile.append(&gtk4::Label::new(Some(&gettext("Palette:"))));
     farbzeile.append(&palette);
     farb_box.append(&farbzeile);
     let eigene = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
-    eigene.append(&gtk4::Label::new(Some("Farbwert:")));
+    eigene.append(&gtk4::Label::new(Some(&gettext("Color value:"))));
     eigene.append(&hex);
-    eigene.append(&gtk4::Label::new(Some("Benutzerdefiniert:")));
+    eigene.append(&gtk4::Label::new(Some(&gettext("Custom:"))));
     eigene.append(&farbknopf);
-    eigene.append(&gtk4::Label::new(Some("Vorschau:")));
+    eigene.append(&gtk4::Label::new(Some(&gettext("Preview:"))));
     eigene.append(&farbfeld);
     farb_box.append(&eigene);
     farb_box.append(&hex_hinweis);
@@ -245,9 +254,9 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     status.set_hexpand(true);
     status.set_wrap(true);
     let knopfzeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
-    let abbrechen = gtk4::Button::with_label("Abbrechen");
-    let standard = gtk4::Button::with_label("Standard wiederherstellen");
-    let uebernehmen = gtk4::Button::with_label("Übernehmen");
+    let abbrechen = gtk4::Button::with_label(&gettext("Cancel"));
+    let standard = gtk4::Button::with_label(&gettext("Restore Defaults"));
+    let uebernehmen = gtk4::Button::with_label(&gettext("Apply"));
     uebernehmen.add_css_class("suggested-action");
     let luecke = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
     luecke.set_hexpand(true);
@@ -331,7 +340,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     // Palette
     for (name, farbe) in modell::PALETTE {
         let knopf = gtk4::Button::new();
-        knopf.set_tooltip_text(Some(&format!("{name} ({})", farbe.hex())));
+        knopf.set_tooltip_text(Some(&format!("{} ({})", gettext(*name), farbe.hex())));
         let feld = gtk4::DrawingArea::new();
         feld.set_content_width(26);
         feld.set_content_height(18);
@@ -458,9 +467,9 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
                 }
                 None => {
                     e.add_css_class("error");
-                    ui2.hex_hinweis.set_text(
-                        "Ungültiger Farbwert – erwartet wird #rrggbb, zum Beispiel #204a87.",
-                    );
+                    ui2.hex_hinweis.set_text(&gettext(
+                        "Invalid color value – expected #rrggbb, for example #204a87.",
+                    ));
                 }
             }
         });
@@ -498,9 +507,9 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
             ui2.zustand.borrow_mut().aktuell = Hintergrund::default();
             ui2.bild_laden();
             ui2.aktualisieren();
-            ui2.status.set_text(
-                "Standard in der Vorschau wiederhergestellt – gilt erst nach „Übernehmen“.",
-            );
+            ui2.status.set_text(&gettext(
+                "Default restored in the preview – takes effect only after “Apply”.",
+            ));
         });
         let ui2 = ui.clone();
         ui.uebernehmen.connect_clicked(move |_| ui2.uebernehmen());
@@ -508,9 +517,11 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
 
     ui.aktualisieren();
     if !probleme.is_empty() {
-        ui.status.set_text(&format!(
-            "Hinweis: {} Eintrag/Einträge in desktop.ini wurden ignoriert (siehe Protokoll).",
-            probleme.len()
+        ui.status.set_text(&ngettext_f(
+            "Note: {n} entry in desktop.ini was ignored (see the log).",
+            "Note: {n} entries in desktop.ini were ignored (see the log).",
+            probleme.len() as u32,
+            &[],
         ));
     }
     fenster
@@ -626,7 +637,14 @@ fn aufloesungen() -> Vec<(String, f64, f64)> {
     {
         let g = m.geometry();
         let (b, h) = (f64::from(g.width()), f64::from(g.height()));
-        liste.push((format!("Aktueller Bildschirm ({b}×{h})"), b, h));
+        liste.push((
+            gettext_f(
+                "Current screen ({width}×{height})",
+                &[("width", &b.to_string()), ("height", &h.to_string())],
+            ),
+            b,
+            h,
+        ));
     }
     for (b, h) in [(1920.0, 1080.0), (1024.0, 768.0)] {
         if !liste.iter().any(|(_, x, y)| *x == b && *y == h) {
@@ -659,10 +677,12 @@ pub(crate) fn textur_fuer(
             Ok(t) => (Some(t), None),
             Err(err) => (
                 eingebautes_bild().and_then(|p| gdk::Texture::from_filename(p).ok()),
-                Some(format!(
-                    "Bild „{}“ nicht lesbar ({}). Der Desktop zeigt dann das eingebaute Bild.",
-                    pfad.display(),
-                    kurz(&err.to_string())
+                Some(gettext_f(
+                    "Image “{file}” not readable ({error}). The desktop then shows the built-in image.",
+                    &[
+                        ("file", &pfad.display().to_string()),
+                        ("error", &kurz(&err.to_string())),
+                    ],
                 )),
             ),
         },
@@ -670,7 +690,7 @@ pub(crate) fn textur_fuer(
             Some(p) => (gdk::Texture::from_filename(p).ok(), None),
             None => (
                 None,
-                Some("Eingebautes Bild nicht gefunden – nur Farbe.".into()),
+                Some(gettext("Built-in image not found – color only.")),
             ),
         },
     }
@@ -701,12 +721,12 @@ impl Oberflaeche {
 
     fn bild_waehlen(self: &Rc<Self>) {
         let filter = gtk4::FileFilter::new();
-        filter.set_name(Some("Bilder (PNG, JPEG, WebP, …)"));
+        filter.set_name(Some(&gettext("Images (PNG, JPEG, WebP, …)")));
         filter.add_mime_type("image/*");
         let filters = gio::ListStore::new::<gtk4::FileFilter>();
         filters.append(&filter);
         let dialog = gtk4::FileDialog::builder()
-            .title("Hintergrundbild auswählen")
+            .title(gettext("Choose Background Image"))
             .modal(true)
             .filters(&filters)
             .default_filter(&filter)
@@ -742,17 +762,23 @@ impl Oberflaeche {
             self.typ_farbe.set_active(a.typ == Typ::Farbe);
             self.bild_name
                 .set_text(&match (&a.datei, erkannt(a.datei.as_deref())) {
-                    (Some(p), Some(w)) => format!(
-                        "Eingebautes Bild „{}“ ({})",
-                        w.name(),
-                        p.file_name()
-                            .map(|n| n.to_string_lossy())
-                            .unwrap_or_default()
+                    (Some(p), Some(w)) => gettext_f(
+                        "Built-in image “{name}” ({file})",
+                        &[
+                            ("name", &w.name()),
+                            (
+                                "file",
+                                &p.file_name()
+                                    .map(|n| n.to_string_lossy().into_owned())
+                                    .unwrap_or_default(),
+                            ),
+                        ],
                     ),
                     (Some(p), None) => p.display().to_string(),
-                    (None, _) => {
-                        format!("Eingebautes Bild „Querencia Blau“ ({})", modell::EINGEBAUT)
-                    }
+                    (None, _) => gettext_f(
+                        "Built-in image “Querencia Blue” ({file})",
+                        &[("file", modell::EINGEBAUT)],
+                    ),
                 });
             // G2-AF: Kachel der Einstellung markieren (fremdes Bild: keine)
             match erkannt(a.datei.as_deref())
@@ -806,27 +832,30 @@ impl Oberflaeche {
         {
             Ok(()) => {
                 self.uebernehmen.set_sensitive(true);
-                self.uebernehmen
-                    .set_tooltip_text(Some("Schreibt desktop.ini; der Desktop übernimmt sofort."));
+                self.uebernehmen.set_tooltip_text(Some(&gettext(
+                    "Writes desktop.ini; the desktop applies it immediately.",
+                )));
                 if z.aktuell == z.geladen {
                     self.status
-                        .set_text("Keine Änderung gegenüber der gespeicherten Einstellung.");
+                        .set_text(&gettext("No change compared to the saved setting."));
                 } else {
-                    self.status.set_text("Geändert – noch nicht übernommen.");
+                    self.status.set_text(&gettext("Changed – not applied yet."));
                 }
             }
             Err(_) if self.faehigkeiten.get().is_none() => {
                 self.uebernehmen.set_sensitive(false);
                 self.uebernehmen
-                    .set_tooltip_text(Some("Fähigkeiten des Desktops werden ermittelt …"));
-                self.status
-                    .set_text("Fähigkeiten des laufenden Desktops werden ermittelt …");
+                    .set_tooltip_text(Some(&gettext("Determining the desktop’s capabilities …")));
+                self.status.set_text(&gettext(
+                    "Determining the capabilities of the running desktop …",
+                ));
             }
             Err(grund) => {
                 self.uebernehmen.set_sensitive(false);
                 self.uebernehmen.set_tooltip_text(Some(&grund));
-                self.status.set_text(&format!(
-                    "Kann der laufende Desktop nicht darstellen: {grund}"
+                self.status.set_text(&gettext_f(
+                    "The running desktop cannot display this: {reason}",
+                    &[("reason", &grund)],
                 ));
             }
         }
@@ -849,10 +878,10 @@ impl Oberflaeche {
         // Arbeitsflächen-Einstellungen bleiben beim Schreiben einfach erhalten.)
         let jetzt = std::fs::read_to_string(&pfad).unwrap_or_default();
         if ini::gruppe(&jetzt, GRUPPE) != ini::gruppe(&geladener_text, GRUPPE) {
-            self.status.set_text(
-                "desktop.ini wurde inzwischen von anderer Stelle geändert – nicht überschrieben. \
-                 Bitte den Dialog schließen und neu öffnen.",
-            );
+            self.status.set_text(&gettext(
+                "desktop.ini has been changed elsewhere in the meantime – not overwritten. \
+                 Please close the dialog and open it again.",
+            ));
             return;
         }
         match schreiben(&pfad, &neu, &jetzt) {
@@ -867,16 +896,25 @@ impl Oberflaeche {
                     .map(|s| s.to_string())
                     .unwrap_or_default();
                 self.status.set_text(&match sicherung {
-                    Some(s) => format!(
-                        "Übernommen um {zeit}. Vorherige Einstellung gesichert als {}.",
-                        s.file_name()
-                            .map(|n| n.to_string_lossy().into_owned())
-                            .unwrap_or_default()
+                    Some(s) => gettext_f(
+                        "Applied at {time}. Previous setting saved as {name}.",
+                        &[
+                            ("time", &zeit),
+                            (
+                                "name",
+                                &s.file_name()
+                                    .map(|n| n.to_string_lossy().into_owned())
+                                    .unwrap_or_default(),
+                            ),
+                        ],
                     ),
-                    None => format!("Übernommen um {zeit}."),
+                    None => gettext_f("Applied at {time}.", &[("time", &zeit)]),
                 });
             }
-            Err(err) => self.status.set_text(&format!("Nicht gespeichert: {err}")),
+            Err(err) => self.status.set_text(&gettext_f(
+                "Not saved: {error}",
+                &[("error", &err.to_string())],
+            )),
         }
     }
 }

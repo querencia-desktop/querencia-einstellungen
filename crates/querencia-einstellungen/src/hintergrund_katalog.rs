@@ -10,6 +10,7 @@
 //!
 //! Das Seitenverhältnis entscheidet die Datei: unter [`GRENZE`] (5:4, 4:3,
 //! 3:2) die 4:3-Fassung, sonst (16:10, 16:9 und breiter) die 16:9-Fassung.
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 use std::path::{Path, PathBuf};
 
 /// Mitte zwischen 4:3 (1,333) und 16:9 (1,778); 16:10 (1,6) bekommt 16:9.
@@ -29,31 +30,31 @@ pub struct Motiv {
 /// Reihenfolge der Galerie; das erste Motiv ist der Standard.
 pub const MOTIVE: &[Motiv] = &[
     Motiv {
-        name: "Querencia Blau",
+        name: gettext_noop("Querencia Blue"),
         stamm: "blau",
         logo: false,
         vier_drei: false,
     },
     Motiv {
-        name: "Querencia Abend",
+        name: gettext_noop("Querencia Evening"),
         stamm: "abend",
         logo: true,
         vier_drei: true,
     },
     Motiv {
-        name: "Querencia Blau 2",
+        name: gettext_noop("Querencia Blue 2"),
         stamm: "blau2",
         logo: true,
         vier_drei: true,
     },
     Motiv {
-        name: "Querencia Erde",
+        name: gettext_noop("Querencia Earth"),
         stamm: "erde",
         logo: true,
         vier_drei: true,
     },
     Motiv {
-        name: "Querencia Nacht",
+        name: gettext_noop("Querencia Night"),
         stamm: "nacht",
         logo: true,
         vier_drei: true,
@@ -110,9 +111,9 @@ impl Wahl {
 
     pub fn name(self) -> String {
         if self.logo {
-            format!("{} mit Logo", self.motiv().name)
+            gettext_f("{name} with logo", &[("name", &gettext(self.motiv().name))])
         } else {
-            self.motiv().name.to_string()
+            gettext(self.motiv().name)
         }
     }
 
@@ -195,12 +196,12 @@ mod tests {
         let k = kacheln();
         assert_eq!(k.len(), 9);
         assert_eq!(k[0], Wahl::STANDARD);
-        assert_eq!(k[0].name(), "Querencia Blau");
-        assert_eq!(k[1].name(), "Querencia Abend");
-        assert_eq!(k[2].name(), "Querencia Abend mit Logo");
-        assert_eq!(k[8].name(), "Querencia Nacht mit Logo");
-        assert_eq!(k[0].kurzname(), "Blau");
-        assert_eq!(k[2].kurzname(), "Abend mit Logo");
+        assert_eq!(k[0].name(), "Querencia Blue");
+        assert_eq!(k[1].name(), "Querencia Evening");
+        assert_eq!(k[2].name(), "Querencia Evening with logo");
+        assert_eq!(k[8].name(), "Querencia Night with logo");
+        assert_eq!(k[0].kurzname(), "Blue");
+        assert_eq!(k[2].kurzname(), "Evening with logo");
     }
 
     #[test]

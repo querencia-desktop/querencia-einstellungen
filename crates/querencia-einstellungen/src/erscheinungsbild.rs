@@ -21,6 +21,7 @@ use gtk4::{gdk, glib};
 use crate::gsettings::{
     self as gs, FARBSCHEMA, GTK_THEMA, SYMBOLTHEMA, ZEIGERGROESSE, ZEIGERTHEMA,
 };
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 use crate::labwc_konfig::{Stand, Wirkung};
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::Fehler;
@@ -31,9 +32,9 @@ pub const GTK_EINGEBAUT: &str = "Adwaita";
 const SYMBOLE_WIE_QUERENCIA: &str = "Adwaita";
 /// Zeigergrößen zur Auswahl (Pixel).
 pub const ZEIGERGROESSEN: &[(u32, &str)] = &[
-    (24, "Normal (24)"),
-    (32, "Groß (32)"),
-    (48, "Sehr groß (48)"),
+    (24, gettext_noop("Normal (24)")),
+    (32, gettext_noop("Large (32)")),
+    (48, gettext_noop("Very large (48)")),
 ];
 /// Symbole der Vorschau (gibt es in allen angebotenen Themen).
 const VORSCHAU: &[&str] = &[
@@ -141,7 +142,7 @@ pub fn symbolthemen() -> Vec<Thema> {
 pub fn gtk_themen() -> Vec<Thema> {
     let mut liste = vec![Thema {
         name: GTK_EINGEBAUT.into(),
-        anzeige: "GTK-Standard (eingebaut)".into(),
+        anzeige: gettext("GTK default (built-in)"),
     }];
     for d in ordner("themes") {
         let Ok(eintraege) = std::fs::read_dir(&d) else {
@@ -182,7 +183,10 @@ fn mit_aktuellem(themen: &[Thema], aktuell: &str) -> Vec<(String, String)> {
         .map(|t| (t.name.clone(), t.anzeige.clone()))
         .collect();
     if !aktuell.is_empty() && !themen.iter().any(|t| t.name == aktuell) {
-        liste.push((aktuell.to_owned(), format!("{aktuell} (nicht installiert)")));
+        liste.push((
+            aktuell.to_owned(),
+            gettext_f("{theme} (not installed)", &[("theme", aktuell)]),
+        ));
     }
     liste
 }
@@ -219,8 +223,10 @@ fn gewaehlt(l: &RefCell<Vec<(String, gtk4::CheckButton)>>) -> String {
 
 impl Bereich for Erscheinungsbild {
     type Werte = Werte;
-    const NAME: &'static str = "Erscheinungsbild";
-    const QUELLE: &'static str = "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); für labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themen aus ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons und /usr/share/themes.";
+    const NAME: &'static str = gettext_noop("Appearance");
+    const QUELLE: &'static str = gettext_noop(
+        "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes.",
+    );
     const GSETTINGS: &'static [&'static str] = &[
         SYMBOLTHEMA,
         GTK_THEMA,
@@ -277,59 +283,60 @@ impl Bereich for Erscheinungsbild {
     }
 
     fn hinweis(w: &Wirkung, _st: &Stand) -> Option<String> {
-        let labwc = match w {
-            Wirkung::Sofort { .. } => "sofort nach „Übernehmen“",
-            Wirkung::NaechsteAnmeldung { .. } => "ab der nächsten Anmeldung",
-        };
-        Some(format!(
-            "Symbole, Thema, Farbschema und Zeiger wirken nach „Übernehmen“ sofort in allen GTK-Programmen, im Panel und auf dem Desktop. Über Fensterrahmen und freier Arbeitsfläche (labwc) wechselt der Zeiger {labwc}, in anderen Programmen (z. B. X11) ab der nächsten Anmeldung."
-        ))
+        Some(match w {
+            Wirkung::Sofort { .. } => gettext(
+                "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login.",
+            ),
+            Wirkung::NaechsteAnmeldung { .. } => gettext(
+                "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login.",
+            ),
+        })
     }
 
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
-        let (f, b) = ls::rahmen("Symbole");
+        let (f, b) = ls::rahmen(&gettext("Icons"));
         let symbole_kasten = gtk4::Grid::new();
         symbole_kasten.set_row_spacing(2);
         symbole_kasten.set_column_spacing(12);
         b.append(&symbole_kasten);
         let vorschau = gtk4::Box::new(gtk4::Orientation::Horizontal, 10);
         vorschau.set_margin_top(4);
-        b.append(&ls::zeile("Vorschau:", &vorschau));
+        b.append(&ls::zeile(&gettext("Preview:"), &vorschau));
         let symbol_hinweis = ls::grau("");
         b.append(&symbol_hinweis);
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Steuerelemente (GTK-Thema)");
+        let (f, b) = ls::rahmen(&gettext("Controls (GTK Theme)"));
         let gtk_kasten = gtk4::Grid::new();
         gtk_kasten.set_row_spacing(2);
         gtk_kasten.set_column_spacing(12);
         b.append(&gtk_kasten);
-        let dunkel = gtk4::CheckButton::with_label("Dunkle Darstellung bevorzugen");
+        let dunkel = gtk4::CheckButton::with_label(&gettext("Prefer dark appearance"));
         b.append(&dunkel);
         b.append(&ls::grau(
-            "Dunkel werden Programme, die diese Vorliebe auswerten (z. B. Firefox, Webseiten, GNOME-Programme); Querencia-Programme behalten ihr Thema.",
+            &gettext("Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."),
         ));
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Mauszeiger");
+        let (f, b) = ls::rahmen(&gettext("Mouse Pointer"));
         let zeiger_kasten = gtk4::Box::new(gtk4::Orientation::Horizontal, 12);
-        b.append(&ls::zeile("Thema:", &zeiger_kasten));
+        b.append(&ls::zeile(&gettext("Theme:"), &zeiger_kasten));
         let gr = gtk4::Box::new(gtk4::Orientation::Horizontal, 12);
         let mut groessen: Vec<gtk4::CheckButton> = Vec::new();
         for (_, text) in ZEIGERGROESSEN {
-            let k = gtk4::CheckButton::with_label(text);
+            let k = gtk4::CheckButton::with_label(&gettext(*text));
             if let Some(erste) = groessen.first() {
                 k.set_group(Some(erste));
             }
             gr.append(&k);
             groessen.push(k);
         }
-        b.append(&ls::zeile("Größe:", &gr));
-        b.append(&ls::grau(
-            "Derselbe Zeiger steht im Bereich „Maus“; beide Bereiche schreiben dieselben Werte.",
-        ));
+        b.append(&ls::zeile(&gettext("Size:"), &gr));
+        b.append(&ls::grau(&gettext(
+            "The same pointer is in the “Mouse” section; both sections write the same values.",
+        )));
         inhalt.append(&f);
 
         let e = Erscheinungsbild {
@@ -455,10 +462,10 @@ impl Neben {
             bild.set_pixel_size(32);
             self.vorschau.append(&bild);
         }
-        self.symbol_hinweis.set_text(if symbolthema == SYMBOLE_WIE_QUERENCIA {
-            "Panel und Desktop zeigen bei „Adwaita“ weiter die Querencia-Symbole; Programme zeigen Adwaita."
+        self.symbol_hinweis.set_text(&if symbolthema == SYMBOLE_WIE_QUERENCIA {
+            gettext("With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita.")
         } else {
-            "Panel, Desktop und Programme zeigen dieses Thema; fehlende Symbole kommen aus den Themen, auf die es aufbaut."
+            gettext("Panel, desktop and programs show this theme; missing icons come from the themes it builds on.")
         });
     }
 }
@@ -595,6 +602,6 @@ mod tests {
         }];
         assert_eq!(mit_aktuellem(&t, "A").len(), 1);
         let l = mit_aktuellem(&t, "B");
-        assert_eq!(l[1], ("B".to_owned(), "B (nicht installiert)".to_owned()));
+        assert_eq!(l[1], ("B".to_owned(), "B (not installed)".to_owned()));
     }
 }

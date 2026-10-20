@@ -7,4 +7,4 @@
 - am Ende nur den eigenen `<laufzeit>/doc` aushängen (Prüfung über /proc/self/mounts)
 - Schrift der echten Sitzung (gsettings font-name, nur gelesen) als gtk-4.0/settings.ini ins Testprofil, außer es gibt eine eigene
 
-Rückfall: `cp -p isoliert.sh.vor-pt1 isoliert.sh`. Diff und Prüfläufe: 
+Rückfall (in `werkzeug/`): `cp -p isoliert.sh.vor-pt1 isoliert.sh`. Diff und Prüfläufe: 

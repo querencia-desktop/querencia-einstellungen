@@ -25,6 +25,7 @@ use wayland_protocols_wlr::output_management::v1::client::{
 };
 
 use crate::bildschirm_modell::{Ausgabe, Drehung, Modus, Wahl};
+use crate::i18n::{gettext, gettext_f};
 
 #[derive(Default)]
 struct Kopf {
@@ -73,8 +74,12 @@ impl Verbindung {
     /// Verbindet sich mit dem Compositor aus `WAYLAND_DISPLAY` und liest die
     /// Ausgaben, bis das erste `done` da ist.
     pub fn oeffnen() -> Result<Self, String> {
-        let verbindung =
-            Connection::connect_to_env().map_err(|e| format!("keine Wayland-Verbindung: {e}"))?;
+        let verbindung = Connection::connect_to_env().map_err(|e| {
+            gettext_f(
+                "no Wayland connection: {error}",
+                &[("error", &e.to_string())],
+            )
+        })?;
         let warteschlange = verbindung.new_event_queue();
         let griff = warteschlange.handle();
         verbindung.display().get_registry(&griff, ());
@@ -85,7 +90,9 @@ impl Verbindung {
         };
         v.roundtrip()?;
         if v.sammler.manager.is_none() {
-            return Err("der Compositor bietet zwlr_output_manager_v1 nicht an".to_owned());
+            return Err(gettext(
+                "the compositor does not offer zwlr_output_manager_v1",
+            ));
         }
         v.warten_bis(|s| s.done)?;
         Ok(v)
@@ -95,7 +102,12 @@ impl Verbindung {
         self.warteschlange
             .roundtrip(&mut self.sammler)
             .map(drop)
-            .map_err(|e| format!("Wayland-Abfrage fehlgeschlagen: {e}"))
+            .map_err(|e| {
+                gettext_f(
+                    "Wayland query failed: {error}",
+                    &[("error", &e.to_string())],
+                )
+            })
     }
 
     /// Wartet mit Roundtrips (nie ohne Zeitgrenze blockierend), bis `fertig`
@@ -109,7 +121,7 @@ impl Verbindung {
                 return Ok(());
             }
             if start.elapsed() > ZEITGRENZE {
-                return Err("der Compositor antwortet nicht (5 s)".to_owned());
+                return Err(gettext("the compositor does not respond (5 s)"));
             }
             std::thread::sleep(Duration::from_millis(20));
         }
@@ -134,7 +146,7 @@ impl Verbindung {
             .sammler
             .manager
             .clone()
-            .ok_or("kein zwlr_output_manager_v1")?;
+            .ok_or_else(|| gettext("no zwlr_output_manager_v1"))?;
         let griff = self.warteschlange.handle();
         let konfiguration = manager.create_configuration(self.sammler.serial, &griff, ());
         let mut koepfe: Vec<(ZwlrOutputHeadV1, Wahl, Vec<ObjectId>)> = Vec::new();
@@ -185,13 +197,13 @@ impl Verbindung {
                 Ok(())
             }
             Some(Ergebnis::Fehlgeschlagen) => Err(if nur_test {
-                "der Compositor lehnt diese Einstellung ab (Test fehlgeschlagen)".to_owned()
+                gettext("the compositor rejects this setting (test failed)")
             } else {
-                "der Compositor konnte die Einstellung nicht setzen".to_owned()
+                gettext("the compositor could not apply the setting")
             }),
-            Some(Ergebnis::Abgebrochen) | None => Err(
-                "die Ausgaben haben sich inzwischen geändert; bitte erneut versuchen".to_owned(),
-            ),
+            Some(Ergebnis::Abgebrochen) | None => Err(gettext(
+                "the outputs have changed in the meantime; please try again",
+            )),
         }
     }
 }

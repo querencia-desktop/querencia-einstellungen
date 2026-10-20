@@ -14,10 +14,15 @@ use std::rc::Rc;
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 use crate::standardanwendungen_modell::{self as sm, Art, KATEGORIEN, Kategorie};
 
-pub const NAME: &str = "Standardanwendungen";
-pub const TITEL: &str = "Querencia – Standardanwendungen";
+pub const NAME: &str = gettext_noop("Default Applications");
+
+/// Fenstertitel des eigenen Fensters (`--standardanwendungen`).
+pub fn titel() -> String {
+    gettext_f("Querencia – {name}", &[("name", &gettext(NAME))])
+}
 
 // ------------------------------------------------------------------ GIO
 
@@ -166,7 +171,7 @@ impl Seite {
                 Art::NurAnzeige => {
                     let a = anwendung(terminal());
                     let t = a.as_ref().map_or_else(
-                        || format!("{} (nicht installiert)", terminal()),
+                        || gettext_f("{program} (not installed)", &[("program", terminal())]),
                         |a| a.display_name().to_string(),
                     );
                     (a, t)
@@ -176,9 +181,9 @@ impl Seite {
                     let t = match &a {
                         Some(a) => a.display_name().to_string(),
                         None if kandidaten(k).is_empty() => {
-                            "Keine passende Anwendung installiert".into()
+                            gettext("No suitable application installed")
                         }
-                        None => "(nicht festgelegt)".into(),
+                        None => gettext("(not set)"),
                     };
                     (a, t)
                 }
@@ -206,7 +211,7 @@ impl Seite {
 pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     let fenster = gtk4::Window::builder()
         .application(app)
-        .title(TITEL)
+        .title(titel())
         .default_width(600)
         .default_height(640)
         .build();
@@ -219,10 +224,10 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
 
 /// Seite im Kontrollzentrum.
 pub fn seite() -> gtk4::Widget {
-    let s = crate::bereiche::seite(NAME);
-    let einleitung = gtk4::Label::new(Some(
-        "Welche Anwendung Dateien und Adressen öffnet – in Querencia Files, auf der Arbeitsfläche und in allen Programmen, die über GIO öffnen. Eine Änderung gilt sofort.",
-    ));
+    let s = crate::bereiche::seite(&gettext(NAME));
+    let einleitung = gtk4::Label::new(Some(&gettext(
+        "Which application opens files and addresses – in Querencia Files, on the desktop and in all programs that open via GIO. A change takes effect immediately.",
+    )));
     einleitung.set_xalign(0.0);
     einleitung.set_wrap(true);
     s.append(&einleitung);
@@ -234,7 +239,7 @@ pub fn seite() -> gtk4::Widget {
     let mut zeilen = Vec::new();
     for (i, k) in KATEGORIEN.iter().enumerate() {
         let i = i as i32;
-        let beschriftung = gtk4::Label::new(Some(&format!("{}:", k.name)));
+        let beschriftung = gtk4::Label::new(Some(&format!("{}:", gettext(k.name))));
         beschriftung.set_xalign(1.0);
         beschriftung.add_css_class("dim-label");
         if !k.typen.is_empty() {
@@ -253,7 +258,7 @@ pub fn seite() -> gtk4::Widget {
         raster.attach(&beschriftung, 0, i, 1, 1);
         raster.attach(&wert, 1, i, 1, 1);
         let aendern = (k.art == Art::Mime).then(|| {
-            let b = gtk4::Button::with_label("Ändern …");
+            let b = gtk4::Button::with_label(&gettext("Change …"));
             b.set_valign(gtk4::Align::Center);
             raster.attach(&b, 2, i, 1, 1);
             b
@@ -267,9 +272,9 @@ pub fn seite() -> gtk4::Widget {
     }
     s.append(&raster);
 
-    let terminal = gtk4::Label::new(Some(
-        "Terminal: Panel und Arbeitsfläche öffnen fest Querencia Terminal. Für Terminals gibt es keinen MIME-Typ und keinen Schreibweg über GIO; die Auswahl folgt mit einem eigenen Baustein.",
-    ));
+    let terminal = gtk4::Label::new(Some(&gettext(
+        "Terminal: panel and desktop always open Querencia Terminal. There is no MIME type and no way to write it via GIO for terminals; the choice follows with a separate building block.",
+    )));
     terminal.set_xalign(0.0);
     terminal.set_wrap(true);
     terminal.add_css_class("dim-label");
@@ -281,14 +286,15 @@ pub fn seite() -> gtk4::Widget {
     status.set_selectable(true);
     s.append(&status);
 
-    let mut herkunft = format!(
-        "GIO: {} (Benutzerdatei; fehlt sie, gilt der Systemstandard). Nur diese Datei wird geschrieben.",
-        mimeapps_pfad().display()
+    let mut herkunft = gettext_f(
+        "GIO: {file} (user file; if it is missing, the system default applies). Only this file is written.",
+        &[("file", &mimeapps_pfad().display().to_string())],
     );
     for p in vorrangige_listen() {
-        herkunft.push_str(&format!(
-            " Vorrang hat {} – Einträge dort gelten vor dieser Seite.",
-            p.display()
+        herkunft.push(' ');
+        herkunft.push_str(&gettext_f(
+            "{file} takes precedence – entries there apply before this page.",
+            &[("file", &p.display().to_string())],
         ));
     }
     s.append(&crate::bereiche::quelle(&herkunft));
@@ -312,7 +318,10 @@ pub fn seite() -> gtk4::Widget {
 /// vorausgewählt; vorausgewählt ist die aktuelle Anwendung.
 fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite>) {
     let dialog = gtk4::Window::builder()
-        .title(format!("Standardanwendung wählen – {}", k.name))
+        .title(gettext_f(
+            "Choose Default Application – {category}",
+            &[("category", &gettext(k.name))],
+        ))
         .modal(true)
         .default_width(460)
         .default_height(380)
@@ -325,10 +334,12 @@ fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite
     aussen.set_margin_start(12);
     aussen.set_margin_end(12);
     let kopf = gtk4::Label::new(None);
-    kopf.set_markup(&format!(
-        "<b>{}</b> öffnet: {}",
-        glib::markup_escape_text(k.name),
-        glib::markup_escape_text(&k.typen.join(", "))
+    kopf.set_markup(&gettext_f(
+        "<b>{category}</b> opens: {types}",
+        &[
+            ("category", &glib::markup_escape_text(&gettext(k.name))),
+            ("types", &glib::markup_escape_text(&k.typen.join(", "))),
+        ],
     ));
     kopf.set_xalign(0.0);
     kopf.set_wrap(true);
@@ -354,10 +365,10 @@ fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite
         let mut name = a.display_name().to_string();
         let aid = id(a);
         if k.vorschlag == Some(aid.as_str()) {
-            name.push_str(" (Vorschlag)");
+            name = gettext_f("{name} (suggestion)", &[("name", &name)]);
         }
         if ist.as_deref() == Some(aid.as_str()) {
-            name.push_str(" – aktuell");
+            name = gettext_f("{name} – current", &[("name", &name)]);
         }
         let n = gtk4::Label::new(Some(&name));
         n.set_xalign(0.0);
@@ -382,7 +393,10 @@ fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite
     if let Some(v) = k.vorschlag
         && !apps.iter().any(|a| id(a) == v)
     {
-        let l = gtk4::Label::new(Some(&format!("Vorschlag {v} ist nicht installiert.")));
+        let l = gtk4::Label::new(Some(&gettext_f(
+            "Suggestion {id} is not installed.",
+            &[("id", v)],
+        )));
         l.set_xalign(0.0);
         l.add_css_class("dim-label");
         aussen.append(&l);
@@ -390,8 +404,8 @@ fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite
 
     let knoepfe = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
     knoepfe.set_halign(gtk4::Align::End);
-    let abbrechen = gtk4::Button::with_label("Abbrechen");
-    let uebernehmen = gtk4::Button::with_label("Übernehmen");
+    let abbrechen = gtk4::Button::with_label(&gettext("Cancel"));
+    let uebernehmen = gtk4::Button::with_label(&gettext("Apply"));
     uebernehmen.add_css_class("suggested-action");
     knoepfe.append(&abbrechen);
     knoepfe.append(&uebernehmen);
@@ -422,27 +436,37 @@ fn waehlen(eltern: Option<&gtk4::Window>, k: &'static Kategorie, seite: Rc<Seite
                 Ok(typen) => {
                     let jetzt = aktuell(k).map(|a| id(&a));
                     if jetzt.as_deref() == Some(neu.as_str()) {
-                        format!(
-                            "{}: „{}“ ist jetzt Standard für {}. Gespeichert in {}.",
-                            k.name,
-                            app.display_name(),
-                            typen.join(", "),
-                            mimeapps_pfad().display()
+                        gettext_f(
+                            "{category}: “{application}” is now the default for {types}. Saved in {file}.",
+                            &[
+                                ("category", &gettext(k.name)),
+                                ("application", &app.display_name()),
+                                ("types", &typen.join(", ")),
+                                ("file", &mimeapps_pfad().display().to_string()),
+                            ],
                         )
                     } else {
-                        format!(
-                            "{}: gespeichert, aber GIO meldet weiter „{}“ – eine vorrangige Liste ({}) legt etwas anderes fest.",
-                            k.name,
-                            jetzt.unwrap_or_else(|| "(keine)".into()),
-                            vorrangige_listen()
-                                .iter()
-                                .map(|p| p.display().to_string())
-                                .collect::<Vec<_>>()
-                                .join(", ")
+                        gettext_f(
+                            "{category}: saved, but GIO still reports “{application}” – a list with precedence ({lists}) sets something else.",
+                            &[
+                                ("category", &gettext(k.name)),
+                                ("application", &jetzt.unwrap_or_else(|| gettext("(none)"))),
+                                (
+                                    "lists",
+                                    &vorrangige_listen()
+                                        .iter()
+                                        .map(|p| p.display().to_string())
+                                        .collect::<Vec<_>>()
+                                        .join(", "),
+                                ),
+                            ],
                         )
                     }
                 }
-                Err(e) => format!("{}: nicht gespeichert – {e}", k.name),
+                Err(e) => gettext_f(
+                    "{category}: not saved – {error}",
+                    &[("category", &gettext(k.name)), ("error", &e.to_string())],
+                ),
             };
             eprintln!("standardanwendungen: {meldung}");
             seite.status.set_text(&meldung);

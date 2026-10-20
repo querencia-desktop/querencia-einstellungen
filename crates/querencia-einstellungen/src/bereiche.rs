@@ -9,61 +9,82 @@
 use gtk4::glib;
 use gtk4::prelude::*;
 
+use crate::i18n::{gettext, gettext_f};
 use crate::logo;
 
 pub struct Bereich {
-    pub name: &'static str,
+    /// Fester Name der Stapelseite (unabhängig von der Sprache).
+    pub id: &'static str,
+    /// Beschriftung in der Seitenleiste (übersetzt).
+    pub name: String,
     pub seite: gtk4::Widget,
 }
 
 pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
     vec![
         Bereich {
-            name: "Erscheinungsbild",
+            id: "erscheinungsbild",
+            name: gettext("Appearance"),
             seite: crate::labwc_seite::seite::<crate::erscheinungsbild::Erscheinungsbild>(),
         },
         Bereich {
-            name: "Hintergrundbild",
+            id: "hintergrundbild",
+            name: gettext("Background Image"),
             seite: crate::hintergrund_seite::seite(app),
         },
         Bereich {
-            name: crate::arbeitsflaeche::NAME,
+            id: "symbole",
+            name: gettext(crate::arbeitsflaeche::NAME),
             seite: crate::arbeitsflaeche::seite(),
         },
         Bereich {
-            name: "Fensterdesign",
+            id: "fensterdesign",
+            name: gettext("Window Design"),
             seite: crate::labwc_seite::seite::<crate::fensterdesign::Fensterdesign>(),
         },
         Bereich {
-            name: "Schriften",
+            id: "schriften",
+            name: gettext("Fonts"),
             seite: crate::labwc_seite::seite::<crate::schriften::Schriften>(),
         },
         Bereich {
-            name: "Panels",
+            id: "panels",
+            name: gettext("Panels"),
             seite: crate::panels::seite(),
         },
         Bereich {
-            name: "Tastatur",
+            id: "tastatur",
+            name: gettext("Keyboard"),
             seite: crate::labwc_seite::seite::<crate::tastatur::Tastatur>(),
         },
         Bereich {
-            name: "Maus",
+            id: "maus",
+            name: gettext("Mouse"),
             seite: crate::labwc_seite::seite::<crate::maus::Maus>(),
         },
         Bereich {
-            name: "Bildschirm",
+            id: "bildschirm",
+            name: gettext("Screen"),
             seite: crate::bildschirm::seite(false),
         },
         Bereich {
-            name: "Arbeitsflächen",
+            id: "arbeitsflaechen",
+            name: gettext("Workspaces"),
             seite: crate::labwc_seite::seite::<crate::arbeitsflaechen::Arbeitsflaechen>(),
         },
         Bereich {
-            name: crate::standardanwendungen::NAME,
+            id: "standardanwendungen",
+            name: gettext(crate::standardanwendungen::NAME),
             seite: crate::standardanwendungen::seite(),
         },
         Bereich {
-            name: "Informationen über Querencia",
+            id: "sprache",
+            name: gettext(<crate::sprache::Sprache as crate::labwc_seite::Bereich>::NAME),
+            seite: crate::labwc_seite::seite::<crate::sprache::Sprache>(),
+        },
+        Bereich {
+            id: "informationen",
+            name: gettext("About Querencia"),
             seite: informationen(),
         },
     ]
@@ -88,7 +109,7 @@ pub(crate) fn seite(titel: &str) -> gtk4::Box {
 }
 
 /// Zweispaltige Ist-Werte (Beschriftung, Wert).
-fn werte(zeilen: &[(&str, String)]) -> gtk4::Grid {
+fn werte(zeilen: &[(String, String)]) -> gtk4::Grid {
     let g = gtk4::Grid::new();
     g.set_row_spacing(4);
     g.set_column_spacing(12);
@@ -108,7 +129,7 @@ fn werte(zeilen: &[(&str, String)]) -> gtk4::Grid {
 }
 
 pub(crate) fn quelle(text: &str) -> gtk4::Label {
-    let l = gtk4::Label::new(Some(&format!("Quelle: {text}")));
+    let l = gtk4::Label::new(Some(&gettext_f("Source: {source}", &[("source", text)])));
     l.set_xalign(0.0);
     l.set_wrap(true);
     l.add_css_class("dim-label");
@@ -118,7 +139,7 @@ pub(crate) fn quelle(text: &str) -> gtk4::Label {
 // ------------------------------------------------------------------ Seiten
 
 fn informationen() -> gtk4::Widget {
-    let s = seite("Informationen über Querencia");
+    let s = seite(&gettext("About Querencia"));
     let kopf = gtk4::Box::new(gtk4::Orientation::Horizontal, 14);
     kopf.append(&logo::bild(64));
     let text = gtk4::Box::new(gtk4::Orientation::Vertical, 4);
@@ -127,9 +148,15 @@ fn informationen() -> gtk4::Widget {
     name.set_xalign(0.0);
     text.append(&name);
     for zeile in [
-        format!("Querencia Einstellungen {}", env!("CARGO_PKG_VERSION")),
-        "Ein klassischer Desktop im Stil von GNOME 2 für Wayland und labwc".to_string(),
-        format!("Lizenz: {}", env!("CARGO_PKG_LICENSE")),
+        gettext_f(
+            "Querencia Settings {version}",
+            &[("version", env!("CARGO_PKG_VERSION"))],
+        ),
+        gettext("A classic desktop in the style of GNOME 2 for Wayland and labwc"),
+        gettext_f(
+            "License: {license}",
+            &[("license", env!("CARGO_PKG_LICENSE"))],
+        ),
     ] {
         let l = gtk4::Label::new(Some(&zeile));
         l.set_xalign(0.0);
@@ -147,14 +174,14 @@ fn informationen() -> gtk4::Widget {
         })
         .unwrap_or_default();
     s.append(&werte(&[
-        ("System:", ubuntu),
-        ("Compositor:", "labwc 0.9.8".into()),
+        (gettext("System:"), ubuntu),
+        (gettext("Compositor:"), "labwc 0.9.8".into()),
         (
-            "Desktop:",
+            gettext("Desktop:"),
             std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default(),
         ),
         (
-            "GTK:",
+            "GTK:".into(),
             format!(
                 "{}.{}.{}",
                 gtk4::major_version(),
@@ -163,6 +190,6 @@ fn informationen() -> gtk4::Widget {
             ),
         ),
     ]));
-    s.append(&quelle("Versionen der Komponenten: ~/opt/querencia/protokoll.txt; der Panel-Dialog „Informationen über Querencia“ (System-Menü) zeigt dieselben Zeilen."));
+    s.append(&quelle(&gettext("Component versions: ~/opt/querencia/protokoll.txt; the panel dialog “About Querencia” (System menu) shows the same lines.")));
     s.upcast()
 }

@@ -8,8 +8,17 @@
 #      folgen derselben Typografie (Projektstil, nicht global ersetzen).
 # P002 Co-Authored-By in Commit-Texten: bleibt im Arbeitsrepo, der
 #      Veröffentlichungsklon entfernt die Zeilen (ENTSCHEIDUNGEN Nr. 10).
-# H005 Lizenzdatei, README.md, Arbeitsregeln fehlen: Altbestand; Lizenz entscheidet
-#      der Besitzer (ENTSCHEIDUNGEN), README/Arbeitsregeln eigener Auftrag (G2-Z).
+# H005 (bis 0.0.9) Lizenzdatei, README.md fehlten; seit 0.1.0 vorhanden
+#      (LICENSE = GPL-Text, COPYRIGHT, README.md nach ENTSCHEIDUNGEN Nr. 1).
 # H001 Logs unter nachweis/: Prüfbelege, auf die sich die Freigaben stützen.
 # S005 werkzeug/g2aj-gui-lauf.sh: Fachwörter (GTK, gsettings, Desktop, Panel,
 #      Release) in deutschen Kommentaren, keine englischen Sätze (G2-AJ).
+# H003 werkzeug/virtual-keyboard-unstable-v1.xml: Name des wlroots-Protokolls
+#      (Fachbegriff, „v1“ ist Teil des Protokollnamens), nicht umbenennen (0.1.0).
+# Q003 werkzeug/auswerten-bildschirm.py, auswerten-nachpruefung.py,
+#      auswerten-qe04.py, auswerten.py: Altbestand der Prüfwerkzeuge (G2-G,
+#      QE-01, QE-04); die Kommentare benennen die Prüffälle der TSV, bleiben.
+# Q007 crates/querencia-einstellungen/src/arbeitsflaeche_modell.rs:8/14: das
+#      ist das ini-Beispiel der Moduldoku, kein auskommentierter Code.
+# S005 werkzeug/auswerten-010.py: Fachwörter (PASS, FAIL, TSV, maps) in
+#      deutschen Kommentaren, keine englischen Sätze (0.1.0).

@@ -18,6 +18,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
+use crate::i18n::{gettext, gettext_f};
 use crate::labwc_xml;
 
 /// Vorgaben im Runtime-Repo (nur lesen). Für Prüfungen: `QE_LABWC_VORGABE`.
@@ -123,7 +124,13 @@ pub fn lesen(o: &Orte) -> Stand {
     let (rc, quelle) = match std::fs::read_to_string(o.rc()) {
         Ok(t) => (t, Quelle::Benutzer),
         Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
-            fehler = Some(format!("{} nicht lesbar ({e})", o.rc().display()));
+            fehler = Some(gettext_f(
+                "{file} not readable ({error})",
+                &[
+                    ("file", &o.rc().display().to_string()),
+                    ("error", &e.to_string()),
+                ],
+            ));
             (String::new(), Quelle::Benutzer)
         }
         Err(_) if !rc_vorgabe.is_empty() => (rc_vorgabe.clone(), Quelle::Vorgabe),
@@ -228,7 +235,7 @@ pub fn rc_schreiben(
 ) -> Result<Option<PathBuf>, String> {
     labwc_xml::gueltig(neu).map_err(|e| e.to_string())?;
     if neu.trim().is_empty() {
-        return Err("leere rc.xml wird nicht geschrieben".into());
+        return Err(gettext("an empty rc.xml is not written"));
     }
     let io = |e: std::io::Error| e.to_string();
     std::fs::create_dir_all(&o.benutzer).map_err(io)?;
@@ -245,9 +252,10 @@ pub fn rc_schreiben(
 pub fn env_text(alt: &str, aenderungen: &[(&str, Option<String>)]) -> String {
     let mut zeilen: Vec<String> = if alt.is_empty() {
         vec![
-            "# Querencia Einstellungen (Tastatur, Maus). labwc liest diese Datei nach".into(),
-            "# ../environment; Werte hier haben Vorrang. Wirksam mit labwc --reconfigure,".into(),
-            "# für schon laufende Programme ab der nächsten Anmeldung.".into(),
+            "# Querencia Einstellungen (Tastatur, Maus, Sprache und Region). labwc liest".into(),
+            "# diese Datei nach ../environment; Werte hier haben Vorrang. Wirksam mit".into(),
+            "# labwc --reconfigure, für schon laufende Programme und Sprache/Formate".into(),
+            "# ab der nächsten Anmeldung.".into(),
         ]
     } else {
         alt.lines().map(str::to_owned).collect()
@@ -356,7 +364,7 @@ pub fn wirkung(o: &Orte) -> Wirkung {
 /// `labwc --reconfigure` für den laufenden labwc (SIGHUP über `LABWC_PID`).
 pub fn neu_laden(w: &Wirkung) -> Result<(), String> {
     let Wirkung::Sofort { pid, programm } = w else {
-        return Err("labwc liest die Benutzerkopie nicht".into());
+        return Err(gettext("labwc does not read the user copy"));
     };
     let status = std::process::Command::new(programm)
         .arg("--reconfigure")
@@ -365,7 +373,15 @@ pub fn neu_laden(w: &Wirkung) -> Result<(), String> {
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::piped())
         .output()
-        .map_err(|e| format!("{} nicht startbar: {e}", programm.display()))?;
+        .map_err(|e| {
+            gettext_f(
+                "{program} cannot be started: {error}",
+                &[
+                    ("program", &programm.display().to_string()),
+                    ("error", &e.to_string()),
+                ],
+            )
+        })?;
     if status.status.success() {
         Ok(())
     } else {
@@ -399,15 +415,15 @@ pub fn vorgabe_uebernehmen(o: &Orte, zeit: &str) -> Result<Option<PathBuf>, Stri
 /// Text für die Bereiche: wann wirkt „Übernehmen“?
 pub fn wirkung_text(w: &Wirkung, stand: &Stand) -> String {
     match (w, stand.quelle) {
-        (Wirkung::Sofort { .. }, _) => {
-            "Änderungen gelten nach „Übernehmen“ sofort (labwc lädt seine Konfiguration neu).".into()
-        }
-        (Wirkung::NaechsteAnmeldung { .. }, Quelle::Benutzer) => {
-            "Wirksam ab der nächsten Anmeldung. Die laufende Sitzung liest die Benutzerkopie ~/.config/querencia/labwc noch nicht; „Übernehmen“ speichert dort.".into()
-        }
-        (Wirkung::NaechsteAnmeldung { .. }, _) => {
-            "Wirksam ab der nächsten Anmeldung. Es gibt noch keine Benutzerkopie, angezeigt wird die Vorgabe von Querencia; „Übernehmen“ legt ~/.config/querencia/labwc an, die Sitzung liest sie ab der nächsten Anmeldung.".into()
-        }
+        (Wirkung::Sofort { .. }, _) => gettext(
+            "Changes take effect immediately after “Apply” (labwc reloads its configuration).",
+        ),
+        (Wirkung::NaechsteAnmeldung { .. }, Quelle::Benutzer) => gettext(
+            "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there.",
+        ),
+        (Wirkung::NaechsteAnmeldung { .. }, _) => gettext(
+            "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login.",
+        ),
     }
 }
 
@@ -451,8 +467,16 @@ pub fn zeigen() -> i32 {
     for k in [
         "XKB_DEFAULT_LAYOUT",
         "XKB_DEFAULT_VARIANT",
+        "XKB_DEFAULT_OPTIONS",
         "XCURSOR_THEME",
         "XCURSOR_SIZE",
+        "LANG",
+        "LANGUAGE",
+        "LC_TIME",
+        "LC_NUMERIC",
+        "LC_MONETARY",
+        "LC_PAPER",
+        "LC_MEASUREMENT",
     ] {
         println!("env {k}={}", st.env.get(k).map_or("-", String::as_str));
     }
@@ -656,7 +680,7 @@ mod tests {
         assert!(
             st.fehler
                 .as_deref()
-                .is_some_and(|f| f.contains("nicht lesbar"))
+                .is_some_and(|f| f.contains("not readable"))
         );
         std::fs::remove_dir_all(&w).unwrap();
     }

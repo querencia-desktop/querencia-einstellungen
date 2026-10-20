@@ -7,6 +7,7 @@
 //! Eintrag) wird immer gesetzt, die übrigen Typen nur, wenn die gewählte
 //! Anwendung sie in ihrem `MimeType=` nennt. So bekommt keine Anwendung
 //! Dateitypen zugeordnet, die sie nicht öffnen kann.
+use crate::i18n::gettext_noop;
 
 /// Wie eine Kategorie bestimmt wird.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -50,7 +51,7 @@ pub fn terminal_id(installiert: impl Fn(&str) -> bool) -> &'static str {
 pub const KATEGORIEN: &[Kategorie] = &[
     Kategorie {
         schluessel: "webbrowser",
-        name: "Webbrowser",
+        name: gettext_noop("Web Browser"),
         art: Art::Mime,
         typen: &[
             "x-scheme-handler/http",
@@ -62,28 +63,28 @@ pub const KATEGORIEN: &[Kategorie] = &[
     },
     Kategorie {
         schluessel: "e-mail",
-        name: "E-Mail",
+        name: gettext_noop("Email"),
         art: Art::Mime,
         typen: &["x-scheme-handler/mailto"],
         vorschlag: None,
     },
     Kategorie {
         schluessel: "texteditor",
-        name: "Texteditor",
+        name: gettext_noop("Text Editor"),
         art: Art::Mime,
         typen: &["text/plain", "text/markdown", "text/x-markdown"],
         vorschlag: Some("org.querencia.Editor.desktop"),
     },
     Kategorie {
         schluessel: "terminal",
-        name: "Terminal",
+        name: gettext_noop("Terminal"),
         art: Art::NurAnzeige,
         typen: &[],
         vorschlag: Some(TERMINAL_ID),
     },
     Kategorie {
         schluessel: "bilder",
-        name: "Bilder",
+        name: gettext_noop("Images"),
         art: Art::Mime,
         typen: &[
             "image/png",
@@ -98,7 +99,7 @@ pub const KATEGORIEN: &[Kategorie] = &[
     },
     Kategorie {
         schluessel: "musik",
-        name: "Musik",
+        name: gettext_noop("Music"),
         art: Art::Mime,
         typen: &[
             "audio/mpeg",
@@ -112,7 +113,7 @@ pub const KATEGORIEN: &[Kategorie] = &[
     },
     Kategorie {
         schluessel: "video",
-        name: "Video",
+        name: gettext_noop("Video"),
         art: Art::Mime,
         typen: &[
             "video/mp4",
@@ -125,21 +126,21 @@ pub const KATEGORIEN: &[Kategorie] = &[
     },
     Kategorie {
         schluessel: "dateimanager",
-        name: "Dateimanager",
+        name: gettext_noop("File Manager"),
         art: Art::Mime,
         typen: &["inode/directory"],
         vorschlag: Some("io.github.lgse.Strata.desktop"),
     },
     Kategorie {
         schluessel: "pdf",
-        name: "PDF-Dokumente",
+        name: gettext_noop("PDF Documents"),
         art: Art::Mime,
         typen: &["application/pdf"],
         vorschlag: None,
     },
     Kategorie {
         schluessel: "archive",
-        name: "Archive",
+        name: gettext_noop("Archives"),
         art: Art::Mime,
         typen: &[
             "application/zip",

@@ -10,6 +10,7 @@ use gtk4::pango;
 use gtk4::prelude::*;
 
 use crate::gsettings::{self as gs, DICKTENGLEICH, DOKUMENTSCHRIFT, SCHRIFT};
+use crate::i18n::{gettext, gettext_noop};
 use crate::labwc_konfig::{Stand, Wirkung};
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
@@ -85,8 +86,10 @@ fn ist_fett(wert: Option<String>) -> bool {
 
 impl Bereich for Schriften {
     type Werte = Werte;
-    const NAME: &'static str = "Schriften";
-    const QUELLE: &'static str = "gsettings org.gnome.desktop.interface (font-name, document-font-name, monospace-font-name); ~/.config/querencia/labwc/rc.xml <theme><font place=\"ActiveWindow\"> und \"InactiveWindow\" (name, size, weight).";
+    const NAME: &'static str = gettext_noop("Fonts");
+    const QUELLE: &'static str = gettext_noop(
+        "gsettings org.gnome.desktop.interface (font-name, document-font-name, monospace-font-name); ~/.config/querencia/labwc/rc.xml <theme><font place=\"ActiveWindow\"> and \"InactiveWindow\" (name, size, weight).",
+    );
     const GSETTINGS: &'static [&'static str] = &[SCHRIFT, DOKUMENTSCHRIFT, DICKTENGLEICH];
 
     fn lesen(st: &Stand) -> Werte {
@@ -133,57 +136,58 @@ impl Bereich for Schriften {
     }
 
     fn hinweis(w: &Wirkung, _st: &Stand) -> Option<String> {
-        let titel = match w {
-            Wirkung::Sofort { .. } => "ebenfalls sofort (labwc lädt seine Konfiguration neu)",
-            Wirkung::NaechsteAnmeldung { .. } => "ab der nächsten Anmeldung",
-        };
-        Some(format!(
-            "Die Schriften der Programme wirken nach „Übernehmen“ sofort in allen GTK-Programmen, im Panel und auf dem Desktop. Die Schrift der Fenstertitel wirkt {titel}."
-        ))
+        Some(match w {
+            Wirkung::Sofort { .. } => gettext(
+                "The program fonts take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. The window title font also takes effect immediately (labwc reloads its configuration).",
+            ),
+            Wirkung::NaechsteAnmeldung { .. } => gettext(
+                "The program fonts take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. The window title font takes effect from the next login.",
+            ),
+        })
     }
 
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
-        let (f, b) = ls::rahmen("Schriften der Programme");
+        let (f, b) = ls::rahmen(&gettext("Program Fonts"));
         let raster = gtk4::Grid::new();
         raster.set_row_spacing(6);
         raster.set_column_spacing(12);
-        let anwendungen = Knopf::neu("Schrift der Anwendungen");
-        let dokumente = Knopf::neu("Schrift für Dokumente");
-        let dicktengleich = Knopf::neu("Dicktengleiche Schrift");
+        let anwendungen = Knopf::neu(&gettext("Application Font"));
+        let dokumente = Knopf::neu(&gettext("Document Font"));
+        let dicktengleich = Knopf::neu(&gettext("Monospace Font"));
         for (i, (text, k)) in [
-            ("Anwendungen:", &anwendungen),
-            ("Dokumente:", &dokumente),
-            ("Dicktengleich:", &dicktengleich),
+            (gettext("Applications:"), &anwendungen),
+            (gettext("Documents:"), &dokumente),
+            (gettext("Monospace:"), &dicktengleich),
         ]
         .into_iter()
         .enumerate()
         {
-            let l = gtk4::Label::new(Some(text));
+            let l = gtk4::Label::new(Some(&text));
             l.set_xalign(1.0);
             raster.attach(&l, 0, i as i32, 1, 1);
             raster.attach(&k.knopf, 1, i as i32, 1, 1);
         }
         b.append(&raster);
-        b.append(&ls::grau(
-            "„Anwendungen“ gilt für Menüs, Knöpfe und Beschriftungen, „Dokumente“ für Textinhalte, „Dicktengleich“ für Terminal und Quelltext. Der Schriftwähler zeigt alle installierten Schriften.",
-        ));
+        b.append(&ls::grau(&gettext(
+            "“Applications” applies to menus, buttons and labels, “Documents” to text content, “Monospace” to terminal and source code. The font chooser shows all installed fonts.",
+        )));
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Fenstertitel");
+        let (f, b) = ls::rahmen(&gettext("Window Titles"));
         let titel = gtk4::FontDialogButton::new(Some(
             gtk4::FontDialog::builder()
-                .title("Schrift der Fenstertitel")
+                .title(gettext("Window Title Font"))
                 .modal(true)
                 .build(),
         ));
         titel.set_use_font(true);
         titel.set_halign(gtk4::Align::Start);
         b.append(&titel);
-        b.append(&ls::grau(
-            "Für aktive und inaktive Fenster; derselbe Wert steht im Bereich „Fensterdesign“. Fett wird übernommen, Kursiv nicht.",
-        ));
+        b.append(&ls::grau(&gettext(
+            "For active and inactive windows; the same value is in the “Window Design” section. Bold is applied, italic is not.",
+        )));
         inhalt.append(&f);
 
         for k in [

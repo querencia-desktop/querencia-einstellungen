@@ -17,6 +17,7 @@
 //! `centered`/`tiled` auf `zoom` zurück – beides nur mit Logzeile, nie mit
 //! Absturz. Welche Werte der laufende Desktop tatsächlich darstellen kann,
 //! sagt [`Faehigkeiten`].
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 use std::path::PathBuf;
 
 /// Das eingebaute Bild „Querencia Blau“ (Name wie im Desktop).
@@ -30,16 +31,19 @@ pub const STANDARD_FARBE: Farbe = Farbe {
 
 /// Vordefinierte Palette (Name, Farbe) für die klassische Farbauswahl.
 pub const PALETTE: &[(&str, Farbe)] = &[
-    ("Querencia Blau", STANDARD_FARBE),
-    ("Tango Blau", Farbe::neu(0x20, 0x4a, 0x87)),
-    ("Anthrazit", Farbe::neu(0x24, 0x24, 0x24)),
-    ("Querencia Orange", Farbe::neu(0xf0, 0x77, 0x46)),
-    ("Schiefer", Farbe::neu(0x2e, 0x34, 0x36)),
-    ("Moos", Farbe::neu(0x4e, 0x9a, 0x06)),
-    ("Wein", Farbe::neu(0x8f, 0x1b, 0x1b)),
-    ("Sand", Farbe::neu(0xc4, 0xa0, 0x00)),
-    ("Nebel", Farbe::neu(0xba, 0xbd, 0xb6)),
-    ("Schwarz", Farbe::neu(0x00, 0x00, 0x00)),
+    (gettext_noop("Querencia Blue"), STANDARD_FARBE),
+    (gettext_noop("Tango Blue"), Farbe::neu(0x20, 0x4a, 0x87)),
+    (gettext_noop("Anthracite"), Farbe::neu(0x24, 0x24, 0x24)),
+    (
+        gettext_noop("Querencia Orange"),
+        Farbe::neu(0xf0, 0x77, 0x46),
+    ),
+    (gettext_noop("Slate"), Farbe::neu(0x2e, 0x34, 0x36)),
+    (gettext_noop("Moss"), Farbe::neu(0x4e, 0x9a, 0x06)),
+    (gettext_noop("Wine"), Farbe::neu(0x8f, 0x1b, 0x1b)),
+    (gettext_noop("Sand"), Farbe::neu(0xc4, 0xa0, 0x00)),
+    (gettext_noop("Fog"), Farbe::neu(0xba, 0xbd, 0xb6)),
+    (gettext_noop("Black"), Farbe::neu(0x00, 0x00, 0x00)),
 ];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -105,13 +109,13 @@ impl Darstellung {
         Self::Kacheln,
     ];
 
-    pub fn beschriftung(self) -> &'static str {
+    pub fn beschriftung(self) -> String {
         match self {
-            Self::Ausfuellen => "Bildschirm ausfüllen",
-            Self::Einpassen => "Einpassen",
-            Self::Zentrieren => "Zentrieren",
-            Self::Strecken => "Strecken",
-            Self::Kacheln => "Kacheln",
+            Self::Ausfuellen => gettext("Zoom"),
+            Self::Einpassen => gettext("Scaled"),
+            Self::Zentrieren => gettext("Centered"),
+            Self::Strecken => gettext("Stretched"),
+            Self::Kacheln => gettext("Tiled"),
         }
     }
 
@@ -293,17 +297,19 @@ impl Hintergrund {
             if f.farbe {
                 return Ok(());
             }
-            return Err(
-                "Ein rein einfarbiger Hintergrund braucht die Desktop-Erweiterung \
-                        (Type=color); der laufende Desktop zeigt stattdessen das eingebaute Bild."
-                    .into(),
-            );
+            return Err(gettext(
+                "A plain solid-color background needs the desktop extension \
+                 (Type=color); the running desktop shows the built-in image instead.",
+            ));
         }
         if !self.darstellung.moeglich(f) {
-            return Err(format!(
-                "„{}“ braucht die Desktop-Erweiterung; der laufende Desktop zeigt stattdessen \
-                 „Bildschirm ausfüllen“.",
-                self.darstellung.beschriftung()
+            return Err(gettext_f(
+                "“{style}” needs the desktop extension; the running desktop shows \
+                 “{zoom}” instead.",
+                &[
+                    ("style", &self.darstellung.beschriftung()),
+                    ("zoom", &Darstellung::Ausfuellen.beschriftung()),
+                ],
             ));
         }
         Ok(())

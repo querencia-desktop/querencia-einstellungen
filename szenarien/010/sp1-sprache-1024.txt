@@ -1,0 +1,45 @@
+extent 1024 768
+wait 3500
+move 152 468
+click
+wait 1200
+shot 01-sprache.png
+move 622 433
+click
+wait 800
+shot 02-formate-deutschland.png
+mark uebernehmen 1
+move 871 669
+click
+wait 1500
+shot 03-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+wait 700
+move 349 308
+click
+wait 400
+move 622 485
+click
+wait 800
+shot 04-englisch-schweiz.png
+mark uebernehmen 2
+move 871 669
+click
+wait 1500
+shot 05-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-2.xml
+wait 700
+move 429 669
+click
+wait 600
+shot 06-standard.png
+mark uebernehmen 3
+move 871 669
+click
+wait 1500
+shot 07-standard-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-3.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-3.xml
+wait 700

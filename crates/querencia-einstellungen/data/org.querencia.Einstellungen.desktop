@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name[de]=Systemeinstellungen
+Name[en]=System Settings
+Name=System Settings
+GenericName[de]=Einstellungen
+GenericName[en]=Settings
+GenericName=Settings
+Comment[de]=Erscheinungsbild, Hintergrund, Tastatur, Maus, Bildschirm, Sprache und weitere Einstellungen von Querencia ändern
+Comment[en]=Change the appearance, background, keyboard, mouse, screen, language and other settings of Querencia
+Comment=Change the appearance, background, keyboard, mouse, screen, language and other settings of Querencia
+Exec=querencia-einstellungen
+TryExec=querencia-einstellungen
+Icon=org.querencia.Einstellungen
+Terminal=false
+NoDisplay=false
+Categories=Settings;
+Keywords[de]=Einstellungen;Systemeinstellungen;Kontrollzentrum;Hintergrund;Bildschirm;Auflösung;Monitor;Skalierung;Tastatur;Maus;Sprache;Region;
+Keywords[en]=settings;preferences;control center;background;screen;resolution;monitor;scaling;keyboard;mouse;language;region;
+Keywords=settings;preferences;control center;background;screen;resolution;monitor;scaling;keyboard;mouse;language;region;
+StartupNotify=true
+StartupWMClass=org.querencia.Einstellungen

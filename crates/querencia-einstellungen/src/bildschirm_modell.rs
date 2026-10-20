@@ -2,6 +2,7 @@
 //! Compositor sie meldet; die Wahl des Benutzers je Ausgabe; Anordnung mit
 //! Einrasten; die Datei `~/.config/querencia/bildschirm.ini`. Ohne GTK und
 //! ohne Wayland, damit alles hier mit Unit-Tests prüfbar ist.
+use crate::i18n::{gettext, pgettext};
 use std::path::PathBuf;
 
 /// Ein Modus: Pixelgröße und Wiederholrate in mHz (wie im Protokoll).
@@ -30,9 +31,9 @@ impl Modus {
 
     pub fn hz_text(&self) -> String {
         if self.mhz <= 0 {
-            "automatisch".to_owned()
+            gettext("automatic")
         } else {
-            format!("{:.2} Hz", f64::from(self.mhz) / 1000.0).replace('.', ",")
+            format!("{:.2} Hz", f64::from(self.mhz) / 1000.0).replace('.', &dezimaltrenner())
         }
     }
 
@@ -95,12 +96,12 @@ impl Drehung {
         matches!(self, Drehung::Rechts90 | Drehung::Links270)
     }
 
-    pub fn beschriftung(self) -> &'static str {
+    pub fn beschriftung(self) -> String {
         match self {
-            Drehung::Normal => "Normal",
-            Drehung::Rechts90 => "90° (rechts)",
-            Drehung::Um180 => "180° (über Kopf)",
-            Drehung::Links270 => "270° (links)",
+            Drehung::Normal => gettext("Normal"),
+            Drehung::Rechts90 => gettext("90° (right)"),
+            Drehung::Um180 => gettext("180° (upside down)"),
+            Drehung::Links270 => gettext("270° (left)"),
         }
     }
 
@@ -132,8 +133,16 @@ pub fn skalierung_text(s: f64) -> String {
     if (s - s.round()).abs() < 0.001 {
         format!("{}", s.round() as i64)
     } else {
-        format!("{s:.2}").trim_end_matches('0').replace('.', ",")
+        format!("{s:.2}")
+            .trim_end_matches('0')
+            .replace('.', &dezimaltrenner())
     }
+}
+
+/// Dezimaltrenner der Oberflächensprache (Bildwiederholrate, Skalierung).
+fn dezimaltrenner() -> String {
+    // TRANSLATORS: decimal separator of refresh rates and scale factors (59.95 Hz, 1.25 ×)
+    pgettext("decimal separator", ".")
 }
 
 /// Ist-Zustand einer Ausgabe, wie der Compositor sie meldet.
@@ -618,8 +627,8 @@ mod tests {
         assert_eq!(Modus::aus_dateiwert("1920x1080@60000"), Some(m));
         assert_eq!(Modus::aus_dateiwert("1920x1080"), None);
         assert_eq!(Modus::aus_dateiwert("0x1080@60000"), None);
-        assert_eq!(m.hz_text(), "60,00 Hz");
-        assert_eq!(Modus::neu(1024, 768, 0).hz_text(), "automatisch");
+        assert_eq!(m.hz_text(), "60.00 Hz");
+        assert_eq!(Modus::neu(1024, 768, 0).hz_text(), "automatic");
     }
 
     #[test]
@@ -630,8 +639,8 @@ mod tests {
         assert_eq!(logische_groesse(m, Drehung::Normal, 2.0), (960, 540));
         assert_eq!(logische_groesse(m, Drehung::Normal, 1.5), (1280, 720));
         assert_eq!(skalierung_text(1.0), "1");
-        assert_eq!(skalierung_text(1.25), "1,25");
-        assert_eq!(skalierung_text(1.5), "1,5");
+        assert_eq!(skalierung_text(1.25), "1.25");
+        assert_eq!(skalierung_text(1.5), "1.5");
     }
 
     #[test]

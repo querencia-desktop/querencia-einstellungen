@@ -15,19 +15,19 @@ use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
 use crate::arbeitsflaeche_modell::{self as am, Arbeitsflaeche, Symbolgroesse};
+use crate::i18n::{gettext, gettext_f, gettext_noop, ngettext_f};
 use crate::modell::Faehigkeiten;
 use crate::{faehigkeiten, hintergrund, ini};
 
-/// Name des Bereichs – **nur hier** ändern (Seitenleiste, Überschrift,
-/// Fenstertitel, Protokoll). Entscheidung 19.10.2026: „Symbole der
-/// Arbeitsfläche“ (nicht „Arbeitsfläche“, zu nah an „Arbeitsflächen“).
-macro_rules! bereichsname {
-    () => {
-        "Symbole der Arbeitsfläche"
-    };
+/// Name des Bereichs (msgid) – **nur hier** ändern (Seitenleiste,
+/// Überschrift, Fenstertitel, Protokoll). Entscheidung 19.10.2026: „Symbole
+/// der Arbeitsfläche“ (nicht „Arbeitsfläche“, zu nah an „Arbeitsflächen“).
+pub const NAME: &str = gettext_noop("Desktop Icons");
+
+/// Fenstertitel des eigenen Fensters (`--arbeitsflaeche`).
+pub fn titel() -> String {
+    gettext_f("Querencia – {name}", &[("name", &gettext(NAME))])
 }
-pub const NAME: &str = bereichsname!();
-pub const TITEL: &str = concat!("Querencia – ", bereichsname!());
 
 struct Oberflaeche {
     rechner: gtk4::CheckButton,
@@ -55,7 +55,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     let hoehe = hintergrund::bildschirmhoehe().map_or(600, |h| (h - 130).clamp(420, 600));
     let fenster = gtk4::Window::builder()
         .application(app)
-        .title(TITEL)
+        .title(titel())
         .default_width(640)
         .default_height(hoehe)
         .build();
@@ -116,48 +116,48 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     let ueberschrift = gtk4::Label::new(None);
     ueberschrift.set_markup(&format!(
         "<b><big>{}</big></b>",
-        glib::markup_escape_text(NAME)
+        glib::markup_escape_text(&gettext(NAME))
     ));
     ueberschrift.set_xalign(0.0);
     aussen.append(&ueberschrift);
 
     // Symbolgröße zuoberst: die Liste klappt nach unten auf (nach oben
     // geklappte Listen bekommen unter labwc 0.9.8 keine Klicks, G2-G).
-    let (f_symbole, b_symbole) = rahmen("Feste Symbole");
+    let (f_symbole, b_symbole) = rahmen(&gettext("Fixed Icons"));
     let groessenzeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
-    groessenzeile.append(&gtk4::Label::new(Some("Symbolgröße:")));
-    let groesse = gtk4::DropDown::from_strings(
-        &Symbolgroesse::ALLE
-            .iter()
-            .map(|g| g.beschriftung())
-            .collect::<Vec<_>>(),
-    );
+    groessenzeile.append(&gtk4::Label::new(Some(&gettext("Icon size:"))));
+    let groessen: Vec<String> = Symbolgroesse::ALLE
+        .iter()
+        .map(|g| g.beschriftung())
+        .collect();
+    let groesse =
+        gtk4::DropDown::from_strings(&groessen.iter().map(String::as_str).collect::<Vec<_>>());
     groessenzeile.append(&groesse);
     b_symbole.append(&groessenzeile);
-    let (rechner, z) = kaestchen("Rechner", "");
+    let (rechner, z) = kaestchen(&gettext("Computer"), "");
     b_symbole.append(&z);
-    let (persoenlich, z) = kaestchen("Persönlicher Ordner", "");
+    let (persoenlich, z) = kaestchen(&gettext("Home Folder"), "");
     b_symbole.append(&z);
-    let (papierkorb, z) = kaestchen("Papierkorb", "");
+    let (papierkorb, z) = kaestchen(&gettext("Trash"), "");
     b_symbole.append(&z);
     aussen.append(&f_symbole);
 
-    let (f_laufwerke, b_laufwerke) = rahmen("Eingehängte Laufwerke zeigen");
+    let (f_laufwerke, b_laufwerke) = rahmen(&gettext("Show Mounted Drives"));
     let (wechsel, z) = kaestchen(
-        "Wechseldatenträger",
-        "USB-Sticks, Speicherkarten, externe Festplatten",
+        &gettext("Removable media"),
+        &gettext("USB sticks, memory cards, external hard disks"),
     );
     b_laufwerke.append(&z);
-    let (optisch, z) = kaestchen("Optische Medien", "CD, DVD");
+    let (optisch, z) = kaestchen(&gettext("Optical media"), &gettext("CD, DVD"));
     b_laufwerke.append(&z);
     let (netz, z) = kaestchen(
-        "Netzlaufwerke",
-        "eingehängte Freigaben (SMB, SFTP, FTP, WebDAV)",
+        &gettext("Network drives"),
+        &gettext("mounted shares (SMB, SFTP, FTP, WebDAV)"),
     );
     b_laufwerke.append(&z);
     let (eingebaut, z) = kaestchen(
-        "Eingebaute Laufwerke",
-        "interne Festplatten und Partitionen",
+        &gettext("Internal drives"),
+        &gettext("internal hard disks and partitions"),
     );
     b_laufwerke.append(&z);
     aussen.append(&f_laufwerke);
@@ -168,9 +168,9 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     hinweis.set_max_width_chars(70);
     hinweis.set_visible(false);
     aussen.append(&hinweis);
-    let quelle = gtk4::Label::new(Some(
-        "Quelle: ~/.config/querencia/desktop.ini [Icons] und [Volumes]; Querencia Desktop übernimmt Änderungen sofort.",
-    ));
+    let quelle = gtk4::Label::new(Some(&gettext(
+        "Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately.",
+    )));
     quelle.set_xalign(0.0);
     quelle.set_wrap(true);
     quelle.add_css_class("dim-label");
@@ -187,9 +187,9 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     status.set_max_width_chars(70);
     fuss.append(&status);
     let knoepfe = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
-    let standard = gtk4::Button::with_label("Standard wiederherstellen");
-    let neu_laden = gtk4::Button::with_label("Neu laden");
-    let uebernehmen = gtk4::Button::with_label("Übernehmen");
+    let standard = gtk4::Button::with_label(&gettext("Restore Defaults"));
+    let neu_laden = gtk4::Button::with_label(&gettext("Reload"));
+    let uebernehmen = gtk4::Button::with_label(&gettext("Apply"));
     uebernehmen.add_css_class("suggested-action");
     knoepfe.append(&standard);
     knoepfe.append(&neu_laden);
@@ -197,7 +197,7 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     platz.set_hexpand(true);
     knoepfe.append(&platz);
     if mit_schliessen {
-        let schliessen = gtk4::Button::with_label("Schließen");
+        let schliessen = gtk4::Button::with_label(&gettext("Close"));
         schliessen.connect_clicked(|b| {
             if let Some(w) = b.root().and_then(|r| r.downcast::<gtk4::Window>().ok()) {
                 w.close();
@@ -255,7 +255,7 @@ fn verdrahten(o: &Rc<Oberflaeche>) {
     let o2 = o.clone();
     o.neu_laden.connect_clicked(move |_| {
         o2.laden();
-        o2.status.set_text("Neu geladen.");
+        o2.status.set_text(&gettext("Reloaded."));
     });
     let o2 = o.clone();
     o.uebernehmen.connect_clicked(move |_| o2.uebernehmen());
@@ -284,11 +284,13 @@ impl Oberflaeche {
         self.zeigen(&a);
         self.uebernehmen.set_sensitive(false);
         self.status.set_text(&if probleme.is_empty() {
-            "Änderungen gelten erst nach „Übernehmen“.".to_owned()
+            gettext("Changes take effect only after “Apply”.")
         } else {
-            format!(
-                "Hinweis: {} Eintrag/Einträge in desktop.ini wurden ignoriert (siehe Protokoll); es gilt der Standard.",
-                probleme.len()
+            ngettext_f(
+                "Note: {n} entry in desktop.ini was ignored (see the log); the default applies.",
+                "Note: {n} entries in desktop.ini were ignored (see the log); the default applies.",
+                probleme.len() as u32,
+                &[],
             )
         });
         eprintln!("querencia-einstellungen: {NAME} geladen: {}", kurz(&a));
@@ -333,10 +335,10 @@ impl Oberflaeche {
         }
         let anders = self.aktuell() != self.geladen.borrow().0;
         self.uebernehmen.set_sensitive(anders);
-        self.status.set_text(if anders {
-            "Geändert – „Übernehmen“ schreibt desktop.ini."
+        self.status.set_text(&if anders {
+            gettext("Changed – “Apply” writes desktop.ini.")
         } else {
-            "Keine Änderung gegenüber desktop.ini."
+            gettext("No change compared to desktop.ini.")
         });
     }
 
@@ -347,13 +349,15 @@ impl Oberflaeche {
         };
         let mut fehlt = Vec::new();
         if !f.laufwerkstypen {
-            fehlt.push("die Laufwerkstypen");
+            fehlt.push(gettext("the drive types"));
         }
         if !f.symbole_sichtbar {
-            fehlt.push("das Ein- und Ausblenden von Rechner, Persönlichem Ordner und Papierkorb");
+            fehlt.push(gettext(
+                "showing and hiding Computer, Home Folder and Trash",
+            ));
         }
         if !f.symbolgroesse {
-            fehlt.push("die Symbolgröße");
+            fehlt.push(gettext("the icon size"));
         }
         if fehlt.is_empty() {
             self.hinweis.set_visible(false);
@@ -361,12 +365,13 @@ impl Oberflaeche {
             return;
         }
         let was = if fehlt.len() == 3 {
-            "diese Einstellungen".to_owned()
+            gettext("these settings")
         } else {
             fehlt.join(", ")
         };
-        let text = format!(
-            "Hinweis: Der laufende Desktop wertet {was} noch nicht aus. Sie werden trotzdem gespeichert und gelten, sobald ein neuerer Querencia Desktop läuft."
+        let text = gettext_f(
+            "Note: The running desktop does not evaluate {what} yet. They are saved anyway and take effect as soon as a newer Querencia Desktop is running.",
+            &[("what", &was)],
         );
         eprintln!("querencia-einstellungen: {NAME}: {text}");
         self.hinweis.set_text(&text);
@@ -380,9 +385,9 @@ impl Oberflaeche {
         // Nicht unbemerkt überschreiben – aber nur die eigenen Gruppen zählen;
         // ein inzwischen geänderter Hintergrund bleibt einfach erhalten.
         if am::eigene_gruppen(&jetzt) != self.geladen.borrow().1 {
-            self.status.set_text(
-                "Die Symbol-Einstellungen in desktop.ini wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.",
-            );
+            self.status.set_text(&gettext(
+                "The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state.",
+            ));
             eprintln!("querencia-einstellungen: {NAME}: Konflikt, nicht geschrieben");
             return;
         }
@@ -394,18 +399,27 @@ impl Oberflaeche {
                 self.uebernehmen.set_sensitive(false);
                 let uhr = jetzt_text("%H:%M:%S").unwrap_or_default();
                 self.status.set_text(&match sicherung {
-                    Some(s) => format!(
-                        "Übernommen um {uhr}. Vorherige Einstellung gesichert als {}.",
-                        s.file_name()
-                            .map(|n| n.to_string_lossy().into_owned())
-                            .unwrap_or_default()
+                    Some(s) => gettext_f(
+                        "Applied at {time}. Previous setting saved as {name}.",
+                        &[
+                            ("time", &uhr),
+                            (
+                                "name",
+                                &s.file_name()
+                                    .map(|n| n.to_string_lossy().into_owned())
+                                    .unwrap_or_default(),
+                            ),
+                        ],
                     ),
-                    None => format!("Übernommen um {uhr}."),
+                    None => gettext_f("Applied at {time}.", &[("time", &uhr)]),
                 });
                 eprintln!("querencia-einstellungen: {NAME} übernommen: {}", kurz(&neu));
             }
             Err(err) => {
-                self.status.set_text(&format!("Nicht gespeichert: {err}"));
+                self.status.set_text(&gettext_f(
+                    "Not saved: {error}",
+                    &[("error", &err.to_string())],
+                ));
                 eprintln!("querencia-einstellungen: {NAME} nicht gespeichert: {err}");
             }
         }
@@ -443,8 +457,12 @@ mod tests {
     /// allein (zu nah an „Arbeitsflächen“, den virtuellen Arbeitsflächen).
     #[test]
     fn name_wie_entschieden() {
-        assert_eq!(NAME, "Symbole der Arbeitsfläche");
-        assert_eq!(TITEL, "Querencia – Symbole der Arbeitsfläche");
-        assert_ne!(NAME, "Arbeitsflächen");
+        // msgid englisch; ohne Katalog (Tests) erscheint sie selbst
+        assert_eq!(NAME, "Desktop Icons");
+        assert_eq!(titel(), "Querencia – Desktop Icons");
+        // der deutsche Name steht in de.po
+        let de = include_str!("../po/de.po");
+        assert!(de.contains("msgid \"Desktop Icons\"\nmsgstr \"Symbole der Arbeitsfläche\""));
+        assert!(!de.contains("msgid \"Desktop Icons\"\nmsgstr \"Arbeitsflächen\""));
     }
 }

@@ -5,6 +5,7 @@
 //! (`cursor-size`) werden beim Lesen und Schreiben umgewandelt.
 use std::collections::BTreeMap;
 
+use crate::i18n::gettext_f;
 use gtk4::gio;
 use gtk4::prelude::*;
 
@@ -80,12 +81,16 @@ pub fn schreiben(aenderungen: &[(&str, String)]) -> Result<(), String> {
     if aenderungen.is_empty() {
         return Ok(());
     }
-    let s = einstellungen().ok_or_else(|| format!("Schema {SCHEMA} fehlt"))?;
+    let s = einstellungen()
+        .ok_or_else(|| gettext_f("Schema {schema} is missing", &[("schema", SCHEMA)]))?;
     for (k, wert) in aenderungen {
         let ergebnis = if s.value(k).type_() == gtk4::glib::VariantTy::INT32 {
-            let zahl: i32 = wert
-                .parse()
-                .map_err(|_| format!("{k}: „{wert}“ ist keine Zahl"))?;
+            let zahl: i32 = wert.parse().map_err(|_| {
+                gettext_f(
+                    "{key}: “{value}” is not a number",
+                    &[("key", k), ("value", wert)],
+                )
+            })?;
             s.set_int(k, zahl)
         } else {
             s.set_string(k, wert)

@@ -16,8 +16,12 @@ use crate::ausgaben::Verbindung;
 use crate::bildschirm_modell::{
     self as bm, Ausgabe, Drehung, FREIE_GROESSEN, Modus, SKALIERUNGEN, Wahl, skalierung_text,
 };
+use crate::i18n::{gettext, gettext_f, ngettext_f, pgettext};
 
-pub const TITEL: &str = "Querencia – Bildschirm";
+/// Fenstertitel des eigenen Fensters (`--bildschirm`).
+pub fn titel() -> String {
+    gettext("Querencia – Screen")
+}
 const FANG: i32 = 60;
 pub const COUNTDOWN_SEKUNDEN: u32 = 15;
 
@@ -85,7 +89,7 @@ pub fn oeffnen(app: &gtk4::Application) -> gtk4::Window {
     let hoehe = crate::hintergrund::bildschirmhoehe().map_or(660, |h| (h - 100).clamp(480, 660));
     let fenster = gtk4::Window::builder()
         .application(app)
-        .title(TITEL)
+        .title(titel())
         .default_width(760)
         .default_height(hoehe)
         .build();
@@ -127,13 +131,15 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     aussen.set_margin_start(14);
     aussen.set_margin_end(14);
     let ueberschrift = gtk4::Label::new(None);
-    ueberschrift.set_markup("<b><big>Bildschirm</big></b>");
+    ueberschrift.set_markup(&format!(
+        "<b><big>{}</big></b>",
+        glib::markup_escape_text(&gettext("Screen"))
+    ));
     ueberschrift.set_xalign(0.0);
     aussen.append(&ueberschrift);
 
     // --- Anordnung
-    let anordnung_rahmen =
-        gtk4::Frame::new(Some("Anordnung der Monitore (ziehen zum Verschieben)"));
+    let anordnung_rahmen = gtk4::Frame::new(Some(&gettext("Monitor Arrangement (drag to move)")));
     let anordnung = gtk4::DrawingArea::new();
     anordnung.set_size_request(400, 130);
     anordnung.set_hexpand(true);
@@ -147,7 +153,7 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     // --- Einstellungen je Monitor (oben, damit die Aufklapplisten nach
     // unten Platz haben: nach oben geklappte Listen bekommen unter labwc
     // 0.9.8 keine Klicks, siehe Bericht G2-G)
-    let rahmen = gtk4::Frame::new(Some("Monitor"));
+    let rahmen = gtk4::Frame::new(Some(&gettext("Monitor")));
     let gitter = gtk4::Grid::new();
     gitter.set_row_spacing(4);
     gitter.set_column_spacing(10);
@@ -155,20 +161,23 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     gitter.set_margin_bottom(6);
     gitter.set_margin_start(8);
     gitter.set_margin_end(8);
-    let beschriftung = |t: &str| {
-        let l = gtk4::Label::new(Some(t));
+    let beschriftung = |t: String| {
+        let l = gtk4::Label::new(Some(&t));
         l.set_xalign(1.0);
         l
     };
     let monitor = gtk4::DropDown::from_strings(&[]);
     monitor.set_hexpand(true);
-    let aktiv = gtk4::CheckButton::with_label("Eingeschaltet");
+    let aktiv = gtk4::CheckButton::with_label(&gettext("On"));
     let aufloesung = gtk4::DropDown::from_strings(&[]);
     let rate = gtk4::DropDown::from_strings(&[]);
     let drehung = gtk4::DropDown::from_strings(
         &Drehung::ALLE
             .iter()
             .map(|d| d.beschriftung())
+            .collect::<Vec<_>>()
+            .iter()
+            .map(String::as_str)
             .collect::<Vec<_>>(),
     );
     let skalierung = gtk4::DropDown::from_strings(&[]);
@@ -177,22 +186,22 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     skalierung_hinweis.set_wrap(true);
     skalierung_hinweis.set_max_width_chars(50);
     skalierung_hinweis.add_css_class("dim-label");
-    let haupt = gtk4::Button::with_label("Als Hauptmonitor verwenden");
+    let haupt = gtk4::Button::with_label(&gettext("Use as Primary Monitor"));
     let details = gtk4::Label::new(None);
     details.set_xalign(0.0);
     details.set_wrap(true);
     details.add_css_class("dim-label");
-    gitter.attach(&beschriftung("Monitor:"), 0, 0, 1, 1);
+    gitter.attach(&beschriftung(gettext("Monitor:")), 0, 0, 1, 1);
     gitter.attach(&monitor, 1, 0, 2, 1);
     gitter.attach(&aktiv, 1, 1, 1, 1);
     gitter.attach(&haupt, 2, 1, 1, 1);
-    gitter.attach(&beschriftung("Auflösung:"), 0, 2, 1, 1);
+    gitter.attach(&beschriftung(gettext("Resolution:")), 0, 2, 1, 1);
     gitter.attach(&aufloesung, 1, 2, 1, 1);
-    gitter.attach(&beschriftung("Wiederholrate:"), 0, 3, 1, 1);
+    gitter.attach(&beschriftung(gettext("Refresh rate:")), 0, 3, 1, 1);
     gitter.attach(&rate, 1, 3, 1, 1);
-    gitter.attach(&beschriftung("Drehung:"), 0, 4, 1, 1);
+    gitter.attach(&beschriftung(gettext("Rotation:")), 0, 4, 1, 1);
     gitter.attach(&drehung, 1, 4, 1, 1);
-    gitter.attach(&beschriftung("Skalierung:"), 0, 5, 1, 1);
+    gitter.attach(&beschriftung(gettext("Scale:")), 0, 5, 1, 1);
     gitter.attach(&skalierung, 1, 5, 1, 1);
     gitter.attach(&skalierung_hinweis, 1, 6, 2, 1);
     // Detailzeile außerhalb des Gitters: eine umbrechende, breite Zeile würde
@@ -216,15 +225,15 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     status.set_max_width_chars(70);
     fuss.append(&status);
     let knoepfe = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
-    let zuruecksetzen = gtk4::Button::with_label("Zurücksetzen");
-    let anwenden = gtk4::Button::with_label("Anwenden");
+    let zuruecksetzen = gtk4::Button::with_label(&gettext("Reset"));
+    let anwenden = gtk4::Button::with_label(&pgettext("screen settings", "Apply"));
     anwenden.add_css_class("suggested-action");
     knoepfe.append(&zuruecksetzen);
     let platz = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
     platz.set_hexpand(true);
     knoepfe.append(&platz);
     if mit_schliessen {
-        let schliessen = gtk4::Button::with_label("Schließen");
+        let schliessen = gtk4::Button::with_label(&gettext("Close"));
         schliessen.connect_clicked(|b| {
             if let Some(w) = b.root().and_then(|r| r.downcast::<gtk4::Window>().ok()) {
                 w.close();
@@ -274,8 +283,10 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     });
     verdrahten(&o);
     if let Some(e) = fehler {
-        o.status
-            .set_text(&format!("Bildschirm kann nicht verwaltet werden: {e}"));
+        o.status.set_text(&gettext_f(
+            "The screen cannot be managed: {error}",
+            &[("error", &e.to_string())],
+        ));
         for w in [
             &o.monitor,
             &o.aufloesung,
@@ -293,9 +304,11 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
         o.monitorliste_fuellen();
         o.auswahl_zeigen();
         let n = o.zustand.borrow().ausgaben.len();
-        o.status.set_text(&format!(
-            "{n} Ausgabe{} gemeldet (wlr-output-management, labwc). Änderungen gelten erst nach „Anwenden“.",
-            if n == 1 { "" } else { "n" }
+        o.status.set_text(&ngettext_f(
+            "{n} output reported (wlr-output-management, labwc). Changes take effect only after “Apply”.",
+            "{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”.",
+            n as u32,
+            &[],
         ));
     }
     (aussen, fuss)
@@ -311,10 +324,10 @@ impl Oberflaeche {
             .map(|(a, w)| {
                 let mut n = a.anzeigename();
                 if w.haupt {
-                    n.push_str(" – Hauptmonitor");
+                    n = gettext_f("{name} – primary monitor", &[("name", &n)]);
                 }
                 if !w.aktiv {
-                    n.push_str(" (aus)");
+                    n = gettext_f("{name} (off)", &[("name", &n)]);
                 }
                 n
             })
@@ -367,7 +380,7 @@ impl Oberflaeche {
             .map(|(b, h)| {
                 let mut t = format!("{b} × {h}");
                 if Some((*b, *h)) == bevorzugt {
-                    t.push_str(" (bevorzugt)");
+                    t = gettext_f("{size} (preferred)", &[("size", &t)]);
                 }
                 t
             })
@@ -418,33 +431,50 @@ impl Oberflaeche {
         let aktiv = w.aktiv;
         let haupt = w.haupt;
         let (lb, lh) = w.logische_groesse();
-        let details = format!(
-            "{}{}{} · Modi: {} · logische Größe {}×{} bei {},{}{}",
-            a.name,
-            if a.beschreibung.trim().is_empty() {
-                String::new()
-            } else {
-                format!(" – {}", a.beschreibung.trim())
-            },
-            if a.physisch_mm.0 > 0 {
-                format!(" · {}×{} mm", a.physisch_mm.0, a.physisch_mm.1)
-            } else {
-                String::new()
-            },
-            if frei {
-                "keine Liste (freie Größen, z. B. virtuelle Ausgabe)".to_owned()
-            } else {
-                a.modi.len().to_string()
-            },
-            lb,
-            lh,
-            w.position.0,
-            w.position.1,
-            if a.seriennummer.trim().is_empty() {
-                String::new()
-            } else {
-                format!(" · Seriennummer {}", a.seriennummer.trim())
-            }
+        let details = gettext_f(
+            "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}",
+            &[
+                ("output", &a.name),
+                (
+                    "description",
+                    &if a.beschreibung.trim().is_empty() {
+                        String::new()
+                    } else {
+                        format!(" – {}", a.beschreibung.trim())
+                    },
+                ),
+                (
+                    "size",
+                    &if a.physisch_mm.0 > 0 {
+                        format!(" · {}×{} mm", a.physisch_mm.0, a.physisch_mm.1)
+                    } else {
+                        String::new()
+                    },
+                ),
+                (
+                    "modes",
+                    &if frei {
+                        gettext("no list (free sizes, e.g. virtual output)")
+                    } else {
+                        a.modi.len().to_string()
+                    },
+                ),
+                ("width", &lb.to_string()),
+                ("height", &lh.to_string()),
+                ("x", &w.position.0.to_string()),
+                ("y", &w.position.1.to_string()),
+                (
+                    "serial",
+                    &if a.seriennummer.trim().is_empty() {
+                        String::new()
+                    } else {
+                        gettext_f(
+                            " · serial number {serial}",
+                            &[("serial", a.seriennummer.trim())],
+                        )
+                    },
+                ),
+            ],
         );
         let unterschied = bm::unterschiedlich(&z.ist, &z.wahlen);
         drop(z);
@@ -489,9 +519,9 @@ impl Oberflaeche {
         let s = z.wahlen.get(z.gewaehlt).map_or(1.0, |w| w.skalierung);
         drop(z);
         if (s - s.round()).abs() > 0.001 {
-            self.skalierung_hinweis.set_text(
-                "Gebrochene Skalierung: GTK 4.10 zeichnet mit dem nächsten ganzen Faktor und verkleinert; der Desktop zeigt Zentrieren und Kacheln dann mit ¾ der Pixelgröße. Ganze Faktoren (1 ×, 2 ×) sind pixelgenau.",
-            );
+            self.skalierung_hinweis.set_text(&gettext(
+                "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact.",
+            ));
         } else {
             self.skalierung_hinweis.set_text("");
         }
@@ -521,7 +551,11 @@ impl Oberflaeche {
 
     fn neu_lesen(&self) -> Result<(), String> {
         let mut z = self.zustand.borrow_mut();
-        let ausgaben = z.verbindung.as_mut().ok_or("keine Verbindung")?.lesen()?;
+        let ausgaben = z
+            .verbindung
+            .as_mut()
+            .ok_or_else(|| gettext("no connection"))?
+            .lesen()?;
         let ist = bm::wahlen_aus(&ausgaben);
         z.ausgaben = ausgaben;
         z.wahlen = ist.clone();
@@ -540,14 +574,14 @@ impl Oberflaeche {
         };
         if !bm::unterschiedlich(&vorher, &soll) {
             self.status
-                .set_text("Keine Änderung gegenüber dem aktuellen Zustand.");
+                .set_text(&gettext("No change compared to the current state."));
             return;
         }
         let ergebnis = {
             let mut z = self.zustand.borrow_mut();
             let v = z.verbindung.as_mut();
             match v {
-                None => Err("keine Verbindung zum Compositor".to_owned()),
+                None => Err(gettext("no connection to the compositor")),
                 Some(v) => v
                     .anwenden(&soll, true)
                     .map_err(|e| format!("Test: {e}"))
@@ -556,7 +590,8 @@ impl Oberflaeche {
         };
         match ergebnis {
             Err(e) => {
-                self.status.set_text(&format!("Nicht angewendet – {e}"));
+                self.status
+                    .set_text(&gettext_f("Not applied – {error}", &[("error", &e)]));
                 let _ = self.neu_lesen();
                 let mut z = self.zustand.borrow_mut();
                 z.wahlen = soll;
@@ -570,8 +605,9 @@ impl Oberflaeche {
                 );
                 let _ = self.neu_lesen();
                 self.geaendert();
-                self.status.set_text(&format!(
-                    "Angewendet. Bestätigung innerhalb von {COUNTDOWN_SEKUNDEN} s, sonst wird der vorherige Zustand wiederhergestellt."
+                self.status.set_text(&gettext_f(
+                    "Applied. Confirm within {seconds} s, otherwise the previous state is restored.",
+                    &[("seconds", &COUNTDOWN_SEKUNDEN.to_string())],
                 ));
                 self.countdown(vorher, soll);
             }
@@ -586,7 +622,7 @@ impl Oberflaeche {
             .root()
             .and_then(|r| r.downcast::<gtk4::Window>().ok());
         let dialog = gtk4::Window::builder()
-            .title("Bildschirmeinstellungen behalten?")
+            .title(gettext("Keep Screen Settings?"))
             .modal(true)
             .default_width(460)
             .resizable(false)
@@ -599,9 +635,9 @@ impl Oberflaeche {
         inhalt.set_margin_bottom(14);
         inhalt.set_margin_start(16);
         inhalt.set_margin_end(16);
-        let frage = gtk4::Label::new(Some(
-            "Die neuen Bildschirmeinstellungen sind aktiv. Sollen sie behalten werden?",
-        ));
+        let frage = gtk4::Label::new(Some(&gettext(
+            "The new screen settings are active. Do you want to keep them?",
+        )));
         frage.set_xalign(0.0);
         frage.set_wrap(true);
         let zaehler = gtk4::Label::new(None);
@@ -609,8 +645,8 @@ impl Oberflaeche {
         zaehler.add_css_class("dim-label");
         let knoepfe = gtk4::Box::new(gtk4::Orientation::Horizontal, 8);
         knoepfe.set_halign(gtk4::Align::End);
-        let wiederherstellen = gtk4::Button::with_label("Vorherige Einstellungen wiederherstellen");
-        let behalten = gtk4::Button::with_label("Einstellungen behalten");
+        let wiederherstellen = gtk4::Button::with_label(&gettext("Restore Previous Settings"));
+        let behalten = gtk4::Button::with_label(&gettext("Keep Settings"));
         behalten.add_css_class("suggested-action");
         knoepfe.append(&wiederherstellen);
         knoepfe.append(&behalten);
@@ -621,9 +657,11 @@ impl Oberflaeche {
 
         let verbleibend = Rc::new(Cell::new(COUNTDOWN_SEKUNDEN));
         let zaehler_text = |n: u32| {
-            format!(
-                "Ohne Bestätigung werden die vorherigen Einstellungen in {n} Sekunde{} wiederhergestellt.",
-                if n == 1 { "" } else { "n" }
+            ngettext_f(
+                "Without confirmation the previous settings are restored in {n} second.",
+                "Without confirmation the previous settings are restored in {n} seconds.",
+                n,
+                &[],
             )
         };
         zaehler.set_text(&zaehler_text(COUNTDOWN_SEKUNDEN));
@@ -647,19 +685,24 @@ impl Oberflaeche {
                     let mut z = o.zustand.borrow_mut();
                     match z.verbindung.as_mut() {
                         Some(v) => v.anwenden(&vorher, false),
-                        None => Err("keine Verbindung".to_owned()),
+                        None => Err(gettext("no connection")),
                     }
                 };
                 let _ = o.neu_lesen();
                 o.geaendert();
                 match ergebnis {
                     Ok(()) => {
-                        eprintln!("querencia-einstellungen: Bildschirm zurückgesetzt auf {}", kurz(&vorher));
-                        o.status
-                            .set_text("Vorherige Bildschirmeinstellungen wiederhergestellt; nichts gespeichert.");
+                        eprintln!(
+                            "querencia-einstellungen: Bildschirm zurückgesetzt auf {}",
+                            kurz(&vorher)
+                        );
+                        o.status.set_text(&gettext(
+                            "Previous screen settings restored; nothing saved.",
+                        ));
                     }
-                    Err(e) => o.status.set_text(&format!(
-                        "Wiederherstellen fehlgeschlagen – {e}. Der neue Zustand bleibt, nichts gespeichert."
+                    Err(e) => o.status.set_text(&gettext_f(
+                        "Restoring failed – {error}. The new state remains, nothing saved.",
+                        &[("error", &e)],
                     )),
                 }
                 dialog.close();
@@ -731,14 +774,15 @@ impl Oberflaeche {
         match bm::konfig_speichern(&pfad, &bm::konfig_schreiben(&wahlen, &ausgaben)) {
             Ok(()) => {
                 eprintln!("querencia-einstellungen: {} geschrieben", pfad.display());
-                self.status.set_text(&format!(
-                    "Bildschirmeinstellungen behalten und gespeichert in {}. Sie werden beim Sitzungsstart wieder gesetzt.",
-                    pfad.display()
+                self.status.set_text(&gettext_f(
+                    "Screen settings kept and saved in {file}. They are applied again at session start.",
+                    &[("file", &pfad.display().to_string())],
                 ));
             }
-            Err(e) => self
-                .status
-                .set_text(&format!("Einstellungen aktiv, aber nicht gespeichert: {e}")),
+            Err(e) => self.status.set_text(&gettext_f(
+                "Settings active, but not saved: {error}",
+                &[("error", &e)],
+            )),
         }
         let mut z = self.zustand.borrow_mut();
         z.wahlen = wahlen.clone();
@@ -795,7 +839,7 @@ impl Oberflaeche {
             cr.set_source_rgb(0.4, 0.4, 0.4);
             cr.move_to(16.0, 30.0);
             cr.set_font_size(14.0);
-            let _ = cr.show_text("Keine eingeschaltete Ausgabe");
+            let _ = cr.show_text(&gettext("No output switched on"));
             return;
         }
         for (i, w) in z.wahlen.iter().enumerate() {
@@ -1012,9 +1056,11 @@ fn verdrahten(o: &Rc<Oberflaeche>) {
                 Ok(()) => {
                     o2.geaendert();
                     o2.status
-                        .set_text("Zurückgesetzt auf den aktuellen Zustand des Compositors.");
+                        .set_text(&gettext("Reset to the current state of the compositor."));
                 }
-                Err(e) => o2.status.set_text(&format!("Lesen fehlgeschlagen – {e}")),
+                Err(e) => o2
+                    .status
+                    .set_text(&gettext_f("Reading failed – {error}", &[("error", &e)])),
             });
     }
     {

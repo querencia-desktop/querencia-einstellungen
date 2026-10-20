@@ -13,20 +13,25 @@ use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
 use crate::bereiche;
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 
 /// Typen der Panel-Elemente und ihre Namen (wie `applets.rs` im Panel).
 const NAMEN: &[(&str, &str)] = &[
-    ("applications", "Anwendungen"),
-    ("places", "Orte"),
-    ("system", "System"),
-    ("window-list", "Fensterliste"),
-    ("workspace-switcher", "Arbeitsflächenumschalter"),
-    ("clock", "Uhr"),
-    ("volume", "Lautstärke"),
-    ("network", "Netzwerk"),
+    ("applications", gettext_noop("Applications")),
+    ("places", gettext_noop("Places")),
+    ("system", gettext_noop("System")),
+    ("window-list", gettext_noop("Window List")),
+    ("workspace-switcher", gettext_noop("Workspace Switcher")),
+    ("clock", gettext_noop("Clock")),
+    ("volume", gettext_noop("Volume")),
+    ("network", gettext_noop("Network")),
 ];
 
-const BEREICHE: &[(&str, &str)] = &[("Start", "links"), ("Center", "Mitte"), ("End", "rechts")];
+const BEREICHE: &[(&str, &str)] = &[
+    ("Start", gettext_noop("left")),
+    ("Center", gettext_noop("center")),
+    ("End", gettext_noop("right")),
+];
 
 pub fn pfad() -> PathBuf {
     glib::user_config_dir().join("querencia").join("panel.ini")
@@ -34,11 +39,11 @@ pub fn pfad() -> PathBuf {
 
 fn kante(k: &str) -> String {
     match k {
-        "top" => "Oberes Panel".into(),
-        "bottom" => "Unteres Panel".into(),
-        "left" => "Linkes Panel".into(),
-        "right" => "Rechtes Panel".into(),
-        _ => format!("Panel ({k})"),
+        "top" => gettext("Top Panel"),
+        "bottom" => gettext("Bottom Panel"),
+        "left" => gettext("Left Panel"),
+        "right" => gettext("Right Panel"),
+        _ => gettext_f("Panel ({edge})", &[("edge", k)]),
     }
 }
 
@@ -55,12 +60,15 @@ fn element(kf: &glib::KeyFile, id: &str, starter: &dyn Fn(&str) -> Option<String
             .string(&gruppe, "DesktopId")
             .ok()
             .and_then(|d| starter(&d).or_else(|| Some(d.to_string())));
-        return format!("Starter „{}“", app.unwrap_or_else(|| id.to_owned()));
+        return gettext_f(
+            "Launcher “{name}”",
+            &[("name", &app.unwrap_or_else(|| id.to_owned()))],
+        );
     }
     NAMEN
         .iter()
         .find(|(t, _)| *t == typ)
-        .map_or(typ.clone(), |(_, n)| (*n).to_owned())
+        .map_or(typ.clone(), |(_, n)| gettext(*n))
 }
 
 /// Zeilen (Beschriftung, Wert) des gespeicherten Aufbaus; `Err` mit Grund,
@@ -99,13 +107,16 @@ pub fn aufbau(
                 .unwrap_or_default();
             if !ids.is_empty() {
                 let namen: Vec<String> = ids.iter().map(|id| element(&kf, id, starter)).collect();
-                teile.push(format!("{wo}: {}", namen.join(", ")));
+                teile.push(format!("{}: {}", gettext(*wo), namen.join(", ")));
             }
         }
         zeilen.push((
-            format!("{} ({hoehe} Pixel):", kante(&k)),
+            gettext_f(
+                "{panel} ({height} pixels):",
+                &[("panel", &kante(&k)), ("height", &hoehe.to_string())],
+            ),
             if teile.is_empty() {
-                "leer".into()
+                gettext("empty")
             } else {
                 teile.join("\n")
             },
@@ -129,12 +140,17 @@ fn fuellen(raster: &gtk4::Grid) {
         Ok(text) => aufbau(&text, &anwendungsname).unwrap_or_else(|e| {
             vec![(
                 "panel.ini:".into(),
-                format!("nicht lesbar ({e}) – das Panel nutzt dann seinen Standardaufbau"),
+                gettext_f(
+                    "not readable ({error}) – the panel then uses its default layout",
+                    &[("error", &e)],
+                ),
             )]
         }),
         Err(_) => vec![(
             "panel.ini:".into(),
-            "noch nicht vorhanden – das Panel zeigt seinen Standardaufbau und legt die Datei bei der ersten Änderung an".into(),
+            gettext(
+                "not present yet – the panel shows its default layout and creates the file at the first change",
+            ),
         )],
     };
     eprintln!(
@@ -161,24 +177,38 @@ fn fuellen(raster: &gtk4::Grid) {
 }
 
 pub fn seite() -> gtk4::Widget {
-    let s = bereiche::seite("Panels");
+    let s = bereiche::seite(&gettext("Panels"));
     let einleitung = gtk4::Label::new(None);
-    einleitung.set_markup("<b>Die Panels richten Sie direkt am Panel ein, wie in GNOME 2.</b> Jede Änderung speichert das Panel sofort; diese Seite zeigt den gespeicherten Aufbau.");
+    einleitung.set_markup(&format!(
+        "<b>{}</b> {}",
+        glib::markup_escape_text(&gettext(
+            "You set up the panels directly on the panel, as in GNOME 2."
+        )),
+        glib::markup_escape_text(&gettext(
+            "The panel saves every change immediately; this page shows the saved layout."
+        ))
+    ));
     einleitung.set_xalign(0.0);
     einleitung.set_wrap(true);
     einleitung.set_max_width_chars(70);
     s.append(&einleitung);
 
-    let rahmen = gtk4::Frame::new(Some("So geht es"));
+    let rahmen = gtk4::Frame::new(Some(&gettext("How It Works")));
     let liste = gtk4::Box::new(gtk4::Orientation::Vertical, 4);
     liste.set_margin_top(6);
     liste.set_margin_bottom(6);
     liste.set_margin_start(8);
     liste.set_margin_end(8);
     for zeile in [
-        "Hinzufügen: Rechtsklick auf eine freie Stelle im Panel → „Zum Panel hinzufügen …“ (Menüs, Uhr, Lautstärke, Netzwerk, Anwendungsstarter). Das Element kommt in den angeklickten Teil des Panels.",
-        "Verschieben: Rechtsklick auf ein Element → „Nach links“, „Nach rechts“, „An den linken Rand“, „An den rechten Rand“; oder mit der mittleren Maustaste (bzw. Alt und linker Taste) ziehen.",
-        "Entfernen: Rechtsklick auf einen Starter, die Uhr oder die Lautstärke → „Aus dem Panel entfernen“.",
+        gettext(
+            "Add: right-click a free spot on the panel → “Add to Panel …” (menus, clock, volume, network, application launcher). The item goes into the clicked part of the panel.",
+        ),
+        gettext(
+            "Move: right-click an item → “Move Left”, “Move Right”, “Move to the Left Edge”, “Move to the Right Edge”; or drag it with the middle mouse button (or Alt and the left button).",
+        ),
+        gettext(
+            "Remove: right-click a launcher, the clock or the volume control → “Remove From Panel”.",
+        ),
     ] {
         let l = gtk4::Label::new(Some(&format!("•  {zeile}")));
         l.set_xalign(0.0);
@@ -189,7 +219,7 @@ pub fn seite() -> gtk4::Widget {
     rahmen.set_child(Some(&liste));
     s.append(&rahmen);
 
-    let rahmen = gtk4::Frame::new(Some("Gespeicherter Aufbau"));
+    let rahmen = gtk4::Frame::new(Some(&gettext("Saved Layout")));
     let raster = gtk4::Grid::new();
     raster.set_row_spacing(6);
     raster.set_column_spacing(12);
@@ -201,17 +231,17 @@ pub fn seite() -> gtk4::Widget {
     rahmen.set_child(Some(&raster));
     s.append(&rahmen);
 
-    let lage = gtk4::Label::new(Some(
-        "Lage und Höhe der beiden Panels sind fest eingestellt (siehe oben); ein Menüpunkt dafür kommt mit einer späteren Fassung des Panels.",
-    ));
+    let lage = gtk4::Label::new(Some(&gettext(
+        "Position and height of the two panels are fixed (see above); a menu item for this comes with a later version of the panel.",
+    )));
     lage.set_xalign(0.0);
     lage.set_wrap(true);
     lage.set_max_width_chars(70);
     lage.add_css_class("dim-label");
     s.append(&lage);
-    s.append(&bereiche::quelle(&format!(
-        "{} (Formatversion 1), geschrieben vom Panel",
-        pfad().display()
+    s.append(&bereiche::quelle(&gettext_f(
+        "{file} (format version 1), written by the panel",
+        &[("file", &pfad().display().to_string())],
     )));
 
     // Änderungen im Panel sofort zeigen (das Panel ersetzt die Datei atomar)
@@ -250,16 +280,13 @@ mod tests {
         })
         .unwrap();
         assert_eq!(z.len(), 2);
-        assert_eq!(z[0].0, "Oberes Panel (32 Pixel):");
+        assert_eq!(z[0].0, "Top Panel (32 pixels):");
         assert_eq!(
             z[0].1,
-            "links: Anwendungen, Orte, System, Starter „Firefox“\nrechts: Lautstärke, Netzwerk, Uhr"
+            "left: Applications, Places, System, Launcher “Firefox”\nright: Volume, Network, Clock"
         );
-        assert_eq!(z[1].0, "Unteres Panel (32 Pixel):");
-        assert_eq!(
-            z[1].1,
-            "links: Fensterliste\nrechts: Arbeitsflächenumschalter"
-        );
+        assert_eq!(z[1].0, "Bottom Panel (32 pixels):");
+        assert_eq!(z[1].1, "left: Window List\nright: Workspace Switcher");
     }
 
     #[test]
@@ -271,10 +298,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             z[0],
-            (
-                "Linkes Panel (32 Pixel):".to_owned(),
-                "links: neu".to_owned()
-            )
+            ("Left Panel (32 pixels):".to_owned(), "left: neu".to_owned())
         );
         assert!(aufbau("kein ini", &|_| None).is_err());
         assert!(aufbau("[Layout]\n", &|_| None).is_err());

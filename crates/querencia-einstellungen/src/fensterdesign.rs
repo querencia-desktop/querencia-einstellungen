@@ -8,6 +8,7 @@ use std::rc::Rc;
 use gtk4::prelude::*;
 use gtk4::{glib, pango};
 
+use crate::i18n::{gettext, gettext_f, gettext_noop};
 use crate::labwc_konfig::Stand;
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
@@ -17,17 +18,17 @@ use crate::tastatur::ja;
 pub const KNOEPFE: &[(&str, &str)] = &[
     (
         "icon:iconify,max,close",
-        "Programmsymbol links; Minimieren, Maximieren, Schließen rechts (Standard)",
+        gettext_noop("Program icon on the left; minimize, maximize, close on the right (default)"),
     ),
     (
         "menu:iconify,max,close",
-        "Fenstermenü links; Minimieren, Maximieren, Schließen rechts",
+        gettext_noop("Window menu on the left; minimize, maximize, close on the right"),
     ),
     (
         "close,iconify,max:",
-        "Schließen, Minimieren, Maximieren links",
+        gettext_noop("Close, minimize, maximize on the left"),
     ),
-    ("icon:close", "Nur Schließen"),
+    ("icon:close", gettext_noop("Close only")),
 ];
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -81,8 +82,10 @@ pub struct Fensterdesign {
 
 impl Bereich for Fensterdesign {
     type Werte = Werte;
-    const NAME: &'static str = "Fensterdesign";
-    const QUELLE: &'static str = "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); Themen in ~/.local/share/themes/*/labwc/themerc und /usr/share/themes.";
+    const NAME: &'static str = gettext_noop("Window Design");
+    const QUELLE: &'static str = gettext_noop(
+        "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes.",
+    );
 
     fn lesen(st: &Stand) -> Werte {
         let t = |k: &str| lx::wert(&st.rc, lx::THEMA, k);
@@ -130,35 +133,38 @@ impl Bereich for Fensterdesign {
 
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
-        let (f, b) = ls::rahmen("Thema der Fensterrahmen");
+        let (f, b) = ls::rahmen(&gettext("Window Frame Theme"));
         let themen_kasten = gtk4::Box::new(gtk4::Orientation::Vertical, 4);
         b.append(&themen_kasten);
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Form");
+        let (f, b) = ls::rahmen(&gettext("Shape"));
         let eckenradius = gtk4::SpinButton::with_range(0.0, 20.0, 1.0);
-        b.append(&ls::zeile("Eckenradius oben (Pixel):", &eckenradius));
-        let schatten = gtk4::CheckButton::with_label("Schatten hinter Fenstern");
+        b.append(&ls::zeile(
+            &gettext("Top corner radius (pixels):"),
+            &eckenradius,
+        ));
+        let schatten = gtk4::CheckButton::with_label(&gettext("Shadows behind windows"));
         b.append(&schatten);
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Knöpfe der Titelleiste");
+        let (f, b) = ls::rahmen(&gettext("Title Bar Buttons"));
         let knoepfe_kasten = gtk4::Box::new(gtk4::Orientation::Vertical, 4);
         b.append(&knoepfe_kasten);
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Schrift der Titelleiste");
+        let (f, b) = ls::rahmen(&gettext("Title Bar Font"));
         let schrift = gtk4::FontDialogButton::new(Some(
             gtk4::FontDialog::builder()
-                .title("Schrift der Titelleiste")
+                .title(gettext("Title Bar Font"))
                 .modal(true)
                 .build(),
         ));
         schrift.set_halign(gtk4::Align::Start);
         b.append(&schrift);
-        b.append(&ls::grau(
-            "Für aktive und inaktive Fenster. Die übrigen Schriften stehen im Bereich „Schriften“.",
-        ));
+        b.append(&ls::grau(&gettext(
+            "For active and inactive windows. The other fonts are in the “Fonts” section.",
+        )));
         inhalt.append(&f);
 
         let d = Fensterdesign {
@@ -187,9 +193,9 @@ impl Bereich for Fensterdesign {
         }
         let beschriftung = |t: &String| {
             if t.is_empty() {
-                "Eingebautes labwc-Thema".to_owned()
+                gettext("Built-in labwc theme")
             } else if t == &w.thema && !self::themen().contains(t) {
-                format!("{t} (nicht installiert)")
+                gettext_f("{theme} (not installed)", &[("theme", t)])
             } else {
                 t.clone()
             }
@@ -209,12 +215,12 @@ impl Bereich for Fensterdesign {
         self.schatten.set_active(w.schatten);
         let mut knoepfe: Vec<(String, String)> = KNOEPFE
             .iter()
-            .map(|(k, t)| ((*k).to_owned(), (*t).to_owned()))
+            .map(|(k, t)| ((*k).to_owned(), gettext(*t)))
             .collect();
         if !knoepfe.iter().any(|(k, _)| k == &w.knoepfe) {
             knoepfe.push((
                 w.knoepfe.clone(),
-                format!("Eigene Anordnung: {}", w.knoepfe),
+                gettext_f("Custom arrangement: {layout}", &[("layout", &w.knoepfe)]),
             ));
         }
         ls::optionen(

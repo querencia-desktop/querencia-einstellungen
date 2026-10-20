@@ -34,6 +34,7 @@ mod gsettings;
 mod hintergrund;
 mod hintergrund_katalog;
 mod hintergrund_seite;
+mod i18n;
 mod ini;
 mod labwc_konfig;
 mod labwc_seite;
@@ -43,12 +44,14 @@ mod maus;
 mod modell;
 mod panels;
 mod schriften;
+mod sprache;
 mod standardanwendungen;
 mod standardanwendungen_modell;
 mod tastatur;
 mod vorschau;
 mod xkb;
 
+use crate::i18n::gettext;
 use gtk4::prelude::*;
 use gtk4::{gio, glib};
 
@@ -108,6 +111,7 @@ fn main() -> glib::ExitCode {
     if args.iter().any(|a| a == "--standardanwendungen-zeigen") {
         return glib::ExitCode::from(standardanwendungen::zeigen() as u8);
     }
+    i18n::init();
     let nur_hintergrund = args.iter().any(|a| a == "--hintergrund");
     let nur_bildschirm = args.iter().any(|a| a == "--bildschirm");
     let nur_arbeitsflaeche = args.iter().any(|a| a == "--arbeitsflaeche");
@@ -137,7 +141,7 @@ fn main() -> glib::ExitCode {
 fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
     let fenster = gtk4::Window::builder()
         .application(app)
-        .title("Querencia Einstellungen")
+        .title(gettext("Querencia Settings"))
         .default_width(860)
         .default_height(600)
         .build();
@@ -148,7 +152,10 @@ fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
     kopf.set_margin_start(12);
     kopf.append(&logo::bild(32));
     let titel = gtk4::Label::new(None);
-    titel.set_markup("<b><big>Querencia Einstellungen</big></b>");
+    titel.set_markup(&format!(
+        "<b><big>{}</big></b>",
+        glib::markup_escape_text(&gettext("Querencia Settings"))
+    ));
     titel.set_xalign(0.0);
     kopf.append(&titel);
 
@@ -158,7 +165,7 @@ fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
         let rollbar = gtk4::ScrolledWindow::new();
         rollbar.set_policy(gtk4::PolicyType::Never, gtk4::PolicyType::Automatic);
         rollbar.set_child(Some(&b.seite));
-        stapel.add_titled(&rollbar, Some(b.name), b.name);
+        stapel.add_titled(&rollbar, Some(b.id), &b.name);
     }
     let liste = gtk4::StackSidebar::new();
     liste.set_stack(&stapel);

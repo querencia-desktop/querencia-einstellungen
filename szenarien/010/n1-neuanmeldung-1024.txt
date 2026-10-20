@@ -1,0 +1,13 @@
+extent 1024 768
+wait 3500
+move 152 468
+click
+wait 1200
+shot 01-sprache-neu.png
+move 152 328
+click
+wait 1200
+shot 02-tastatur-neu.png
+run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
+run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && tr "\0" "\n" < /proc/$p/environ | grep -E "^(LANG|LANGUAGE|LC_[A-Z]+)="; done | sort -u > app-umgebung.txt
+wait 500

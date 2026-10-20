@@ -11,16 +11,17 @@ use std::rc::Rc;
 use gtk4::prelude::*;
 
 use crate::gsettings as gs;
+use crate::i18n::{gettext, gettext_noop, pgettext};
 use crate::labwc_konfig::Stand;
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
 use crate::tastatur::ja;
 
 pub const GROESSEN: &[(u32, &str)] = &[
-    (24, "Normal (24)"),
-    (32, "Groß (32)"),
-    (48, "Größer (48)"),
-    (64, "Sehr groß (64)"),
+    (24, gettext_noop("Normal (24)")),
+    (32, gettext_noop("Large (32)")),
+    (48, gettext_noop("Larger (48)")),
+    (64, gettext_noop("Very large (64)")),
 ];
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -82,8 +83,10 @@ pub struct Maus {
 
 impl Bereich for Maus {
     type Werte = Werte;
-    const NAME: &'static str = "Maus";
-    const QUELLE: &'static str = "~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE).";
+    const NAME: &'static str = gettext_noop("Mouse");
+    const QUELLE: &'static str = gettext_noop(
+        "~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE).",
+    );
 
     fn lesen(st: &Stand) -> Werte {
         let g = |k: &str| lx::wert(&st.rc, lx::GERAET, k);
@@ -192,58 +195,64 @@ impl Bereich for Maus {
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
-        let (f, b) = ls::rahmen("Zeiger bewegen");
+        let (f, b) = ls::rahmen(&gettext("Pointer Motion"));
         let geschwindigkeit =
             gtk4::Scale::with_range(gtk4::Orientation::Horizontal, -1.0, 1.0, 0.05);
         geschwindigkeit.set_hexpand(true);
         geschwindigkeit.set_size_request(260, -1);
-        geschwindigkeit.add_mark(-1.0, gtk4::PositionType::Bottom, Some("Langsam"));
+        geschwindigkeit.add_mark(-1.0, gtk4::PositionType::Bottom, Some(&gettext("Slow")));
         geschwindigkeit.add_mark(0.0, gtk4::PositionType::Bottom, None);
-        geschwindigkeit.add_mark(1.0, gtk4::PositionType::Bottom, Some("Schnell"));
+        geschwindigkeit.add_mark(1.0, gtk4::PositionType::Bottom, Some(&gettext("Fast")));
         geschwindigkeit.set_digits(2);
         geschwindigkeit.set_draw_value(true);
         geschwindigkeit.set_margin_start(16);
         geschwindigkeit.set_margin_end(28);
-        geschwindigkeit.set_format_value_func(|_, v| format!("{v:+.2}").replace('.', ","));
-        b.append(&ls::zeile("Geschwindigkeit:", &geschwindigkeit));
+        geschwindigkeit.set_format_value_func(|_, v| {
+            // TRANSLATORS: decimal separator of the pointer speed (+0.25)
+            format!("{v:+.2}").replace('.', &pgettext("decimal separator", "."))
+        });
+        b.append(&ls::zeile(&gettext("Speed:"), &geschwindigkeit));
         let beschleunigung =
-            gtk4::CheckButton::with_label("Beschleunigung (schnelle Bewegungen tragen weiter)");
+            gtk4::CheckButton::with_label(&gettext("Acceleration (fast movements travel further)"));
         b.append(&beschleunigung);
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Tasten und Rad");
+        let (f, b) = ls::rahmen(&gettext("Buttons and Wheel"));
         let doppelklick = gtk4::SpinButton::with_range(100.0, 2000.0, 50.0);
         b.append(&ls::zeile(
-            "Doppelklick-Zeitlimit (Millisekunden):",
+            &gettext("Double-click timeout (milliseconds):"),
             &doppelklick,
         ));
-        b.append(&ls::grau("Gilt für labwc (Titelleisten, Fensterrahmen); GTK-Programme haben eine eigene Einstellung."));
+        b.append(&ls::grau(&gettext(
+            "Applies to labwc (title bars, window frames); GTK programs have their own setting.",
+        )));
         let linkshaendig =
-            gtk4::CheckButton::with_label("Linkshändig (linke und rechte Taste tauschen)");
+            gtk4::CheckButton::with_label(&gettext("Left-handed (swap left and right buttons)"));
         b.append(&linkshaendig);
-        let natuerlich =
-            gtk4::CheckButton::with_label("Natürliches Rollen (Inhalt folgt den Fingern)");
-        b.append(&natuerlich);
-        b.append(&ls::grau(
-            "Gilt für alle Mäuse und Touchpads ohne eigenes Profil in rc.xml.",
+        let natuerlich = gtk4::CheckButton::with_label(&gettext(
+            "Natural scrolling (content follows the fingers)",
         ));
+        b.append(&natuerlich);
+        b.append(&ls::grau(&gettext(
+            "Applies to all mice and touchpads without their own profile in rc.xml.",
+        )));
         inhalt.append(&f);
 
-        let (f, b) = ls::rahmen("Mauszeiger");
+        let (f, b) = ls::rahmen(&gettext("Mouse Pointer"));
         let themen_kasten = gtk4::Box::new(gtk4::Orientation::Horizontal, 12);
-        b.append(&ls::zeile("Thema:", &themen_kasten));
+        b.append(&ls::zeile(&gettext("Theme:"), &themen_kasten));
         let gr = gtk4::Box::new(gtk4::Orientation::Horizontal, 12);
         let mut groessen: Vec<gtk4::CheckButton> = Vec::new();
         for (_, text) in GROESSEN {
-            let k = gtk4::CheckButton::with_label(text);
+            let k = gtk4::CheckButton::with_label(&gettext(*text));
             if let Some(erste) = groessen.first() {
                 k.set_group(Some(erste));
             }
             gr.append(&k);
             groessen.push(k);
         }
-        b.append(&ls::zeile("Größe:", &gr));
-        b.append(&ls::grau("Zeiger von labwc (Fensterrahmen, Arbeitsfläche) und GTK-Programmen sofort nach „Übernehmen“, in anderen Programmen ab der nächsten Anmeldung."));
+        b.append(&ls::zeile(&gettext("Size:"), &gr));
+        b.append(&ls::grau(&gettext("Pointer of labwc (window frames, desktop) and GTK programs immediately after “Apply”, in other programs from the next login.")));
         inhalt.append(&f);
 
         let m = Maus {
@@ -335,7 +344,7 @@ impl Maus {
             .into_iter()
             .map(|n| {
                 let text = if n.is_empty() {
-                    "Standard".to_owned()
+                    gettext("Default")
                 } else {
                     n.clone()
                 };

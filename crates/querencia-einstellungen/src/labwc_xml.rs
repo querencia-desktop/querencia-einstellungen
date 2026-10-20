@@ -13,6 +13,7 @@
 //! passenden Behältern; geändert wird diese letzte Fundstelle, sonst wird im
 //! letzten passenden Behälter ein Kindelement angelegt (fehlende Behälter
 //! samt Filterattribut, z. B. `<device category="default">`, mit).
+use crate::i18n::{gettext, gettext_f};
 use std::ops::Range;
 
 /// Welche Elemente ein Pfadschritt trifft.
@@ -118,17 +119,21 @@ impl std::fmt::Display for Fehler {
 }
 
 fn parsen(text: &str) -> Result<roxmltree::Document<'_>, Fehler> {
-    let doc = roxmltree::Document::parse(text)
-        .map_err(|e| Fehler(format!("rc.xml ist kein gültiges XML ({e})")))?;
+    let doc = roxmltree::Document::parse(text).map_err(|e| {
+        Fehler(gettext_f(
+            "rc.xml is not valid XML ({error})",
+            &[("error", &e.to_string())],
+        ))
+    })?;
     if !doc
         .root_element()
         .tag_name()
         .name()
         .eq_ignore_ascii_case("labwc_config")
     {
-        return Err(Fehler(format!(
-            "rc.xml: Wurzel ist <{}>, nicht <labwc_config>",
-            doc.root_element().tag_name().name()
+        return Err(Fehler(gettext_f(
+            "rc.xml: root is <{root}>, not <labwc_config>",
+            &[("root", doc.root_element().tag_name().name())],
         )));
     }
     Ok(doc)
@@ -567,10 +572,9 @@ pub fn nur_verwaltete_unterschiede(a: &str, b: &str) -> bool {
 /// Nur, wenn `ours` sich sonst nicht von `basis` unterscheidet; sonst `Err`.
 pub fn auf_neue_vorgabe(ours: &str, basis: &str, neue: &str) -> Result<String, Fehler> {
     if !nur_verwaltete_unterschiede(ours, basis) {
-        return Err(Fehler(
-            "rc.xml enthält Änderungen außerhalb der Einstellungen – bitte von Hand zusammenführen"
-                .into(),
-        ));
+        return Err(Fehler(gettext(
+            "rc.xml contains changes outside the settings – please merge by hand",
+        )));
     }
     let mut neu = neue.to_owned();
     for (pfad, schluessel) in VERWALTET {

@@ -1,0 +1,68 @@
+extent 1920 1080
+wait 3500
+move 600 484
+click
+wait 1200
+move 1100 560
+scroll 10
+wait 800
+shot 01-tastatur-unten.png
+move 877 434
+click
+wait 1500
+type schweiz
+wait 1000
+shot 02-dialog.png
+move 900 361
+click
+wait 400
+move 1152 798
+click
+wait 1200
+shot 03-hinzugefuegt.png
+mark uebernehmen 1
+move 1319 825
+click
+wait 2000
+shot 04-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+wait 700
+move 1110 412
+click
+wait 600
+move 797 535
+click
+wait 600
+shot 05-getauscht.png
+mark uebernehmen 2
+move 1319 825
+click
+wait 2000
+shot 06-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-2.xml
+wait 700
+move 1320 412
+click
+wait 800
+shot 07-entfernt.png
+mark uebernehmen 3
+move 1319 825
+click
+wait 2000
+shot 08-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-3.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-3.xml
+wait 700
+move 877 825
+click
+wait 600
+mark uebernehmen 4
+move 1319 825
+click
+wait 2000
+shot 09-standard-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-4.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-4.xml
+wait 700

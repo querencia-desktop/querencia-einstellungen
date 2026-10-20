@@ -43,3 +43,10 @@
 !/nachweis/g2aj/
 /nachweis/g2aj/**/*.png
 /nachweis/g2aj/**/querencia-einstellungen
+# Einstellungen 0.1.0: wie G2-AJ – Textnachweise unter nachweis/010/ ins Repo,
+# Binaries, Kataloge, Bilder und Läufe nicht; Kataloge der Vorlage wie die Binary
+!/nachweis/010/
+/nachweis/010/**/*.png
+/nachweis/010/**/querencia-einstellungen
+/nachweis/010/**/*.mo
+/integration/**/*.mo

@@ -6,9 +6,12 @@
 //! die Namen entstehen deshalb aus Sprache und Land der Belegung über die
 //! iso-codes-Übersetzungen (gettext-Domänen `iso_639-2`, `iso_3166-1`, z. B.
 //! „Deutsch (Österreich)“). Varianten bekommen eine kleine eigene Tabelle
-//! für die häufigen Zusätze („ohne Akzenttasten“), sonst bleibt der englische
-//! Zusatz stehen.
+//! für die häufigen Zusätze („ohne Akzenttasten“, übersetzt über die eigene
+//! Domäne), sonst bleibt der englische Zusatz stehen. Dazu die gängigen
+//! Umschalttasten für mehrere Belegungen (`XKB_DEFAULT_OPTIONS=grp:…`).
 use std::collections::HashMap;
+
+use crate::i18n::{DOMAIN, gettext, gettext_noop};
 
 pub const REGELN: &str = "/usr/share/X11/xkb/rules/evdev.xml";
 const SPRACHEN: &str = "/usr/share/iso-codes/json/iso_639-2.json";
@@ -25,12 +28,12 @@ pub struct Belegung {
 /// Übersetzung (Domäne, englischer Text) → Text; in der App gettext.
 pub type Uebersetzer<'a> = &'a dyn Fn(&str, &str) -> String;
 
-pub fn gettext(domaene: &str, text: &str) -> String {
+pub fn dgettext(domaene: &str, text: &str) -> String {
     gtk4::glib::dgettext(Some(domaene), text).to_string()
 }
 
 /// Objekte einer iso-codes-JSON-Datei (eine Angabe je Zeile) als Schlüssel→Wert.
-fn iso_json(text: &str) -> Vec<HashMap<String, String>> {
+pub fn iso_json(text: &str) -> Vec<HashMap<String, String>> {
     let mut liste = Vec::new();
     let mut akt = HashMap::new();
     for zeile in text.lines() {
@@ -48,40 +51,41 @@ fn iso_json(text: &str) -> Vec<HashMap<String, String>> {
     liste
 }
 
-/// Zusätze der Varianten (durch Komma getrennte Teile in Klammern).
-const ZUSAETZE: &[(&str, &str)] = &[
-    ("no dead keys", "ohne Akzenttasten"),
-    ("with dead keys", "mit Akzenttasten"),
-    ("intl.", "international"),
-    ("alt. intl.", "international, alternativ"),
-    ("with AltGr dead keys", "Akzente über AltGr"),
-    ("alt.", "alternativ"),
-    ("legacy", "veraltet"),
-    ("extended", "erweitert"),
-    ("dead acute", "Akzenttaste Akut"),
-    ("dead grave acute", "Akzenttasten Gravis und Akut"),
-    ("dead tilde", "Akzenttaste Tilde"),
-    ("euro on 5", "Euro auf 5"),
-    ("phonetic", "phonetisch"),
-    ("one-handed", "einhändig"),
-    ("left", "links"),
-    ("right", "rechts"),
-    ("Latin-9 only", "nur Latin-9"),
-    ("programmer Dvorak", "Dvorak für Programmierer"),
-    ("classic Dvorak", "klassisches Dvorak"),
-    ("US", "USA"),
-    ("UK", "Vereinigtes Königreich"),
-    ("Germany", "Deutschland"),
-    ("Austria", "Österreich"),
-    ("Switzerland", "Schweiz"),
-    ("France", "Frankreich"),
+/// Zusätze der Varianten (durch Komma getrennte Teile in Klammern), wie sie
+/// in evdev.xml stehen; übersetzt über die eigene Textdomäne.
+const ZUSAETZE: &[&str] = &[
+    gettext_noop("no dead keys"),
+    gettext_noop("with dead keys"),
+    gettext_noop("intl."),
+    gettext_noop("alt. intl."),
+    gettext_noop("with AltGr dead keys"),
+    gettext_noop("alt."),
+    gettext_noop("legacy"),
+    gettext_noop("extended"),
+    gettext_noop("dead acute"),
+    gettext_noop("dead grave acute"),
+    gettext_noop("dead tilde"),
+    gettext_noop("euro on 5"),
+    gettext_noop("phonetic"),
+    gettext_noop("one-handed"),
+    gettext_noop("left"),
+    gettext_noop("right"),
+    gettext_noop("Latin-9 only"),
+    gettext_noop("programmer Dvorak"),
+    gettext_noop("classic Dvorak"),
+    gettext_noop("US"),
+    gettext_noop("UK"),
+    gettext_noop("Germany"),
+    gettext_noop("Austria"),
+    gettext_noop("Switzerland"),
+    gettext_noop("France"),
 ];
 
-fn zusatz_deutsch(teil: &str) -> String {
+fn zusatz(teil: &str, ue: Uebersetzer) -> String {
     ZUSAETZE
         .iter()
-        .find(|(en, _)| en.eq_ignore_ascii_case(teil.trim()))
-        .map_or_else(|| teil.trim().to_owned(), |(_, de)| (*de).to_owned())
+        .find(|en| en.eq_ignore_ascii_case(teil.trim()))
+        .map_or_else(|| teil.trim().to_owned(), |en| ue(DOMAIN, en))
 }
 
 fn klammer(beschreibung: &str) -> Option<&str> {
@@ -217,7 +221,7 @@ pub fn liste_aus(regeln: &str, sprachen: &str, laender: &str, ue: Uebersetzer) -
                         let teile: Vec<String> = k
                             .split(", ")
                             .filter(|t| !grund.contains(&t.trim()))
-                            .map(zusatz_deutsch)
+                            .map(|t| zusatz(t, namen.ue))
                             .collect();
                         if teile.is_empty() {
                             grundname.clone()
@@ -276,13 +280,110 @@ pub fn liste() -> Vec<Belegung> {
     let r = std::fs::read_to_string(REGELN).unwrap_or_default();
     let s = std::fs::read_to_string(SPRACHEN).unwrap_or_default();
     let l = std::fs::read_to_string(LAENDER).unwrap_or_default();
-    liste_aus(&r, &s, &l, &gettext)
+    liste_aus(&r, &s, &l, &dgettext)
+}
+
+/// Gängige Umschalttasten für mehrere Belegungen (XKB-Option, Beschriftung),
+/// die erste ist der Vorschlag beim Hinzufügen einer zweiten Belegung. Die
+/// rechte Alt-Taste allein (`grp:toggle`) fehlt absichtlich: auf deutschen
+/// Tastaturen ist sie AltGr (@, €, Klammern).
+pub const UMSCHALTER: &[(&str, &str)] = &[
+    ("grp:alt_shift_toggle", gettext_noop("Alt+Shift")),
+    ("grp:ctrl_shift_toggle", gettext_noop("Ctrl+Shift")),
+    ("grp:win_space_toggle", gettext_noop("Super+Space")),
+    ("grp:alt_space_toggle", gettext_noop("Alt+Space")),
+    ("grp:ctrl_space_toggle", gettext_noop("Ctrl+Space")),
+    ("grp:ctrl_alt_toggle", gettext_noop("Alt+Ctrl")),
+    (
+        "grp:shifts_toggle",
+        gettext_noop("Both Shift keys together"),
+    ),
+    ("grp:alts_toggle", gettext_noop("Both Alt keys together")),
+    ("grp:alt_caps_toggle", gettext_noop("Alt+Caps Lock")),
+    ("grp:caps_toggle", gettext_noop("Caps Lock")),
+    ("grp:menu_toggle", gettext_noop("Menu key")),
+    ("grp:rctrl_toggle", gettext_noop("Right Ctrl")),
+    ("grp:sclk_toggle", gettext_noop("Scroll Lock")),
+];
+
+/// Englische Beschreibung einer XKB-Option aus evdev.xml (für Werte, die
+/// nicht in [`UMSCHALTER`] stehen).
+pub fn optionsbeschreibung(regeln: &str, option: &str) -> Option<String> {
+    let optionen = roxmltree::ParsingOptions {
+        allow_dtd: true,
+        ..Default::default()
+    };
+    let doc = roxmltree::Document::parse_with_options(regeln, optionen).ok()?;
+    doc.descendants()
+        .filter(|n| n.has_tag_name("option"))
+        .find(|n| kind_text(*n, "name").as_deref() == Some(option))
+        .and_then(|n| kind_text(n, "description"))
+}
+
+/// `XKB_DEFAULT_OPTIONS` zerlegen: (Umschalttaste `grp:…` oder leer, übrige
+/// Optionen in ihrer Reihenfolge). Mehrere `grp:` – die letzte gilt bei
+/// xkbcommon nicht eindeutig; behalten wird die erste, die übrigen bleiben
+/// als fremde Optionen stehen.
+pub fn optionen_zerlegen(optionen: &str) -> (String, Vec<String>) {
+    let mut grp = String::new();
+    let mut andere = Vec::new();
+    for o in optionen.split(',').map(str::trim).filter(|o| !o.is_empty()) {
+        if grp.is_empty() && o.starts_with("grp:") {
+            grp = o.to_owned();
+        } else {
+            andere.push(o.to_owned());
+        }
+    }
+    (grp, andere)
+}
+
+/// Gegenstück zu [`optionen_zerlegen`]: übrige Optionen, dann die Umschalttaste.
+pub fn optionen_zusammen(grp: &str, andere: &[String]) -> String {
+    let mut l: Vec<&str> = andere.iter().map(String::as_str).collect();
+    if !grp.is_empty() {
+        l.push(grp);
+    }
+    l.join(",")
+}
+
+/// `XKB_DEFAULT_LAYOUT`/`_VARIANT` (Kommalisten) als Paare (Belegung, Variante).
+pub fn belegungen_zerlegen(layout: &str, variante: &str) -> Vec<(String, String)> {
+    let varianten: Vec<&str> = variante.split(',').map(str::trim).collect();
+    layout
+        .split(',')
+        .map(str::trim)
+        .enumerate()
+        .map(|(i, l)| {
+            (
+                l.to_owned(),
+                varianten.get(i).copied().unwrap_or("").to_owned(),
+            )
+        })
+        .collect()
+}
+
+/// Gegenstück zu [`belegungen_zerlegen`]: Varianten nur, wenn eine gesetzt
+/// ist (sonst leer wie bisher). Bei mehreren Belegungen steht für eine leere
+/// erste Belegung `us` (labwcs Standard), sonst wäre die Liste mehrdeutig.
+pub fn belegungen_zusammen(b: &[(String, String)]) -> (String, String) {
+    let mehrere = b.len() > 1;
+    let layout: Vec<&str> = b
+        .iter()
+        .map(|(l, _)| if mehrere && l.is_empty() { "us" } else { l })
+        .collect();
+    let varianten: Vec<&str> = b.iter().map(|(_, v)| v.as_str()).collect();
+    let variante = if varianten.iter().all(|v| v.is_empty()) {
+        String::new()
+    } else {
+        varianten.join(",")
+    };
+    (layout.join(","), variante)
 }
 
 /// Anzeigename für `XKB_DEFAULT_LAYOUT`/`_VARIANT` (mehrere Belegungen mit Komma).
 pub fn anzeigename(liste: &[Belegung], layout: &str, variante: &str) -> String {
     if layout.is_empty() {
-        return "Englisch (USA) – labwc-Standard".into();
+        return gettext("English (US) – labwc default");
     }
     let layouts: Vec<&str> = layout.split(',').collect();
     let varianten: Vec<&str> = variante.split(',').collect();
@@ -321,6 +422,10 @@ mod tests {
             ("iso_3166-1", "Austria") => "Österreich".into(),
             ("iso_3166-1", "Belgium") => "Belgien".into(),
             ("iso_3166-1", "United States") => "Vereinigte Staaten".into(),
+            // Zusätze der Varianten aus der eigenen Domäne (de.po)
+            ("querencia-einstellungen", "no dead keys") => "ohne Akzenttasten".into(),
+            ("querencia-einstellungen", "intl.") => "international".into(),
+            ("querencia-einstellungen", "with dead keys") => "mit Akzenttasten".into(),
             _ => t.into(),
         }
     }
