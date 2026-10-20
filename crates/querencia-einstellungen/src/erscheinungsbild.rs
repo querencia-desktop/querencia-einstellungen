@@ -191,11 +191,38 @@ fn mit_aktuellem(themen: &[Thema], aktuell: &str) -> Vec<(String, String)> {
     liste
 }
 
+/// Hat das GTK-Thema eine dunkle Fassung (`gtk-4.0/gtk-dark.css`, beim
+/// eingebauten Thema immer)? Nur dann werden auch die Querencia-Programme
+/// mit „Dunkle Darstellung bevorzugen“ dunkel (CSS-Welle dunkel, Thema 0.2).
+/// Wie GTK gilt der erste Ordner, in dem das Thema `gtk-4.0/gtk.css` hat.
+pub fn gtk_thema_mit_dunkel(name: &str) -> bool {
+    name == GTK_EINGEBAUT
+        || ordner("themes")
+            .iter()
+            .map(|d| d.join(name).join("gtk-4.0"))
+            .find(|d| d.join("gtk.css").is_file())
+            .is_some_and(|d| d.join("gtk-dark.css").is_file())
+}
+
+/// Hinweis unter „Dunkle Darstellung bevorzugen“ für das gewählte GTK-Thema.
+fn dunkel_hinweis(mit_dunkel: bool) -> String {
+    if mit_dunkel {
+        gettext(
+            "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now.",
+        )
+    } else {
+        gettext(
+            "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme.",
+        )
+    }
+}
+
 /// Was der gewählten Option folgt: Vorschau der Symbole, Hinweise.
 struct Neben {
     vorschau: gtk4::Box,
     vorschau_cache: RefCell<HashMap<String, Vec<gdk::Paintable>>>,
     symbol_hinweis: gtk4::Label,
+    dunkel_hinweis: gtk4::Label,
 }
 
 pub struct Erscheinungsbild {
@@ -316,9 +343,8 @@ impl Bereich for Erscheinungsbild {
         b.append(&gtk_kasten);
         let dunkel = gtk4::CheckButton::with_label(&gettext("Prefer dark appearance"));
         b.append(&dunkel);
-        b.append(&ls::grau(
-            &gettext("Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."),
-        ));
+        let dunkel_hinweis = ls::grau(&dunkel_hinweis(false));
+        b.append(&dunkel_hinweis);
         inhalt.append(&f);
 
         let (f, b) = ls::rahmen(&gettext("Mouse Pointer"));
@@ -355,6 +381,7 @@ impl Bereich for Erscheinungsbild {
                 vorschau,
                 vorschau_cache: RefCell::new(HashMap::new()),
                 symbol_hinweis,
+                dunkel_hinweis,
             }),
             zeiger_kasten,
             zeiger: RefCell::new(Vec::new()),
@@ -415,12 +442,21 @@ impl Bereich for Erscheinungsbild {
         self.eigene_groesse.set(w.zeigergroesse);
         *self.farbschema.borrow_mut() = w.farbschema.clone();
         self.neben.symbole(&w.symbolthema);
+        self.neben.gtk_thema(&w.gtk_thema);
         // Vorschau und Hinweise folgen jeder Wahl
         for (name, k) in self.symbole.borrow().iter() {
             let (n, name) = (self.neben.clone(), name.clone());
             k.connect_toggled(move |k| {
                 if k.is_active() {
                     n.symbole(&name);
+                }
+            });
+        }
+        for (name, k) in self.gtk.borrow().iter() {
+            let (n, name) = (self.neben.clone(), name.clone());
+            k.connect_toggled(move |k| {
+                if k.is_active() {
+                    n.gtk_thema(&name);
                 }
             });
         }
@@ -452,6 +488,12 @@ impl Bereich for Erscheinungsbild {
 }
 
 impl Neben {
+    /// Hinweis zur dunklen Darstellung (folgt dem gewählten GTK-Thema).
+    fn gtk_thema(&self, gtk_thema: &str) {
+        self.dunkel_hinweis
+            .set_text(&dunkel_hinweis(gtk_thema_mit_dunkel(gtk_thema)));
+    }
+
     /// Vorschau der Symbole und Hinweis zum Symbolthema.
     fn symbole(&self, symbolthema: &str) {
         while let Some(c) = self.vorschau.first_child() {

@@ -5,8 +5,9 @@
 //! (Runtime-Repo, gleichlautend in `docs/` dieses Repos). Kurz:
 //! - geschrieben wird nur die Benutzerkopie `$XDG_CONFIG_HOME/querencia/labwc/`
 //!   (`rc.xml` gezielt über [`crate::labwc_xml`], Umgebung nur in
-//!   `environment.d/zz-querencia-einstellungen.env`), nie die Vorgabe im
-//!   Runtime-Repo (labwc las sie bis Teil A live);
+//!   `environment.d/zz-querencia-einstellungen.env`), nie die Vorgabe
+//!   (Runtime-Checkout oder Paket, [`vorgabe_ermitteln`]; labwc las sie bis
+//!   Teil A live);
 //! - fehlt die Benutzerkopie, wird die Vorgabe gelesen; das erste Schreiben
 //!   legt die Benutzerkopie an und notiert die Vorgabe in `.vorgabe/rc.xml`,
 //!   damit der Starter sie als Ausgangspunkt kennt;
@@ -25,9 +26,11 @@ use std::path::{Path, PathBuf};
 use crate::i18n::{gettext, gettext_f};
 use crate::labwc_xml;
 
-/// Vorgaben im Runtime-Repo (nur lesen). Für Prüfungen: `QE_LABWC_VORGABE`.
-pub const VORGABE_STANDARD: &str =
-    "~/projects/querencia-runtime/session/querencia/labwc";
+/// Lage der Vorgabe im Paket (nur lesen), wenn nichts anderes sie nennt
+/// ([`vorgabe_ermitteln`]).
+pub const VORGABE_PAKET: &str = "/etc/querencia/labwc";
+/// Lage der Vorgabe in einem Checkout des Runtime-Repos (`$QUERENCIA_REPO`).
+pub const VORGABE_IM_REPO: &str = "session/querencia/labwc";
 /// Eigene Umgebungsdatei. labwc liest `environment.d/*.env` nach
 /// `environment`, alphabetisch (scandir/alphasort), die letzte Angabe gilt;
 /// „zz-“ hält die Wahl des Benutzers hinter den Vorgaben anderer
@@ -47,16 +50,69 @@ pub struct Orte {
     pub vorgabe: PathBuf,
 }
 
+/// Woher [`Orte::vorgabe`] stammt (`--labwc-zeigen`: `vorgabe-herkunft=`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Herkunft {
+    /// `QE_LABWC_VORGABE` (Prüfungen)
+    Umgebung,
+    /// `$QUERENCIA_REPO/session/querencia/labwc` (Entwicklung im Checkout)
+    Repo,
+    /// Zeile `quelle …` in `.vorgabe/stand`, die der Sitzungsstarter beim
+    /// Abgleich schreibt (Entwicklungs-VM: der Runtime-Checkout)
+    Stand,
+    /// [`VORGABE_PAKET`]
+    Paket,
+}
+
+/// Bis 0.1.1 stand der Pfad des Runtime-Checkouts der Entwicklungs-VM fest
+/// im Programm. Seit 0.1.2 gilt in dieser Reihenfolge:
+/// 1. `QE_LABWC_VORGABE` (Prüfungen),
+/// 2. `$QUERENCIA_REPO/session/querencia/labwc` (gleicher Name wie im
+///    Sitzungsstarter),
+/// 3. die Quelle, aus der der Sitzungsstarter die Benutzerkopie zuletzt
+///    abgeglichen hat (`<benutzer>/.vorgabe/stand`, Zeile
+///    `quelle <ordner> (commit …)`), wenn dort eine `rc.xml` liegt,
+/// 4. die Paketlage [`VORGABE_PAKET`].
+///
+/// Leere oder relative Angaben zählen nicht.
+pub fn vorgabe_ermitteln(
+    umgebung: impl Fn(&str) -> Option<std::ffi::OsString>,
+    benutzer: &Path,
+) -> (PathBuf, Herkunft) {
+    let absolut = |v: std::ffi::OsString| Some(PathBuf::from(v)).filter(|p| p.is_absolute());
+    if let Some(p) = umgebung("QE_LABWC_VORGABE").and_then(absolut) {
+        return (p, Herkunft::Umgebung);
+    }
+    if let Some(p) = umgebung("QUERENCIA_REPO").and_then(absolut) {
+        return (p.join(VORGABE_IM_REPO), Herkunft::Repo);
+    }
+    if let Some(p) = stand_quelle(&benutzer.join(".vorgabe").join("stand"))
+        .filter(|p| p.join("rc.xml").is_file())
+    {
+        return (p, Herkunft::Stand);
+    }
+    (PathBuf::from(VORGABE_PAKET), Herkunft::Paket)
+}
+
+/// Ordner aus der Zeile `quelle <ordner> (commit <kurz>)` von `.vorgabe/stand`.
+fn stand_quelle(stand: &Path) -> Option<PathBuf> {
+    let text = std::fs::read_to_string(stand).ok()?;
+    let zeile = text.lines().find_map(|z| z.strip_prefix("quelle "))?;
+    let ordner = zeile.rfind(" (commit ").map_or(zeile, |i| &zeile[..i]);
+    Some(PathBuf::from(ordner)).filter(|p| p.is_absolute())
+}
+
 impl Orte {
     pub fn standard() -> Orte {
-        Orte {
-            benutzer: gtk4::glib::user_config_dir()
-                .join("querencia")
-                .join("labwc"),
-            vorgabe: std::env::var_os("QE_LABWC_VORGABE")
-                .map(PathBuf::from)
-                .unwrap_or_else(|| PathBuf::from(VORGABE_STANDARD)),
-        }
+        Orte::ermitteln().0
+    }
+    /// Wie [`Orte::standard`], dazu die Herkunft der Vorgabe.
+    pub fn ermitteln() -> (Orte, Herkunft) {
+        let benutzer = gtk4::glib::user_config_dir()
+            .join("querencia")
+            .join("labwc");
+        let (vorgabe, herkunft) = vorgabe_ermitteln(|k| std::env::var_os(k), &benutzer);
+        (Orte { benutzer, vorgabe }, herkunft)
     }
     pub fn rc(&self) -> PathBuf {
         self.benutzer.join("rc.xml")
@@ -76,7 +132,7 @@ impl Orte {
 pub enum Quelle {
     /// `~/.config/querencia/labwc/rc.xml`
     Benutzer,
-    /// noch keine Benutzerkopie: die Vorgabe des Runtime-Repos
+    /// noch keine Benutzerkopie: die Vorgabe ([`vorgabe_ermitteln`])
     Vorgabe,
     /// weder noch: labwcs eingebaute Werte
     Keine,
@@ -532,11 +588,12 @@ pub fn wirkung_text(w: &Wirkung, stand: &Stand) -> String {
 
 /// `--labwc-zeigen`: Orte, Wirkung und die verwalteten Werte als Text (Prüfung).
 pub fn zeigen() -> i32 {
-    let o = Orte::standard();
+    let (o, herkunft) = Orte::ermitteln();
     let st = lesen(&o);
     let w = wirkung(&o);
     println!("benutzerkopie={}", o.benutzer.display());
     println!("vorgabe={}", o.vorgabe.display());
+    println!("vorgabe-herkunft={herkunft:?}");
     println!("quelle={:?}", st.quelle);
     match &w {
         Wirkung::Sofort { pid, .. } => println!("wirkung=sofort labwc={pid}"),
@@ -614,6 +671,93 @@ mod tests {
         )
         .unwrap();
         o
+    }
+
+    fn umgebung<'a>(
+        werte: &'a [(&'a str, &'a str)],
+    ) -> impl Fn(&str) -> Option<std::ffi::OsString> + 'a {
+        move |k| {
+            werte
+                .iter()
+                .find(|(n, _)| *n == k)
+                .map(|(_, v)| (*v).into())
+        }
+    }
+
+    #[test]
+    fn vorgabe_aus_umgebung_repo_stand_oder_paket() {
+        let w = ordner("herkunft");
+        let benutzer = w.join("config/querencia/labwc");
+        let checkout = w.join("checkout/session/querencia/labwc");
+        std::fs::create_dir_all(benutzer.join(".vorgabe")).unwrap();
+        std::fs::create_dir_all(&checkout).unwrap();
+        // ohne alles: Paket
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&[]), &benutzer),
+            (PathBuf::from(VORGABE_PAKET), Herkunft::Paket)
+        );
+        // Stand des Starters, Ordner ohne rc.xml: zählt nicht
+        let stand = format!(
+            "# Vorgaben in .vorgabe/\nzeit 2026-10-21 08:00:00\nquelle {} (commit 548483c)\n",
+            checkout.display()
+        );
+        std::fs::write(benutzer.join(".vorgabe/stand"), &stand).unwrap();
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&[]), &benutzer).1,
+            Herkunft::Paket
+        );
+        std::fs::write(checkout.join("rc.xml"), "<labwc_config/>\n").unwrap();
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&[]), &benutzer),
+            (checkout.clone(), Herkunft::Stand)
+        );
+        // relative oder leere Angaben zählen nicht
+        let rel = [("QE_LABWC_VORGABE", ""), ("QUERENCIA_REPO", "checkout")];
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&rel), &benutzer).1,
+            Herkunft::Stand
+        );
+        std::fs::write(
+            benutzer.join(".vorgabe/stand"),
+            "quelle session/querencia/labwc\n",
+        )
+        .unwrap();
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&[]), &benutzer).1,
+            Herkunft::Paket
+        );
+        // QUERENCIA_REPO vor dem Stand, QE_LABWC_VORGABE vor allem
+        std::fs::write(benutzer.join(".vorgabe/stand"), &stand).unwrap();
+        let repo = [("QUERENCIA_REPO", "/srv/anna/querencia-runtime")];
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&repo), &benutzer),
+            (
+                PathBuf::from("/srv/anna/querencia-runtime/session/querencia/labwc"),
+                Herkunft::Repo
+            )
+        );
+        let beide = [
+            ("QUERENCIA_REPO", "/srv/anna/querencia-runtime"),
+            ("QE_LABWC_VORGABE", "/tmp/pruefung/labwc"),
+        ];
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&beide), &benutzer),
+            (PathBuf::from("/tmp/pruefung/labwc"), Herkunft::Umgebung)
+        );
+        // Stand ohne Commit-Angabe, Pfad mit Leerzeichen
+        let leer = w.join("mit leer");
+        std::fs::create_dir_all(&leer).unwrap();
+        std::fs::write(leer.join("rc.xml"), "<labwc_config/>\n").unwrap();
+        std::fs::write(
+            benutzer.join(".vorgabe/stand"),
+            format!("quelle {}\n", leer.display()),
+        )
+        .unwrap();
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&[]), &benutzer),
+            (leer, Herkunft::Stand)
+        );
+        let _ = std::fs::remove_dir_all(&w);
     }
 
     #[test]

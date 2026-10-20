@@ -2,7 +2,7 @@
 
 ## Bild
 
-pottrauschens Bildschirmfotos vom 20.10.2026 (Seiten Hintergrundbild und
+Bildschirmfotos des Besitzers vom 20.10.2026 (Seiten Hintergrundbild und
 Panels): unter dem Seiteninhalt stehen blasse, halbe Textzeilen und Punkte
 der zuvor gezeigten Seite.
 
@@ -52,7 +52,7 @@ derselben Fassung:
 | pixman 1920×1080 | 4/4 | 2/4 |
 | pixman 1024×768 | 4/4 | 2/4 |
 
-Seite „Symbole der Arbeitsfläche“ (pottrauschens fünftes Bild: Reste zwischen
+Seite „Symbole der Arbeitsfläche“ (fünftes Bild des Besitzers: Reste zwischen
 der Quelle-Zeile unter dem Laufwerke-Rahmen und dem Hinweis „Änderungen
 gelten erst nach „Übernehmen““), Szenario `z2-symbole`, gles2:
 

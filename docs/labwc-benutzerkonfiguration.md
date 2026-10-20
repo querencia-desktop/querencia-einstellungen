@@ -11,10 +11,10 @@ Sitzungsstarter (`session/querencia-session`) und Querencia Einstellungen
 
 | Ort | Wer schreibt | Inhalt |
 |---|---|---|
-| `session/querencia/labwc/{rc.xml,autostart,environment[,menu.xml]}` | Entwickler (Git) | **Vorgaben**. labwc liest sie nicht mehr direkt (außer alter Weg, §4). |
+| `session/querencia/labwc/{rc.xml,autostart,environment[,menu.xml]}` im Runtime-Checkout, im Paket `/etc/querencia/labwc/` | Entwickler (Git) bzw. Paket | **Vorgaben**. labwc liest sie nicht mehr direkt (außer alter Weg, §4). Wie Einstellungen sie finden: §7. |
 | `~/.config/querencia/labwc/` (`$XDG_CONFIG_HOME/querencia/labwc`) | Starter, Einstellungen, Benutzer | **Benutzerkopie**; labwc läuft mit `-C` auf diesem Ordner. |
 | `…/labwc/.vorgabe/<datei>` | Starter (Einstellungen nur beim Anlegen) | die Vorgabe, aus der `<datei>` zuletzt übernommen wurde (volle Kopie) |
-| `…/labwc/.vorgabe/stand` | Starter | Zeit, Quelle (Commit), SHA256 je Datei in `.vorgabe/` – zum Lesen für Menschen |
+| `…/labwc/.vorgabe/stand` | Starter | Zeit, Quelle (Commit), SHA256 je Datei in `.vorgabe/`; Einstellungen ab 0.1.2 lesen daraus die Zeile `quelle <ordner> (commit …)` (§7) |
 | `…/labwc/<datei>.vorgabe-neu` | Starter | neuere Vorgabe, die wegen eigener Änderungen **nicht** übernommen wurde |
 | `…/labwc/<datei>.vorher-<JJJJMMTT-HHMMSS>` | Starter (Einstellungen bis 0.1.0) | Sicherung vor jedem Ersetzen; Einstellungen ab 0.1.1 löschen sie nie |
 | `…/labwc/<datei>.einstellungen-vorher-<JJJJMMTT-HHMMSS>` | Einstellungen ab 0.1.1 | Sicherung vor dem ersten Schreiben je Programmlauf, höchstens fünf je Datei (§6) |
@@ -123,3 +123,21 @@ auch Sicherungen des Starters weg.
   gehen. `<datei>.vorher-*` (Starter und Einstellungen bis 0.1.0, nicht zu
   unterscheiden) löschen Einstellungen nie.
 
+## 7. Wo Einstellungen die Vorgabe finden (ab 0.1.2, G1a)
+
+Bis 0.1.1 stand der Pfad des Runtime-Checkouts der Entwicklungs-VM fest im
+Programm. Ab 0.1.2 ermittelt `labwc_konfig::vorgabe_ermitteln` ihn zur
+Laufzeit, in dieser Reihenfolge (die erste passende Angabe gilt):
+
+| # | Quelle | Fall |
+|---|---|---|
+| 1 | `QE_LABWC_VORGABE=<ordner>` | Prüfungen (isolierte Läufe, Tests) |
+| 2 | `$QUERENCIA_REPO/session/querencia/labwc` | Entwicklung mit einem Runtime-Checkout; gleicher Name wie im Starter |
+| 3 | Zeile `quelle <ordner> (commit …)` in `~/.config/querencia/labwc/.vorgabe/stand`, wenn dort eine `rc.xml` liegt | Sitzung: der Starter hat die Benutzerkopie aus diesem Ordner abgeglichen (Entwicklungs-VM: Runtime-Checkout) |
+| 4 | `/etc/querencia/labwc` | Paket |
+
+Leere und relative Angaben zählen nicht. `querencia-einstellungen
+--labwc-zeigen` nennt Ordner und Herkunft (`vorgabe=`, `vorgabe-herkunft=`
+`Umgebung|Repo|Stand|Paket`). Für den Starter heißt das: Die Zeile `quelle`
+in `.vorgabe/stand` bleibt in dieser Form (absoluter Ordner, danach
+` (commit …)`); ein Paket-Starter schreibt dort `/etc/querencia/labwc`.

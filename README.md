@@ -51,9 +51,9 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.1.0 (Tag `einstellungen/0.1.0`) |
-| Letzte Prüfung | 20.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768; Regression gegen 0.0.9 (Zahlen im Bericht der Entwicklungs-VM) |
-| Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; die Vorgabe der labwc-Konfiguration hat einen festen Entwicklungspfad (`labwc_konfig.rs`, `QE_LABWC_VORGABE` setzt ihn um); einige Werkzeuge enthalten feste Pfade der Entwicklungs-VM |
+| Version | 0.1.2 (Tag `einstellungen/0.1.2`) |
+| Letzte Prüfung | 21.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel (beim Start und beim Wechsel); Regression gegen 0.1.1 (Zahlen im Bericht der Entwicklungs-VM) |
+| Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
 | Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
 

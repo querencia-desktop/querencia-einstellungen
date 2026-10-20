@@ -314,6 +314,59 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     (aussen, fuss)
 }
 
+/// Farben der Anordnungsfläche (RGB 0…1). Hell wie bis 0.1.1; dunkel
+/// (CSS-Welle dunkel), wenn das Thema helle Schrift hat, angelehnt an
+/// Querencia-Klassisch 0.2 dunkel (Grund #2b2a27 wie theme_base_color).
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct Farben {
+    flaeche: (f64, f64, f64),
+    leer: (f64, f64, f64),
+    gewaehlt: (f64, f64, f64),
+    ausgabe: (f64, f64, f64),
+    rand: (f64, f64, f64),
+    leiste: (f64, f64, f64),
+    text_gewaehlt: (f64, f64, f64),
+    text: (f64, f64, f64),
+}
+
+const HELL: Farben = Farben {
+    flaeche: (0.97, 0.97, 0.97),
+    leer: (0.4, 0.4, 0.4),
+    gewaehlt: (0.21, 0.52, 0.89),
+    ausgabe: (0.72, 0.74, 0.78),
+    rand: (0.25, 0.25, 0.25),
+    leiste: (0.15, 0.15, 0.15),
+    text_gewaehlt: (1.0, 1.0, 1.0),
+    text: (0.1, 0.1, 0.1),
+};
+
+const fn rgb(r: u8, g: u8, b: u8) -> (f64, f64, f64) {
+    (r as f64 / 255.0, g as f64 / 255.0, b as f64 / 255.0)
+}
+
+const DUNKEL: Farben = Farben {
+    flaeche: rgb(0x2b, 0x2a, 0x27),
+    leer: rgb(0xb3, 0xaf, 0xa6),
+    gewaehlt: rgb(0x1f, 0x5f, 0xae),
+    ausgabe: rgb(0x5b, 0x59, 0x55),
+    rand: rgb(0xbf, 0xbb, 0xb2),
+    leiste: rgb(0x14, 0x14, 0x14),
+    text_gewaehlt: rgb(0xff, 0xff, 0xff),
+    text: rgb(0xf2, 0xf0, 0xeb),
+};
+
+impl Farben {
+    /// Dunkel, wenn die Schriftfarbe des Widgets hell ist (Thema dunkel).
+    fn fuer(w: &impl IsA<gtk4::Widget>) -> &'static Farben {
+        let c = w.as_ref().color();
+        let hell = 0.2126 * c.red() + 0.7152 * c.green() + 0.0722 * c.blue();
+        if hell > 0.5 { &DUNKEL } else { &HELL }
+    }
+    fn setzen(&self, cr: &gtk4::cairo::Context, (r, g, b): (f64, f64, f64)) {
+        cr.set_source_rgb(r, g, b);
+    }
+}
+
 impl Oberflaeche {
     fn monitorliste_fuellen(&self) {
         let z = self.zustand.borrow();
@@ -821,9 +874,9 @@ impl Oberflaeche {
         (m, vx, vy)
     }
 
-    fn zeichnen(&self, cr: &gtk4::cairo::Context, breite: i32, hoehe: i32) {
+    fn zeichnen(&self, cr: &gtk4::cairo::Context, breite: i32, hoehe: i32, f: &Farben) {
         let (b, h) = (f64::from(breite), f64::from(hoehe));
-        cr.set_source_rgb(0.97, 0.97, 0.97);
+        f.setzen(cr, f.flaeche);
         cr.rectangle(0.0, 0.0, b, h);
         let _ = cr.fill();
         let ziehe = self.zustand.borrow().ziehe.is_some();
@@ -836,7 +889,7 @@ impl Oberflaeche {
         };
         let z = self.zustand.borrow();
         if z.wahlen.iter().all(|w| !w.aktiv) {
-            cr.set_source_rgb(0.4, 0.4, 0.4);
+            f.setzen(cr, f.leer);
             cr.move_to(16.0, 30.0);
             cr.set_font_size(14.0);
             let _ = cr.show_text(&gettext("No output switched on"));
@@ -852,28 +905,20 @@ impl Oberflaeche {
             let rb = f64::from(lb) * m;
             let rh = f64::from(lh) * m;
             let gewaehlt = i == z.gewaehlt;
-            if gewaehlt {
-                cr.set_source_rgb(0.21, 0.52, 0.89);
-            } else {
-                cr.set_source_rgb(0.72, 0.74, 0.78);
-            }
+            f.setzen(cr, if gewaehlt { f.gewaehlt } else { f.ausgabe });
             cr.rectangle(x, y, rb, rh);
             let _ = cr.fill();
-            cr.set_source_rgb(0.25, 0.25, 0.25);
+            f.setzen(cr, f.rand);
             cr.set_line_width(if gewaehlt { 2.0 } else { 1.0 });
             cr.rectangle(x + 0.5, y + 0.5, rb - 1.0, rh - 1.0);
             let _ = cr.stroke();
             if w.haupt {
                 // Panel-Andeutung oben: der Hauptmonitor trägt die Leiste
-                cr.set_source_rgb(0.15, 0.15, 0.15);
+                f.setzen(cr, f.leiste);
                 cr.rectangle(x + 1.0, y + 1.0, (rb - 2.0).max(0.0), 5.0_f64.min(rh));
                 let _ = cr.fill();
             }
-            if gewaehlt {
-                cr.set_source_rgb(1.0, 1.0, 1.0);
-            } else {
-                cr.set_source_rgb(0.1, 0.1, 0.1);
-            }
+            f.setzen(cr, if gewaehlt { f.text_gewaehlt } else { f.text });
             cr.set_font_size(if rb < 120.0 { 10.0 } else { 13.0 });
             let name = z
                 .ausgaben
@@ -938,7 +983,7 @@ fn verdrahten(o: &Rc<Oberflaeche>) {
         let o = o.clone();
         o.clone()
             .anordnung
-            .set_draw_func(move |_, cr, b, h| o.zeichnen(cr, b, h));
+            .set_draw_func(move |da, cr, b, h| o.zeichnen(cr, b, h, Farben::fuer(da)));
     }
     {
         let o2 = o.clone();

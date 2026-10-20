@@ -11,7 +11,7 @@ Der Hintergrund (`[Background]`, QE-01) bleibt wie er ist. Er ist in `crates/que
 
 ```ini
 [Background]
-File=~/Bilder/berge.jpg
+File=/home/anna/Bilder/berge.jpg
 Mode=zoom
 Color=#1c4e96
 
@@ -56,12 +56,12 @@ Die Symbole von Dateien und Ordnern in `~/Schreibtisch` sind keine festen Symbol
 > `src/arbeitsflaeche_modell.rs` (Einstellungen) und `IconSettings::default()` in `config.rs` (Desktop). Ändern sich
 > die Standards, müssen beide Stellen und diese Tabelle gleichzeitig geändert werden.
 
-### 3.0 Was das auf der VM entwicklungs-vm bedeutet (gemessen 19.10.2026, `gio mount -li`, `findmnt`)
+### 3.0 Was das auf der Entwicklungs-VM bedeutet (gemessen 19.10.2026, `gio mount -li`, `findmnt`; Benutzer- und Rechnernamen neutralisiert)
 
 | Mount | GIO-Fakten | Typ (§3.1) | QE-03 heute | mit QE-04 und Standardwerten |
 |---|---|---|---|---|
-| `cidata` → `/run/media/user/cidata` (`/dev/sr0`, iso9660) | Volume Klasse `device`, Laufwerk „QEMU DVD-ROM“ removable, auswerfbar, Symbol `media-optical-cd-rom` | Optical | sichtbar | **bleibt sichtbar** |
-| `user on nas-test.local` → `smb://nas-test.local/user/` | GDaemonMount ohne Volume, aushängbar, Symbol `folder-remote` | Network | nicht sichtbar | **erscheint neu** |
+| `cidata` → `/run/media/anna/cidata` (`/dev/sr0`, iso9660) | Volume Klasse `device`, Laufwerk „QEMU DVD-ROM“ removable, auswerfbar, Symbol `media-optical-cd-rom` | Optical | sichtbar | **bleibt sichtbar** |
+| `anna on nas-test.local` → `smb://nas-test.local/anna/` | GDaemonMount ohne Volume, aushängbar, Symbol `folder-remote` | Network | nicht sichtbar | **erscheint neu** |
 | `/`, `/boot`, `/boot/efi` (`/dev/sda1`, `sda13`, `sda15`) | Systempfade; udisks meldet für `sda` keine Volumes | nie | nicht sichtbar | nicht sichtbar |
 | selbst eingehängte eingebaute Partitionen | **gibt es auf der VM nicht** (keine weiteren sda-Partitionen eingehängt) | Internal | wären sichtbar (`can_unmount`) | würden **verschwinden** (Internal aus) – heute betrifft das nichts |
 | `/run/user/1001/doc` (Portal), `/run/user/1001/gvfs` und GVfs-FUSE-Reste isolierter Läufe | Portal/FUSE-Hilfsmounts | nie | nicht sichtbar | nicht sichtbar |

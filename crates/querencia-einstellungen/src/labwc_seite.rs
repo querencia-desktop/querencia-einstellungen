@@ -743,6 +743,52 @@ mod tests {
         std::fs::remove_dir_all(&w).unwrap();
     }
 
+    /// Status-Session 21.10.: fremde Sicherungen in der Benutzerkopie (Rückfallpfad
+    /// aus 00, Starter-Abgleich 21:35, autostart/environment des Starters) bleiben
+    /// nach 20 Übernahmen in 20 Programmläufen byte-gleich; eigene höchstens 5.
+    #[test]
+    fn fremde_vorher_dateien_bleiben_nach_20_uebernahmen() {
+        let w = ordner("fremd20");
+        let o = orte(&w, VORGABE, true);
+        let fremde = [
+            "rc.xml.vorher-20261020-112812",
+            "rc.xml.vorher-20261020-213520",
+            "autostart.vorher-20261020-141708",
+            "environment.vorher-20261020-141708",
+            "environment.d/zz-querencia-einstellungen.env.vorher-20261020-120000",
+        ];
+        std::fs::create_dir_all(o.benutzer.join("environment.d")).unwrap();
+        for (i, f) in fremde.iter().enumerate() {
+            std::fs::write(o.benutzer.join(f), format!("fremd {i}\n")).unwrap();
+        }
+        for i in 0..20u32 {
+            lk::lauf_vergessen(&w);
+            let zeit = format!("20261021-01{i:02}00");
+            if i % 2 == 0 {
+                uebernehmen::<Tastatur>(&o, &zeit, |v| v.verzoegerung = 610 + 10 * i);
+                uebernehmen::<Tastatur>(&o, &zeit, |v| {
+                    v.belegungen =
+                        vec![(if i % 4 == 0 { "us" } else { "ch" }.into(), String::new())]
+                });
+            } else {
+                uebernehmen::<Fensterdesign>(&o, &zeit, |v| v.eckenradius = 1 + i % 7);
+            }
+        }
+        for (i, f) in fremde.iter().enumerate() {
+            assert_eq!(
+                std::fs::read_to_string(o.benutzer.join(f)).unwrap(),
+                format!("fremd {i}\n"),
+                "{f}"
+            );
+        }
+        let s = eigene_sicherungen(&o);
+        let rc = s.iter().filter(|n| n.starts_with("rc.xml.")).count();
+        let env = s.iter().filter(|n| n.starts_with("environment.d/")).count();
+        assert!(rc <= lk::SICHERUNGEN && env <= lk::SICHERUNGEN, "{s:?}");
+        assert!(rc > 0 && env > 0, "{s:?}");
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
     #[test]
     fn labwc_standardwerte_wie_die_bereiche() {
         // ausdrücklich eingetragene labwc-Standardwerte lesen die Bereiche

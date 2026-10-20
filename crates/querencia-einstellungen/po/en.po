@@ -112,15 +112,15 @@ msgid ""
 msgstr ""
 "Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
 
-#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:258 src/labwc_seite.rs:246
+#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:258 src/labwc_seite.rs:274
 msgid "Restore Defaults"
 msgstr "Restore Defaults"
 
-#: src/arbeitsflaeche.rs:193 src/labwc_seite.rs:247
+#: src/arbeitsflaeche.rs:193 src/labwc_seite.rs:275
 msgid "Reload"
 msgstr "Reload"
 
-#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:259 src/hintergrund_seite.rs:135 src/labwc_seite.rs:248 src/standardanwendungen.rs:408
+#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:259 src/hintergrund_seite.rs:135 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
 msgid "Apply"
 msgstr "Apply"
 
@@ -128,11 +128,11 @@ msgstr "Apply"
 msgid "Close"
 msgstr "Close"
 
-#: src/arbeitsflaeche.rs:260 src/labwc_seite.rs:297
+#: src/arbeitsflaeche.rs:260 src/labwc_seite.rs:325
 msgid "Reloaded."
 msgstr "Reloaded."
 
-#: src/arbeitsflaeche.rs:289 src/labwc_seite.rs:375
+#: src/arbeitsflaeche.rs:289 src/labwc_seite.rs:403
 msgid "Changes take effect only after “Apply”."
 msgstr "Changes take effect only after “Apply”."
 
@@ -189,12 +189,12 @@ msgstr ""
 msgid "Applied at {time}. Previous setting saved as {name}."
 msgstr "Applied at {time}. Previous setting saved as {name}."
 
-#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:911 src/labwc_seite.rs:458
+#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:911 src/labwc_seite.rs:466
 #, no-c-format
 msgid "Applied at {time}."
 msgstr "Applied at {time}."
 
-#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:914 src/hintergrund_seite.rs:358 src/labwc_seite.rs:533
+#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:914 src/hintergrund_seite.rs:358 src/labwc_seite.rs:541
 #, no-c-format
 msgid "Not saved: {error}"
 msgstr "Not saved: {error}"
@@ -293,7 +293,7 @@ msgstr "the compositor could not apply the setting"
 msgid "the outputs have changed in the meantime; please try again"
 msgstr "the outputs have changed in the meantime; please try again"
 
-#: src/bereiche.rs:27 src/erscheinungsbild.rs:226
+#: src/bereiche.rs:27 src/erscheinungsbild.rs:253
 msgid "Appearance"
 msgstr "Appearance"
 
@@ -329,7 +329,7 @@ msgstr "Screen"
 msgid "About Querencia"
 msgstr "About Querencia"
 
-#: src/bereiche.rs:132 src/labwc_seite.rs:260
+#: src/bereiche.rs:132 src/labwc_seite.rs:288
 #, no-c-format
 msgid "Source: {source}"
 msgstr "Source: {source}"
@@ -431,84 +431,84 @@ msgstr[0] ""
 msgstr[1] ""
 "{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
 
-#: src/bildschirm.rs:327
+#: src/bildschirm.rs:381
 #, no-c-format
 msgid "{name} – primary monitor"
 msgstr "{name} – primary monitor"
 
-#: src/bildschirm.rs:330
+#: src/bildschirm.rs:384
 #, no-c-format
 msgid "{name} (off)"
 msgstr "{name} (off)"
 
-#: src/bildschirm.rs:383
+#: src/bildschirm.rs:437
 #, no-c-format
 msgid "{size} (preferred)"
 msgstr "{size} (preferred)"
 
-#: src/bildschirm.rs:434
+#: src/bildschirm.rs:488
 #, no-c-format
 msgid ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 msgstr ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 
-#: src/bildschirm.rs:457
+#: src/bildschirm.rs:511
 msgid "no list (free sizes, e.g. virtual output)"
 msgstr "no list (free sizes, e.g. virtual output)"
 
-#: src/bildschirm.rs:471
+#: src/bildschirm.rs:525
 #, no-c-format
 msgid " · serial number {serial}"
 msgstr " · serial number {serial}"
 
-#: src/bildschirm.rs:522
+#: src/bildschirm.rs:576
 msgid ""
 "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
 msgstr ""
 "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
 
-#: src/bildschirm.rs:557 src/bildschirm.rs:688
+#: src/bildschirm.rs:611 src/bildschirm.rs:742
 msgid "no connection"
 msgstr "no connection"
 
-#: src/bildschirm.rs:577
+#: src/bildschirm.rs:631
 msgid "No change compared to the current state."
 msgstr "No change compared to the current state."
 
-#: src/bildschirm.rs:584
+#: src/bildschirm.rs:638
 msgid "no connection to the compositor"
 msgstr "no connection to the compositor"
 
-#: src/bildschirm.rs:594
+#: src/bildschirm.rs:648
 #, no-c-format
 msgid "Not applied – {error}"
 msgstr "Not applied – {error}"
 
-#: src/bildschirm.rs:608
+#: src/bildschirm.rs:662
 #, no-c-format
 msgid ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 msgstr ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 
-#: src/bildschirm.rs:625
+#: src/bildschirm.rs:679
 msgid "Keep Screen Settings?"
 msgstr "Keep Screen Settings?"
 
-#: src/bildschirm.rs:638
+#: src/bildschirm.rs:692
 msgid "The new screen settings are active. Do you want to keep them?"
 msgstr "The new screen settings are active. Do you want to keep them?"
 
-#: src/bildschirm.rs:648
+#: src/bildschirm.rs:702
 msgid "Restore Previous Settings"
 msgstr "Restore Previous Settings"
 
-#: src/bildschirm.rs:649
+#: src/bildschirm.rs:703
 msgid "Keep Settings"
 msgstr "Keep Settings"
 
-#: src/bildschirm.rs:660 src/i18n.rs:175
+#: src/bildschirm.rs:714 src/i18n.rs:175
 #, no-c-format
 msgid "Without confirmation the previous settings are restored in {n} second."
 msgid_plural ""
@@ -517,36 +517,36 @@ msgstr[0] "Without confirmation the previous settings are restored in {n} second
 msgstr[1] ""
 "Without confirmation the previous settings are restored in {n} seconds."
 
-#: src/bildschirm.rs:699
+#: src/bildschirm.rs:753
 msgid "Previous screen settings restored; nothing saved."
 msgstr "Previous screen settings restored; nothing saved."
 
-#: src/bildschirm.rs:703
+#: src/bildschirm.rs:757
 #, no-c-format
 msgid "Restoring failed – {error}. The new state remains, nothing saved."
 msgstr "Restoring failed – {error}. The new state remains, nothing saved."
 
-#: src/bildschirm.rs:777
+#: src/bildschirm.rs:831
 #, no-c-format
 msgid ""
 "Screen settings kept and saved in {file}. They are applied again at session start."
 msgstr ""
 "Screen settings kept and saved in {file}. They are applied again at session start."
 
-#: src/bildschirm.rs:782
+#: src/bildschirm.rs:836
 #, no-c-format
 msgid "Settings active, but not saved: {error}"
 msgstr "Settings active, but not saved: {error}"
 
-#: src/bildschirm.rs:842
+#: src/bildschirm.rs:896
 msgid "No output switched on"
 msgstr "No output switched on"
 
-#: src/bildschirm.rs:1059
+#: src/bildschirm.rs:1105
 msgid "Reset to the current state of the compositor."
 msgstr "Reset to the current state of the compositor."
 
-#: src/bildschirm.rs:1063
+#: src/bildschirm.rs:1109
 #, no-c-format
 msgid "Reading failed – {error}"
 msgstr "Reading failed – {error}"
@@ -599,77 +599,83 @@ msgstr "GTK default (built-in)"
 msgid "{theme} (not installed)"
 msgstr "{theme} (not installed)"
 
-#: src/erscheinungsbild.rs:228
+#: src/erscheinungsbild.rs:210
+msgid ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
+msgstr ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
+
+#: src/erscheinungsbild.rs:214
+msgid ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
+msgstr ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
+
+#: src/erscheinungsbild.rs:255
 msgid ""
 "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
 msgstr ""
 "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
 
-#: src/erscheinungsbild.rs:288
+#: src/erscheinungsbild.rs:315
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
 msgstr ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
 
-#: src/erscheinungsbild.rs:291
+#: src/erscheinungsbild.rs:318
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
 msgstr ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
 
-#: src/erscheinungsbild.rs:300
+#: src/erscheinungsbild.rs:327
 msgid "Icons"
 msgstr "Icons"
 
-#: src/erscheinungsbild.rs:307 src/hintergrund.rs:245
+#: src/erscheinungsbild.rs:334 src/hintergrund.rs:245
 msgid "Preview:"
 msgstr "Preview:"
 
-#: src/erscheinungsbild.rs:312
+#: src/erscheinungsbild.rs:339
 msgid "Controls (GTK Theme)"
 msgstr "Controls (GTK Theme)"
 
-#: src/erscheinungsbild.rs:317
+#: src/erscheinungsbild.rs:344
 msgid "Prefer dark appearance"
 msgstr "Prefer dark appearance"
 
-#: src/erscheinungsbild.rs:320
-msgid ""
-"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
-msgstr ""
-"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
-
-#: src/erscheinungsbild.rs:324 src/maus.rs:242
+#: src/erscheinungsbild.rs:350 src/maus.rs:242
 msgid "Mouse Pointer"
 msgstr "Mouse Pointer"
 
-#: src/erscheinungsbild.rs:326 src/maus.rs:244
+#: src/erscheinungsbild.rs:352 src/maus.rs:244
 msgid "Theme:"
 msgstr "Theme:"
 
-#: src/erscheinungsbild.rs:337 src/maus.rs:255
+#: src/erscheinungsbild.rs:363 src/maus.rs:255
 msgid "Size:"
 msgstr "Size:"
 
-#: src/erscheinungsbild.rs:338
+#: src/erscheinungsbild.rs:364
 msgid ""
 "The same pointer is in the “Mouse” section; both sections write the same values."
 msgstr ""
 "The same pointer is in the “Mouse” section; both sections write the same values."
 
-#: src/erscheinungsbild.rs:344
+#: src/erscheinungsbild.rs:370
 msgid ""
 "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
 msgstr ""
 "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
 
-#: src/erscheinungsbild.rs:472
+#: src/erscheinungsbild.rs:514
 msgid ""
 "With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
 msgstr ""
 "With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
 
-#: src/erscheinungsbild.rs:474
+#: src/erscheinungsbild.rs:516
 msgid ""
 "Panel, desktop and programs show this theme; missing icons come from the themes it builds on."
 msgstr ""
@@ -997,120 +1003,120 @@ msgstr ""
 msgid "Applied at {time}; the desktop shows the image immediately."
 msgstr "Applied at {time}; the desktop shows the image immediately."
 
-#: src/labwc_konfig.rs:141
+#: src/labwc_konfig.rs:198
 #, no-c-format
 msgid "{file} not readable ({error})"
 msgstr "{file} not readable ({error})"
 
-#: src/labwc_konfig.rs:322
+#: src/labwc_konfig.rs:386
 msgid "an empty rc.xml is not written"
 msgstr "an empty rc.xml is not written"
 
-#: src/labwc_konfig.rs:458
+#: src/labwc_konfig.rs:527
 msgid "labwc does not read the user copy"
 msgstr "labwc does not read the user copy"
 
-#: src/labwc_konfig.rs:468
+#: src/labwc_konfig.rs:537
 #, no-c-format
 msgid "{program} cannot be started: {error}"
 msgstr "{program} cannot be started: {error}"
 
-#: src/labwc_konfig.rs:508
+#: src/labwc_konfig.rs:577
 msgid ""
 "Changes take effect immediately after “Apply” (labwc reloads its configuration)."
 msgstr ""
 "Changes take effect immediately after “Apply” (labwc reloads its configuration)."
 
-#: src/labwc_konfig.rs:511
+#: src/labwc_konfig.rs:580
 msgid ""
 "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there."
 msgstr ""
 "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there."
 
-#: src/labwc_konfig.rs:514
+#: src/labwc_konfig.rs:583
 msgid ""
 "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login."
 msgstr ""
 "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login."
 
-#: src/labwc_seite.rs:232
+#: src/labwc_seite.rs:260
 msgid "New Default Available"
 msgstr "New Default Available"
 
-#: src/labwc_seite.rs:233
+#: src/labwc_seite.rs:261
 msgid ""
 "Querencia has a newer default for rc.xml (e.g. new keyboard shortcuts). Your file was not replaced at login because it contains your own settings. “Adopt New Default” transfers your settings to the new default; the previous file is backed up."
 msgstr ""
 "Querencia has a newer default for rc.xml (e.g. new keyboard shortcuts). Your file was not replaced at login because it contains your own settings. “Adopt New Default” transfers your settings to the new default; the previous file is backed up."
 
-#: src/labwc_seite.rs:236
+#: src/labwc_seite.rs:264
 msgid "Adopt New Default"
 msgstr "Adopt New Default"
 
-#: src/labwc_seite.rs:338
+#: src/labwc_seite.rs:366
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
 msgstr ""
 "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
 
-#: src/labwc_seite.rs:346
+#: src/labwc_seite.rs:374
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
 msgstr ""
 "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
 
-#: src/labwc_seite.rs:385
+#: src/labwc_seite.rs:413
 msgid "Changed – “Apply” saves."
 msgstr "Changed – “Apply” saves."
 
-#: src/labwc_seite.rs:387
+#: src/labwc_seite.rs:415
 msgid "No change."
 msgstr "No change."
 
-#: src/labwc_seite.rs:413
+#: src/labwc_seite.rs:441
 msgid ""
 "The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 "The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 
-#: src/labwc_seite.rs:449
+#: src/labwc_seite.rs:457
 #, no-c-format
 msgid "{error} (labwc configuration is already saved)"
 msgstr "{error} (labwc configuration is already saved)"
 
-#: src/labwc_seite.rs:461
+#: src/labwc_seite.rs:469
 msgid "GTK programs, panel and desktop pick it up immediately."
 msgstr "GTK programs, panel and desktop pick it up immediately."
 
-#: src/labwc_seite.rs:470
+#: src/labwc_seite.rs:478
 msgid "labwc has reloaded its configuration."
 msgstr "labwc has reloaded its configuration."
 
-#: src/labwc_seite.rs:473
+#: src/labwc_seite.rs:481
 #, no-c-format
 msgid "Reloading failed: {error}."
 msgstr "Reloading failed: {error}."
 
-#: src/labwc_seite.rs:475
+#: src/labwc_seite.rs:483
 msgid "Saved in ~/.config/querencia/labwc; effective from the next login."
 msgstr "Saved in ~/.config/querencia/labwc; effective from the next login."
 
-#: src/labwc_seite.rs:486 src/labwc_seite.rs:513
+#: src/labwc_seite.rs:494 src/labwc_seite.rs:521
 #, no-c-format
 msgid "Previously saved as {names}."
 msgstr "Previously saved as {names}."
 
-#: src/labwc_seite.rs:506
+#: src/labwc_seite.rs:514
 msgid "New default adopted, your settings remain."
 msgstr "New default adopted, your settings remain."
 
-#: src/labwc_seite.rs:509
+#: src/labwc_seite.rs:517
 msgid "labwc has reloaded."
 msgstr "labwc has reloaded."
 
-#: src/labwc_seite.rs:524
+#: src/labwc_seite.rs:532
 #, no-c-format
 msgid "New default not adopted: {error}"
 msgstr "New default not adopted: {error}"
@@ -1129,7 +1135,7 @@ msgstr "rc.xml: root is <{root}>, not <labwc_config>"
 msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr "rc.xml contains changes outside the settings – please merge by hand"
 
-#: src/main.rs:144 src/main.rs:157
+#: src/main.rs:152 src/main.rs:165
 msgid "Querencia Settings"
 msgstr "Querencia Settings"
 

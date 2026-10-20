@@ -120,7 +120,15 @@ fn main() -> glib::ExitCode {
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
         .build();
-    app.connect_startup(|_| fenstersymbol_einrichten());
+    app.connect_startup(|_| {
+        fenstersymbol_einrichten();
+        // QD-081 (CSS-Welle dunkel): GTK 4.22 lädt unter „prefer-dark“ beim
+        // Start nur die helle Fassung des Themas, bis sich
+        // gtk-interface-color-scheme einmal meldet.
+        if let Some(s) = gtk4::Settings::default() {
+            s.notify("gtk-interface-color-scheme");
+        }
+    });
     app.connect_activate(move |app| {
         if nur_hintergrund {
             hintergrund::oeffnen(app).present();
