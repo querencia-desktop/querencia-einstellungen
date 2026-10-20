@@ -18,7 +18,7 @@ V=${1:-010}
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/010/release/querencia-einstellungen}
 EN=$P/$Z/daten-en
 mkdir -p nachweis/010
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 werkzeug/produktiv-stand.sh > nachweis/010/produktiv-vorher.txt
 gsettings list-recursively org.gnome.desktop.interface > nachweis/010/gsettings-live-vorher.txt
 for a in 1920 1024; do

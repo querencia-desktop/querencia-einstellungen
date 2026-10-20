@@ -11,9 +11,9 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 Z=szenarien/arbeitsflaeche
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2x/release/querencia-einstellungen}
-export QE_DESKTOP=~/opt/querencia/desktop/9f4a9dca39014f0f/querencia-desktop QE_DESKTOP_SHA16=9f4a9dca39014f0f
-ALT_APP=~/opt/querencia/einstellungen/03c6dec5e63966b9/querencia-einstellungen
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+export QE_DESKTOP=$HOME/opt/querencia/desktop/9f4a9dca39014f0f/querencia-desktop QE_DESKTOP_SHA16=9f4a9dca39014f0f
+ALT_APP=$HOME/opt/querencia/einstellungen/03c6dec5e63966b9/querencia-einstellungen
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 echo "Desktop: $QE_DESKTOP ($QE_DESKTOP_SHA16)"
 werkzeug/produktiv-stand.sh > nachweis/g2x/produktiv-vorher-g2x.txt
 l() { local n=$1 a=$2 s=$3 sz=$4 ini=${5:-}; QE_APP_ARGS=$a bash werkzeug/isoliert.sh "g2x-$n" "$s" "$Z/$sz" $ini >/dev/null 2>&1; echo "Lauf $n: $(tail -1 nachweis/g2x-$n/logs/eingabe.log)"; }

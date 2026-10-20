@@ -11,7 +11,7 @@
 set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
-export REG_ALT=${REG_ALT:-~/opt/querencia/einstellungen/452599512a8b268a/querencia-einstellungen}
+export REG_ALT=${REG_ALT:-$HOME/opt/querencia/einstellungen/452599512a8b268a/querencia-einstellungen}
 export REG_NEU=${REG_NEU:-$P/nachweis/g2aj/release/querencia-einstellungen}
 export REG_ALT_NAME=008 REG_NEU_NAME=009
 export REG_SKRIPTE=${REG_SKRIPTE:-g2c g2g g2x g2z g2aa g2af g2ag}

@@ -18,11 +18,11 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 Z=szenarien/fenstersymbol
 NEU=${QE_APP_BIN:-$P/nachweis/g2aa/release/querencia-einstellungen}
-ALT=~/opt/querencia/einstellungen/d6378490b5e53237/querencia-einstellungen
+ALT=${ALT:-$HOME/opt/querencia/einstellungen/d6378490b5e53237/querencia-einstellungen}
 ECHT=szenarien/standardanwendungen/echt-20261019.list
 mkdir -p nachweis/g2aa
-echo "Neu: $NEU $(sha256sum "$NEU" | cut -c1-16) ($("$NEU" --version))"
-echo "Alt: $ALT $(sha256sum "$ALT" | cut -c1-16) ($("$ALT" --version))"
+echo "Neu: $NEU $(sha256sum "$NEU" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$NEU"))"
+echo "Alt: $ALT $(sha256sum "$ALT" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$ALT"))"
 werkzeug/produktiv-stand.sh > nachweis/g2aa/produktiv-vorher-g2aa.txt
 # l <name> <binary> <args> <auflösung> <szenario> <frisch|alt> [rc.xml]
 l() {

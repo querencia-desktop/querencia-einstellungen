@@ -10,7 +10,7 @@ click
 wait 2500
 combo ctrl+l
 wait 300
-type ~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3.png
+type @WURZEL@/nachweis/testbilder/muster-4zu3.png
 key Return
 wait 1500
 move 960 700

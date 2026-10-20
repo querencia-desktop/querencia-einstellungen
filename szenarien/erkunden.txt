@@ -13,7 +13,7 @@ wait 2500
 shot e3-dateidialog.png
 combo ctrl+l
 wait 400
-type ~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3.png
+type @WURZEL@/nachweis/testbilder/muster-4zu3.png
 wait 500
 shot e4-dateidialog-pfad.png
 key Return

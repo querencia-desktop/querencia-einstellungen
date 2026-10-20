@@ -12,18 +12,19 @@
 # Ergebnis: nachweis/<name>/ mit logs/, bildern (shot …), desktop.ini nachher.
 set -euo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
-NAME=${1:?Name}; AUFL=${2:?BREITExHÖHE}; SZENARIO=$(readlink -f "${3:?Szenario}"); INI=${4:-}
+NAME=${1:?Name}; AUFL=${2:?BREITExHÖHE}; SZENARIO_QUELLE=$(readlink -f "${3:?Szenario}"); INI=${4:-}
 # Desktop: Standard HMP-10a aus der Ablage; für die Nachprüfung mit W1s neuem
 # Build: QE_DESKTOP=<pfad> QE_DESKTOP_SHA16=<sha16> isoliert.sh …
-DESKTOP_BIN=${QE_DESKTOP:-~/opt/querencia/desktop/2b46a7b90b3412bb/querencia-desktop}
+DESKTOP_BIN=${QE_DESKTOP:-$HOME/opt/querencia/desktop/2b46a7b90b3412bb/querencia-desktop}
 DESKTOP_SHA16=${QE_DESKTOP_SHA16:-2b46a7b90b3412bb}
-PANEL_BIN=~/opt/querencia/panel/696b8797a3a35eb8/querencia-panel
-LABWC=~/opt/labwc-0.9.8/bin/labwc
+# 0.1.2 (G1a): Pfade über $HOME, umstellbar über QE_PANEL, QE_LABWC_BIN, QE_WERKSTATT_WERK.
+PANEL_BIN=${QE_PANEL:-$HOME/opt/querencia/panel/696b8797a3a35eb8/querencia-panel}
+LABWC=${QE_LABWC_BIN:-$HOME/opt/labwc-0.9.8/bin/labwc}
 # G2-C: Release-Build über QE_APP_BIN=<pfad>; ohne Variable der Debug-Build wie bisher.
 # G2-G: QE_OUTPUTS=2 gibt dem headless labwc zwei Ausgaben (die zweite 1280x720, rechts).
 APP=${QE_APP_BIN:-$P/target/debug/querencia-einstellungen}
 WERK=$P/werkzeug/bin
-WERKSTATT_WERK=~/projects/querencia-panel-werkstatt/arbeitsflaechen-4/werkzeug/bin
+WERKSTATT_WERK=${QE_WERKSTATT_WERK:-$HOME/projects/querencia-panel-werkstatt/arbeitsflaechen-4/werkzeug/bin}
 for f in "$DESKTOP_BIN" "$PANEL_BIN" "$LABWC" "$APP" "$WERK/qe-eingabe" "$WERKSTATT_WERK/qausgabe"; do
     [ -x "$f" ] || { echo "fehlt: $f" >&2; exit 2; }
 done
@@ -66,7 +67,11 @@ echo "Desktop: $DESKTOP_BIN ($DESKTOP_SHA16)" > "$N/desktop-binary.txt"
 # Testbilder ins Profil (der Dateidialog startet dort)
 cp "$P"/nachweis/testbilder/*.png "$P"/nachweis/testbilder/*.jpg "$P"/nachweis/testbilder/*.webp "$PROFIL/bilder/"
 sed -i "s#\$HOME/schreibtisch#$PROFIL/schreibtisch#; s#\$HOME/bilder#$PROFIL/bilder#" "$PROFIL/config/user-dirs.dirs"
-if [ -n "$INI" ]; then cp "$INI" "$PROFIL/config/querencia/desktop.ini"; fi
+# 0.1.2 (G1a): @WURZEL@ in Szenario und desktop.ini-Vorlage steht für diesen
+# Checkout (statt eines festen Pfads); das Szenario läuft als Kopie im Lauf.
+SZENARIO=$N/szenario.txt
+sed "s#@WURZEL@#$P#g" "$SZENARIO_QUELLE" > "$SZENARIO"
+if [ -n "$INI" ]; then sed "s#@WURZEL@#$P#g" "$INI" > "$PROFIL/config/querencia/desktop.ini"; fi
 # G2-G: gespeicherte Bildschirmkonfiguration ins Profil (für --bildschirm-anwenden)
 if [ -n "${QE_BILDSCHIRM_INI:-}" ]; then cp "$QE_BILDSCHIRM_INI" "$PROFIL/config/querencia/bildschirm.ini"; fi
 # G2-Z: mimeapps.list ins Profil (GIO liest und schreibt $XDG_CONFIG_HOME/mimeapps.list);
@@ -80,6 +85,8 @@ if [ -n "${QE_MIMEAPPS_VORRANG:-}" ]; then cp "$QE_MIMEAPPS_VORRANG" "$PROFIL/co
 # simuliert einen labwc, der Starter und Symbole vor G2-V eingelesen hat).
 if [ -n "${QE_LABWC_RC:-}" ]; then cp "$QE_LABWC_RC" "$PROFIL/labwc/rc.xml"; fi
 if [ -n "${QE_DATA_HOME:-}" ]; then mkdir -p "$PROFIL/share"; cp -r "$QE_DATA_HOME/." "$PROFIL/share/"; fi
+# 0.1.2 (G1a): @HOME@ in den kopierten Startern steht für das echte HOME (Ablage unter ~/opt)
+if [ -d "$PROFIL/share/applications" ]; then sed -i "s#@HOME@#$HOME#g" "$PROFIL"/share/applications/*.desktop; fi
 mkdir -p "$HOME/.cache/qe01"; RT=$(mktemp -d "$HOME/.cache/qe01/hmp05-runtime-XXXXXX"); chmod 0700 "$RT"; echo "$RT" > "$N/laufzeitordner.txt"
 # PT-1 (nach SW-6, QD-037): keine Portale im Wegwerf-Bus. Sonst startet
 # xdg-document-portal und sein FUSE-Mount $RT/doc erscheint im echten Querencia
@@ -98,7 +105,7 @@ cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.vorher" 2>/dev/null ||
 #   QE_LABWC=ohne      keine Benutzerkopie, labwc liest das Profil-labwc → „ab
 #                      der nächsten Anmeldung“
 #   QE_LABWC_DATEIEN=<ordner>  danach dessen Inhalt in die Benutzerkopie (Szenarien)
-VQ=${QE_LABWC_VORGABE_QUELLE:-~/projects/querencia-runtime/session/querencia/labwc}
+VQ=${QE_LABWC_VORGABE_QUELLE:-${QUERENCIA_REPO:-$HOME/projects/querencia-runtime}/session/querencia/labwc}
 mkdir -p "$PROFIL/vorgabe"; cp "$VQ/rc.xml" "$VQ/environment" "$PROFIL/vorgabe/"
 LABWC_DIR=$PROFIL/labwc
 if [ "${QE_LABWC:-}" = benutzer ]; then
@@ -161,7 +168,9 @@ fi
 echo "szenario exit=\$?" >> logs/eingabe.log
 sleep 0.5
 # nur Prozesse DIESER isolierten Sitzung (gleiches XDG_RUNTIME_DIR) beenden
-for p in \$(pgrep -f "^$APP"); do grep -qz "^XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR\$" /proc/\$p/environ 2>/dev/null && kill -TERM \$p; done
+# 0.1.2: Prozesse nur über /proc/<pid>/exe, nicht über die Kommandozeile
+APP_EXE=\$(readlink -f "$APP")
+for d in /proc/[0-9]*; do [ "\$(readlink "\$d/exe" 2>/dev/null)" = "\$APP_EXE" ] && grep -qz "^XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR\$" "\$d/environ" 2>/dev/null && kill -TERM "\${d#/proc/}"; done
 if [ "\$("$APP" --version 2>/dev/null)" != "querencia-einstellungen 0.0.1" ]; then
     timeout 10 "$APP" --bildschirm-zeigen > logs/ausgaben-ende.txt 2>>logs/ausgaben.log || true
 fi
@@ -174,6 +183,23 @@ EOF
 chmod +x "$N/start.sh"
 echo "Profil $PROFIL, Laufzeit $RT, Auflösung $AUFL"
 HOME_REAL=$HOME
+# 0.1.2: eigenes HOME im Profil (heim/). Themen, Symbole, Starter und die
+# Galerie der Hintergründe kommen als Verweisbaum (cp -rs, nur gelesen) bzw.
+# Kopie (Starter) dazu, damit das Fenster aussieht wie live.
+#   QE_THEMA_ORDNER=<ordner>  statt des installierten Querencia-Klassisch
+#                             (z. B. Thema 0.2 aus dem Thema-Worktree)
+HEIM=$PROFIL/heim
+mkdir -p "$HEIM/.local/share"
+for d in icons themes querencia; do
+    [ -d "$HOME_REAL/.local/share/$d" ] && cp -rs "$HOME_REAL/.local/share/$d" "$HEIM/.local/share/$d"
+done
+[ -d "$HOME_REAL/.local/share/applications" ] && cp -a "$HOME_REAL/.local/share/applications" "$HEIM/.local/share/"
+if [ -n "${QE_THEMA_ORDNER:-}" ]; then
+    rm -rf "${HEIM:?}/.local/share/themes/Querencia-Klassisch"
+    mkdir -p "$HEIM/.local/share/themes"
+    ln -s "$(readlink -f "$QE_THEMA_ORDNER")" "$HEIM/.local/share/themes/Querencia-Klassisch"
+fi
+echo "HOME=$HEIM Thema=$(readlink -f "$HEIM/.local/share/themes/Querencia-Klassisch")" > "$N/heim.txt"
 (
   export XDG_RUNTIME_DIR="$RT" XDG_CONFIG_HOME="$PROFIL/config" XDG_STATE_HOME="$PROFIL/state" XDG_CACHE_HOME="$PROFIL/cache"
   # G2-AJ: QE_WLR_RENDERER=gles2 lässt den headless labwc auf der Grafikkarte
@@ -184,7 +210,7 @@ HOME_REAL=$HOME
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
   if [ "${QE_PORTAL:-}" = settings ]; then export GTK_USE_PORTAL=0; else export GDK_DEBUG=no-portals GTK_USE_PORTAL=0; fi
   export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_GSETTINGS="${QE_GSETTINGS:+$(readlink -f "$QE_GSETTINGS")}" QE_PORTAL="${QE_PORTAL:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
-  export QE_LABWC_VORGABE="$PROFIL/vorgabe"
+  export QE_LABWC_VORGABE="$PROFIL/vorgabe" HOME="$HEIM"
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
   if [ -n "${QE_DATA_HOME:-}" ]; then export XDG_DATA_HOME="$PROFIL/share"; fi
   mkdir -p "$PROFIL/state/querencia" "$PROFIL/cache"

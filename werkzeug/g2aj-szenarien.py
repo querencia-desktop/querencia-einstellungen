@@ -73,7 +73,7 @@ WECHSEL_Z1 = [
     ("standardanwendungen", "hintergrundbild"),
     ("tastatur", "panels"),
 ]
-# pottrauschens fünftes Bild: Reste unter dem Laufwerke-Rahmen von „Symbole der Arbeitsfläche“
+# fünftes Bild des Besitzers: Reste unter dem Laufwerke-Rahmen von „Symbole der Arbeitsfläche“
 WECHSEL_Z2 = [
     ("erscheinungsbild", "symbole"),
     ("standardanwendungen", "symbole"),

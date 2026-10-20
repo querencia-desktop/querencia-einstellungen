@@ -11,10 +11,10 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 Z=szenarien/standardanwendungen
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2z/release/querencia-einstellungen}
-export QE_DESKTOP=~/opt/querencia/desktop/2c78da3ad2b68a30/querencia-desktop QE_DESKTOP_SHA16=2c78da3ad2b68a30
+export QE_DESKTOP=$HOME/opt/querencia/desktop/2c78da3ad2b68a30/querencia-desktop QE_DESKTOP_SHA16=2c78da3ad2b68a30
 ECHT=$Z/echt-20261019.list
 mkdir -p nachweis/g2z
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 echo "Desktop: $QE_DESKTOP ($QE_DESKTOP_SHA16)"
 werkzeug/produktiv-stand.sh > nachweis/g2z/produktiv-vorher-g2z.txt
 l() { local n=$1 a=$2 s=$3 sz=$4; QE_APP_ARGS=$a bash werkzeug/isoliert.sh "g2z-$n" "$s" "$Z/$sz" >/dev/null 2>&1; echo "Lauf $n: $(tail -1 nachweis/g2z-$n/logs/eingabe.log)"; }

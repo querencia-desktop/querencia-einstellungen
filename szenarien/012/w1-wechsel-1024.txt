@@ -1,0 +1,62 @@
+extent 1024 768
+wait 3500
+move 152 160
+click
+wait 1200
+shot 1-hell-erscheinungsbild.png
+move 652 404
+scroll 15
+wait 800
+shot 1-hell-erscheinungsbild-unten.png
+scroll -15
+wait 800
+move 152 384
+click
+wait 1200
+shot 1-hell-bildschirm.png
+move 152 188
+click
+wait 1200
+shot 1-hell-hintergrundbild.png
+mark wechsel dunkel
+run gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+wait 2000
+move 152 160
+click
+wait 1200
+shot 2-dunkel-erscheinungsbild.png
+move 652 404
+scroll 15
+wait 800
+shot 2-dunkel-erscheinungsbild-unten.png
+scroll -15
+wait 800
+move 152 384
+click
+wait 1200
+shot 2-dunkel-bildschirm.png
+move 152 188
+click
+wait 1200
+shot 2-dunkel-hintergrundbild.png
+mark wechsel hell
+run gsettings set org.gnome.desktop.interface color-scheme default
+wait 2000
+move 152 160
+click
+wait 1200
+shot 3-hell-erscheinungsbild.png
+move 652 404
+scroll 15
+wait 800
+shot 3-hell-erscheinungsbild-unten.png
+scroll -15
+wait 800
+move 152 384
+click
+wait 1200
+shot 3-hell-bildschirm.png
+move 152 188
+click
+wait 1200
+shot 3-hell-hintergrundbild.png

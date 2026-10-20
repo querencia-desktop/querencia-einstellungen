@@ -68,13 +68,15 @@ STANDARD = (877, 825)
 ENV = '"$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env"'
 # Welche Kataloge die App eingeblendet hat (nur Prozesse dieser Sitzung)
 MAPS = (
-    'run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" '
+    'run e=$(readlink -f "$QE_APP"); for p in /proc/[0-9]*; do p=${p#/proc/}; '
+    '[ "$(readlink /proc/$p/exe 2>/dev/null)" = "$e" ] && grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" '
     '/proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt'
 )
 
 # Sprache und Formate, mit denen die App dieser Sitzung läuft
 UMGEBUNG = (
-    'run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" '
+    'run e=$(readlink -f "$QE_APP"); for p in /proc/[0-9]*; do p=${p#/proc/}; '
+    '[ "$(readlink /proc/$p/exe 2>/dev/null)" = "$e" ] && grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" '
     '/proc/$p/environ && tr "\\0" "\\n" < /proc/$p/environ | grep -E "^(LANG|LANGUAGE|LC_[A-Z]+)="; '
     "done | sort -u > app-umgebung.txt"
 )

@@ -9,7 +9,7 @@ cd "$P"
 Z=szenarien/arbeitsflaeche
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2x/release/querencia-einstellungen}
 B=${QE04_BIN:?QE04_BIN: Desktop QE-04}
-QE03=~/opt/querencia/desktop/9f4a9dca39014f0f/querencia-desktop
+QE03=$HOME/opt/querencia/desktop/9f4a9dca39014f0f/querencia-desktop
 echo "App $(sha256sum "$QE_APP_BIN" | cut -c1-16), Desktop QE-04 $(sha256sum "$B" | cut -c1-16)"
 werkzeug/produktiv-stand.sh > nachweis/g2x/produktiv-vorher-qe04.txt
 l() { local n=$1 d=$2 s=$3 sz=$4 ini=${5:-}; QE_DESKTOP=$d QE_DESKTOP_SHA16=$(sha256sum "$d" | cut -c1-16) QE_APP_ARGS=--arbeitsflaeche bash werkzeug/isoliert.sh "g2x-$n" "$s" "$Z/$sz" $ini >/dev/null 2>&1; echo "Lauf $n: $(tail -1 nachweis/g2x-$n/logs/eingabe.log)"; }

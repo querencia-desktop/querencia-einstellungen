@@ -24,7 +24,7 @@ mkdir -p "$DATEN/querencia/hintergruende" nachweis/g2af
 : >"$HOME/.cache/g2af/.querencia-testprofil"
 (cd "$BILDER" && sha256sum -c --quiet SHA256SUMS) || { echo "Bilder stimmen nicht mit SHA256SUMS: $BILDER" >&2; exit 2; }
 for f in "$BILDER"/querencia-*.png; do ln -sfn "$f" "$DATEN/querencia/hintergruende/"; done
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 echo "Desktop: $QE_DESKTOP ($QE_DESKTOP_SHA16), Bilder: $BILDER"
 werkzeug/produktiv-stand.sh > nachweis/g2af/produktiv-vorher.txt
 l() { local n=$1 a=$2 s=$3 sz=$4 ini=${5:-}; QE_APP_ARGS=$a bash werkzeug/isoliert.sh "g2af-$n" "$s" "$sz" $ini >/dev/null 2>&1; echo "Lauf $n: $(tail -1 nachweis/g2af-$n/logs/eingabe.log)"; }

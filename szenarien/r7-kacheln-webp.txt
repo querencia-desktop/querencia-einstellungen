@@ -9,7 +9,7 @@ click
 wait 2500
 combo ctrl+l
 wait 300
-type ~/projects/querencia-einstellungen/nachweis/testbilder/kachel-160x120.png
+type @WURZEL@/nachweis/testbilder/kachel-160x120.png
 key Return
 wait 1500
 move 810 660
@@ -30,7 +30,7 @@ click
 wait 2500
 combo ctrl+l
 wait 300
-type ~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3.webp
+type @WURZEL@/nachweis/testbilder/muster-4zu3.webp
 key Return
 wait 1500
 move 810 660

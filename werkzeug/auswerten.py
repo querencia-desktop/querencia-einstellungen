@@ -98,7 +98,8 @@ def symbole_gleich(lauf):
 
 
 STANDARD_TEXT = "[Background]\nFile=\nMode=zoom\nColor=#1c4e96\n"
-MUSTER = "~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3"
+# 0.1.2 (G1a): Szenarien nennen die Testbilder über @WURZEL@ = dieser Checkout (isoliert.sh)
+MUSTER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "nachweis/testbilder/muster-4zu3")
 
 def main():
     # ---------------------------------------------------------------- R1 Bild

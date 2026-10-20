@@ -8,7 +8,7 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 # Standard: Release 0.0.1 (G2-C); mit QE_APP_BIN=<pfad> ein anderes Binary (G2-G: 0.0.2)
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/release/querencia-einstellungen}
-export QE_DESKTOP=~/projects/querencia-werkstatt-w1-desktop/qe01/nachweis/bin/querencia-desktop-qe01 QE_DESKTOP_SHA16=9a599a8b521a5a4d
+export QE_DESKTOP=$HOME/projects/querencia-werkstatt-w1-desktop/qe01/nachweis/bin/querencia-desktop-qe01 QE_DESKTOP_SHA16=9a599a8b521a5a4d
 echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16)"
 werkzeug/produktiv-stand.sh > nachweis/produktiv-vorher-g2c.txt
 for r in r9-farbe-uebernehmen r10-zentrieren r11-kacheln r12-menue; do bash werkzeug/isoliert.sh $r 1920x1080 szenarien/$r.txt; done
@@ -24,7 +24,7 @@ QE_APP_ARGS=--hintergrund bash werkzeug/isoliert.sh r13-hintergrund-direkt 1920x
 QE_APP_ARGS=- bash werkzeug/isoliert.sh r14-kontrollzentrum 1920x1080 szenarien/r14-kontrollzentrum.txt
 werkzeug/produktiv-stand.sh > nachweis/produktiv-nachher-g2c.txt
 if diff nachweis/produktiv-vorher-g2c.txt nachweis/produktiv-nachher-g2c.txt; then echo "PRODUKTIV UNVERÄNDERT"; else echo "PRODUKTIV VERÄNDERT"; fi
-. ~/projects/querencia-boot-splash/werkzeug/pil-umgebung.sh
+. "$HOME"/projects/querencia-boot-splash/werkzeug/pil-umgebung.sh
 python3 werkzeug/auswerten-nachpruefung.py nachpruefung-release-g2c.tsv; echo "nachpruefung exit=$?"
 python3 werkzeug/auswerten.py; echo "regression exit=$?"; cp nachweis/pruefungen.tsv nachweis/regression-release-g2c.tsv
 python3 werkzeug/auswerten-g2c.py g2c-direktstart.tsv; echo "direktstart exit=$?"

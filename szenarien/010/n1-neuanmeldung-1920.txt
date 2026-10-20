@@ -8,6 +8,6 @@ move 600 484
 click
 wait 1200
 shot 02-tastatur-neu.png
-run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
-run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && tr "\0" "\n" < /proc/$p/environ | grep -E "^(LANG|LANGUAGE|LC_[A-Z]+)="; done | sort -u > app-umgebung.txt
+run e=$(readlink -f "$QE_APP"); for p in /proc/[0-9]*; do p=${p#/proc/}; [ "$(readlink /proc/$p/exe 2>/dev/null)" = "$e" ] && grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
+run e=$(readlink -f "$QE_APP"); for p in /proc/[0-9]*; do p=${p#/proc/}; [ "$(readlink /proc/$p/exe 2>/dev/null)" = "$e" ] && grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && tr "\0" "\n" < /proc/$p/environ | grep -E "^(LANG|LANGUAGE|LC_[A-Z]+)="; done | sort -u > app-umgebung.txt
 wait 500

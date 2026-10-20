@@ -19,5 +19,5 @@ shot 03-applied.png
 run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
 run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
 wait 700
-run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
+run e=$(readlink -f "$QE_APP"); for p in /proc/[0-9]*; do p=${p#/proc/}; [ "$(readlink /proc/$p/exe 2>/dev/null)" = "$e" ] && grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
 wait 500

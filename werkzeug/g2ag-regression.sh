@@ -14,7 +14,7 @@ set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 # Ausgang (live) und neu; Standard seit 20.10. 03:37: 0.0.7 (G2-AF) gegen 0.0.8
-ALT=${REG_ALT:-~/opt/querencia/einstellungen/a4b3f4fd8f1f0df5/querencia-einstellungen}
+ALT=${REG_ALT:-$HOME/opt/querencia/einstellungen/a4b3f4fd8f1f0df5/querencia-einstellungen}
 NEU=${REG_NEU:-$P/nachweis/g2ag/release/querencia-einstellungen}
 VA=${REG_ALT_NAME:-007}; VN=${REG_NEU_NAME:-008}
 R=${REG_ZIEL:-nachweis/g2ag/regression}

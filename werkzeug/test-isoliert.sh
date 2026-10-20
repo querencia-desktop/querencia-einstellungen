@@ -20,9 +20,9 @@ env -u WAYLAND_DISPLAY -u DISPLAY -u DBUS_SESSION_BUS_ADDRESS \
     HOME="$T/heim" XDG_CONFIG_HOME="$T/konfig" XDG_DATA_HOME="$T/daten" \
     XDG_CACHE_HOME="$T/cache" XDG_RUNTIME_DIR="$T/laufzeit" \
     CARGO_HOME="${CARGO_HOME:-$ECHT_HOME/.cargo}" RUSTUP_HOME="${RUSTUP_HOME:-$ECHT_HOME/.rustup}" \
-    PATH="$ECHT_HOME/.cargo/bin:$PATH" \
+    PATH="$ECHT_HOME/.cargo/bin:$PATH" ECHT_HOME="$ECHT_HOME" ECHT_UID="$(id -u)" \
     dbus-run-session -- bash -c '
-        [ "$XDG_RUNTIME_DIR" != /run/user/1001 ] && [ "$HOME" != ~ ] && [ -z "${WAYLAND_DISPLAY:-}" ] ||
+        [ "$XDG_RUNTIME_DIR" != "/run/user/$ECHT_UID" ] && [ "$HOME" != "$ECHT_HOME" ] && [ -z "${WAYLAND_DISPLAY:-}" ] ||
             { echo "test-isoliert: nicht isoliert – Abbruch" >&2; exit 2; }
         echo "test-isoliert: HOME=$HOME XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
         exec cargo test --offline --locked "$@"' _ "$@" || rc=$?

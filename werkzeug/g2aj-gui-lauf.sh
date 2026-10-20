@@ -13,7 +13,7 @@ Z=szenarien/g2aj
 V=${1:-g2aj}
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2aj/release/querencia-einstellungen}
 mkdir -p nachweis/g2aj
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 werkzeug/produktiv-stand.sh > nachweis/g2aj/produktiv-vorher.txt
 gsettings list-recursively org.gnome.desktop.interface > nachweis/g2aj/gsettings-live-vorher.txt
 for a in 1920 1024; do

@@ -11,7 +11,7 @@ set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2aj/release/querencia-einstellungen}
-export QE_DESKTOP=${QE_DESKTOP:-~/opt/querencia/desktop/7f6744b5c6cc3b1d/querencia-desktop}
+export QE_DESKTOP=${QE_DESKTOP:-$HOME/opt/querencia/desktop/7f6744b5c6cc3b1d/querencia-desktop}
 export QE_DESKTOP_SHA16=${QE_DESKTOP_SHA16:-7f6744b5c6cc3b1d}
 export QE_LABWC_VORGABE_QUELLE=${QE_LABWC_VORGABE_QUELLE:-$P/szenarien/labwc/vorgabe}
 export QE_GTK_SCHRIFT=${QE_GTK_SCHRIFT:-DejaVu Sans 10}

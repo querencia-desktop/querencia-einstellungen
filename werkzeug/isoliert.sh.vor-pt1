@@ -15,15 +15,15 @@ P=$(dirname "$(dirname "$(readlink -f "$0")")")
 NAME=${1:?Name}; AUFL=${2:?BREITExHÖHE}; SZENARIO=$(readlink -f "${3:?Szenario}"); INI=${4:-}
 # Desktop: Standard HMP-10a aus der Ablage; für die Nachprüfung mit W1s neuem
 # Build: QE_DESKTOP=<pfad> QE_DESKTOP_SHA16=<sha16> isoliert.sh …
-DESKTOP_BIN=${QE_DESKTOP:-~/opt/querencia/desktop/2b46a7b90b3412bb/querencia-desktop}
+DESKTOP_BIN=${QE_DESKTOP:-$HOME/opt/querencia/desktop/2b46a7b90b3412bb/querencia-desktop}
 DESKTOP_SHA16=${QE_DESKTOP_SHA16:-2b46a7b90b3412bb}
-PANEL_BIN=~/opt/querencia/panel/696b8797a3a35eb8/querencia-panel
-LABWC=~/opt/labwc-0.9.8/bin/labwc
+PANEL_BIN=$HOME/opt/querencia/panel/696b8797a3a35eb8/querencia-panel
+LABWC=$HOME/opt/labwc-0.9.8/bin/labwc
 # G2-C: Release-Build über QE_APP_BIN=<pfad>; ohne Variable der Debug-Build wie bisher.
 # G2-G: QE_OUTPUTS=2 gibt dem headless labwc zwei Ausgaben (die zweite 1280x720, rechts).
 APP=${QE_APP_BIN:-$P/target/debug/querencia-einstellungen}
 WERK=$P/werkzeug/bin
-WERKSTATT_WERK=~/projects/querencia-panel-werkstatt/arbeitsflaechen-4/werkzeug/bin
+WERKSTATT_WERK=$HOME/projects/querencia-panel-werkstatt/arbeitsflaechen-4/werkzeug/bin
 for f in "$DESKTOP_BIN" "$PANEL_BIN" "$LABWC" "$APP" "$WERK/qe-eingabe" "$WERKSTATT_WERK/qausgabe"; do
     [ -x "$f" ] || { echo "fehlt: $f" >&2; exit 2; }
 done

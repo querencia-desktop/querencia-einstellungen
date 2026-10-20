@@ -13,14 +13,14 @@ Z=szenarien/labwc
 export QE_APP_BIN=${QE_APP_BIN:-$P/nachweis/g2ag/release/querencia-einstellungen}
 # Desktop: Standard QE-04a (live bis zur Neuanmeldung); G2-AD v2 mit
 # QE_DESKTOP=<pfad> QE_DESKTOP_SHA16=<sha16> (Läufe heißen dann *-<sha16>)
-export QE_DESKTOP=${QE_DESKTOP:-~/opt/querencia/desktop/f48795676f867b82/querencia-desktop}
+export QE_DESKTOP=${QE_DESKTOP:-$HOME/opt/querencia/desktop/f48795676f867b82/querencia-desktop}
 export QE_DESKTOP_SHA16=${QE_DESKTOP_SHA16:-f48795676f867b82}
 # feste Vorgabe (Kopie main bb90803), damit Vorgabenänderungen die Läufe nicht verschieben
 export QE_LABWC_VORGABE_QUELLE=${QE_LABWC_VORGABE_QUELLE:-$P/szenarien/labwc/vorgabe}
 # Schrift wie live seit 20.10. 01:02 (Erscheinungsbild Variante A), fest für gleiche Klickpunkte
 export QE_GTK_SCHRIFT=${QE_GTK_SCHRIFT:-DejaVu Sans 10}
 mkdir -p nachweis/g2ag
-echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($("$QE_APP_BIN" --version))"
+echo "App: $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -c1-16) ($(bash "$P/werkzeug/version-isoliert.sh" "$QE_APP_BIN"))"
 werkzeug/produktiv-stand.sh > nachweis/g2ag/produktiv-vorher.txt
 l() {   # lauf auflösung modus [daten]
     local n=$1 s=$2 m=$3 d=${4:-}
