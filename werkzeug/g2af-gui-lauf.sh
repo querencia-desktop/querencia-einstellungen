@@ -1,7 +1,7 @@
 #!/bin/bash
 # G2-AF: isolierte GUI-Prüfung der Galerie eingebauter Hintergründe (f1–f9)
 # und der Desktop-Darstellung jedes Motivs (l-*: Lesbarkeit am linken Rand,
-# Logo-Lage) mit dem LIVE-Desktop QE-04a aus der Ablage (nur gelesen) und dem
+# Logo-Lage) mit dem LIVE-Desktop aus der Ablage (nur gelesen) und dem
 # Panel QREL-04c. Die 17 Bilder kommen aus dem Runtime-Worktree über
 # QE_DATA_HOME (Symlinks unter ~/.cache/g2af/share), Schrift fest
 # „Adwaita Sans 11“ (Klickpunkte). Läufe nach nachweis/g2af-*/, Auswertung
@@ -15,7 +15,10 @@ Z=szenarien/hintergruende
 BILDER=${G2AF_BILDER:-$HOME/projects/querencia-runtime-wt-hintergruende/data/hintergruende}
 DATEN=$HOME/.cache/g2af/share
 export QE_APP_BIN=${QE_APP_BIN:-$P/target/debug/querencia-einstellungen}
-export QE_DESKTOP=$HOME/opt/querencia/desktop/f48795676f867b82/querencia-desktop QE_DESKTOP_SHA16=f48795676f867b82
+# Desktop: Standard QE-04a (live bis zur nächsten Anmeldung); G2AF_DESKTOP=<sha16>
+# nimmt eine andere Ablage, z. B. 9d622162efd66f93 (G2-AD, ab nächster Anmeldung).
+D16=${G2AF_DESKTOP:-f48795676f867b82}
+export QE_DESKTOP=$HOME/opt/querencia/desktop/$D16/querencia-desktop QE_DESKTOP_SHA16=$D16
 export QE_DATA_HOME=$DATEN QE_GTK_SCHRIFT=${QE_GTK_SCHRIFT:-Adwaita Sans 11}
 mkdir -p "$DATEN/querencia/hintergruende" nachweis/g2af
 : >"$HOME/.cache/g2af/.querencia-testprofil"
@@ -48,4 +51,4 @@ if [ "${1:-}" != nur-f ]; then
 fi
 werkzeug/produktiv-stand.sh > nachweis/g2af/produktiv-nachher.txt
 if diff nachweis/g2af/produktiv-vorher.txt nachweis/g2af/produktiv-nachher.txt; then echo "PRODUKTIV UNVERÄNDERT"; else echo "PRODUKTIV VERÄNDERT"; fi
-python3 -I werkzeug/auswerten-g2af.py nachweis/g2af/g2af-gui.tsv; echo "auswertung exit=$?"
+python3 -I werkzeug/auswerten-g2af.py nachweis/g2af/g2af-gui${G2AF_DESKTOP:+-$G2AF_DESKTOP}.tsv; echo "auswertung exit=$?"

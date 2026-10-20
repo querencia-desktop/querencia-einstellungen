@@ -6,6 +6,9 @@
 //! Option (HMP-10a) könnte den Aufruf sonst als zweiten Start missverstehen.
 //! Jeder Fehler ergibt die Fähigkeiten von HMP-10a: dann bleibt „Übernehmen“
 //! für Farbe, Zentrieren und Kacheln gesperrt, nichts wird vorgetäuscht.
+//! G2-AF: Im Release-Bau des Desktops (G2-AD, `9d622162`) ist die Zeichenkette
+//! der Option wegoptimiert; die Antwortzeile, die jeder Desktop mit der Option
+//! ausgibt, steht dagegen immer im Programm und gilt deshalb ebenso als Kennzeichen.
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -14,6 +17,8 @@ use std::time::{Duration, Instant};
 use crate::modell::Faehigkeiten;
 
 const OPTION: &[u8] = b"--faehigkeiten";
+/// Anfang der Antwort auf `--faehigkeiten` seit QE-01 (HMP-10a kennt ihn nicht).
+const ANTWORT: &[u8] = b"type-color mode-centered";
 
 pub fn ermitteln() -> Faehigkeiten {
     match laufender_desktop() {
@@ -71,7 +76,12 @@ fn kennt_option(programm: &Path) -> bool {
     let Ok(inhalt) = std::fs::read(programm) else {
         return false;
     };
-    memchr::memmem::find(&inhalt, OPTION).is_some()
+    enthaelt_kennzeichen(&inhalt)
+}
+
+fn enthaelt_kennzeichen(inhalt: &[u8]) -> bool {
+    memchr::memmem::find(inhalt, OPTION).is_some()
+        || memchr::memmem::find(inhalt, ANTWORT).is_some()
 }
 
 fn abfragen(programm: &Path) -> Faehigkeiten {
@@ -106,5 +116,24 @@ fn abfragen(programm: &Path) -> Faehigkeiten {
             }
             Ok(None) => std::thread::sleep(Duration::from_millis(20)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn kennzeichen_option_oder_antwortzeile() {
+        // Debug-Bau (QE-01 bis QE-04a): Option als Zeichenkette vorhanden
+        assert!(enthaelt_kennzeichen(b"..--faehigkeiten.."));
+        // Release-Bau (G2-AD): nur die Antwortzeile
+        assert!(enthaelt_kennzeichen(
+            b"Symboltype-color mode-centered mode-tiled volumes-types icons-visible"
+        ));
+        // HMP-10a: weder noch
+        assert!(!enthaelt_kennzeichen(
+            b"querencia-blau.png zoom scaled stretched"
+        ));
     }
 }

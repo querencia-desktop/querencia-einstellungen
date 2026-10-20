@@ -1,15 +1,15 @@
 #!/bin/bash
-# Querencia Einstellungen @NEU_VERSION@ (G2-AF: Galerie der eingebauten
+# Querencia Einstellungen 0.0.7 (G2-AF: Galerie der eingebauten
 # Hintergründe im Dialog „Hintergrund“, Wahl der 4:3- oder 16:9-Fassung nach
-# dem Bildschirm, QD-058; übrige Bereiche wie @ALT_VERSION@): Versionswechsel
+# dem Bildschirm, QD-058; übrige Bereiche wie 0.0.6): Versionswechsel
 # der Live-Ablage. NUR NACH FREIGABE (Status-Session prüft und gibt frei).
 #
 #   bash einstellungen-g2af-integrieren.sh pruefen      nur lesen
-#   bash einstellungen-g2af-integrieren.sh aktivieren   @ALT_VERSION@ → @NEU_VERSION@ (G2-AF)
-#   bash einstellungen-g2af-integrieren.sh zurueck      @NEU_VERSION@ → @ALT_VERSION@
+#   bash einstellungen-g2af-integrieren.sh aktivieren   0.0.6 → 0.0.7 (G2-AF)
+#   bash einstellungen-g2af-integrieren.sh zurueck      0.0.7 → 0.0.6
 #
-# Ausgang ist die dann laufende Version @ALT_VERSION@ (Link
-# ~/opt/querencia/bin/querencia-einstellungen → Ablage @ALT16@, im Menüeintrag
+# Ausgang ist die dann laufende Version 0.0.6 (Link
+# ~/opt/querencia/bin/querencia-einstellungen → Ablage 05ac8f96c28e4434, im Menüeintrag
 # Exec/TryExec auf diese Ablage). Dieses Skript verwaltet im Menüeintrag NUR
 # die Zeilen Exec= und TryExec=; Icon= (G2-V), Comment= (G2-X), Name,
 # Kategorien und Kommentare bleiben byte-gleich, auch bei zurueck.
@@ -26,7 +26,7 @@
 # integration/hintergruende/hintergruende-integrieren.sh; ohne sie zeigt die
 # Galerie nur „Querencia Blau“), desktop.ini, Symboldateien, labwc-rc.xml,
 # mimeapps.list, Desktop, Autostart, Panel. Kein Neustart; ein offenes
-# Einstellungsfenster läuft als @ALT_VERSION@ weiter, bis es geschlossen wird.
+# Einstellungsfenster läuft als 0.0.6 weiter, bis es geschlossen wird.
 #
 # Rückbau-Reihenfolge: zuerst dieses Skript `zurueck`, dann bei Bedarf die
 # Bilder (hintergruende-integrieren.sh zurueck), dann die älteren Skripte.
@@ -50,8 +50,8 @@ LINK=$OPT/bin/$PROG
 DESK=$APPS/$DESKNAME
 PROTO=$OPT/protokoll.txt
 
-PROG_ALT=@PROG_ALT@
-PROG_NEU=@PROG_NEU@
+PROG_ALT=05ac8f96c28e4434215b7ecf7fed0fcb613d6461217b2b8028d94307894bf25d
+PROG_NEU=a4b3f4fd8f1f0df59ed2a518e348134ee918cf8c026b1e5305113864fe82d60c
 ALT16=${PROG_ALT:0:16}
 NEU16=${PROG_NEU:0:16}
 ABLAGE_ALT=$OPT/einstellungen/$ALT16
@@ -105,17 +105,17 @@ invarianten() {
     [ -f "$PROTO" ] || die "Protokoll fehlt: $PROTO"
     [ -L "$OPT/bin/querencia-desktop" ] || die "kein Desktop-Link in $OPT/bin – falscher Ablageordner?"
     [ -d "$APPS" ] || die "kein Anwendungsordner: $APPS"
-    [ "$(summe "$ABLAGE_ALT/$PROG")" = $PROG_ALT ] || die "@ALT_VERSION@-Ablage fehlt oder verändert (Rückfallziel): $ABLAGE_ALT"
+    [ "$(summe "$ABLAGE_ALT/$PROG")" = $PROG_ALT ] || die "0.0.6-Ablage fehlt oder verändert (Rückfallziel): $ABLAGE_ALT"
     if [ -e "$ABLAGE_NEU" ] || [ -L "$ABLAGE_NEU" ]; then
-        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "@NEU_VERSION@-Ablage ist kein Ordner: $ABLAGE_NEU"
-        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "@NEU_VERSION@-Ablage verändert: $ABLAGE_NEU"
+        [ -d "$ABLAGE_NEU" ] && [ ! -L "$ABLAGE_NEU" ] || die "0.0.7-Ablage ist kein Ordner: $ABLAGE_NEU"
+        [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] || die "0.0.7-Ablage verändert: $ABLAGE_NEU"
     fi
 }
 
 zustaende_zulaessig() {
     local z
     for z in "Programm:$(zustand_p)" "Menüeintrag:$(zustand_d)"; do
-        case ${z#*:} in alt | neu) ;; fehlt) die "${z%%:*} fehlt – zuerst @ALT_VERSION@ aktivieren; nichts geändert" ;; *) die "${z%%:*} ist ${z#*:} – nichts geändert" ;; esac
+        case ${z#*:} in alt | neu) ;; fehlt) die "${z%%:*} fehlt – zuerst 0.0.6 aktivieren; nichts geändert" ;; *) die "${z%%:*} ist ${z#*:} – nichts geändert" ;; esac
     done
 }
 
@@ -175,7 +175,7 @@ ablage_anlegen() {
         mkdir -- "$tmp" && cp -- "$VORSCHLAG/$PROG" "$tmp/$PROG" &&
             [ "$(summe "$tmp/$PROG")" = "$PROG_NEU" ] &&
             chmod 0555 "$tmp/$PROG" "$tmp" && mv -T -- "$tmp" "$ABLAGE_NEU" || { [ -e "$tmp" ] && chmod -R u+w -- "$tmp" && rm -rf -- "$tmp"; return 1; }
-        echo "Quelle: $VORSCHLAG/$PROG (Worktree ~/projects/querencia-einstellungen-wt-hintergruende, Zweig hintergruende, Tag einstellungen/@NEU_VERSION@)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
+        echo "Quelle: $VORSCHLAG/$PROG (Worktree ~/projects/querencia-einstellungen-wt-hintergruende, Zweig hintergruende, Tag einstellungen/0.0.7)" >"$OPT/einstellungen/$NEU16.herkunft" || return 1
     fi
     [ "$(summe "$ABLAGE_NEU/$PROG")" = "$PROG_NEU" ] && [ -x "$ABLAGE_NEU/$PROG" ]
 }
@@ -244,14 +244,16 @@ transaktion_beginnen() {
 pruefen() {
     invarianten
     case $(alle) in
-    "alt alt") melde "Stand: alt – Querencia Einstellungen @ALT_VERSION@ ($ALT16, ohne Galerie)" ;;
-    "neu neu") melde "Stand: neu – Querencia Einstellungen @NEU_VERSION@ ($NEU16, Galerie der eingebauten Hintergründe)" ;;
+    "alt alt") melde "Stand: alt – Querencia Einstellungen 0.0.6 ($ALT16, ohne Galerie)" ;;
+    "neu neu") melde "Stand: neu – Querencia Einstellungen 0.0.7 ($NEU16, Galerie der eingebauten Hintergründe)" ;;
     *) melde "Stand: gemischt ($(alle))" ;;
     esac
     melde "Programm-Link $LINK: $(zustand_p) → $(readlink "$LINK" 2>/dev/null || echo '-')"
     melde "Menüeintrag   $DESK: $(zustand_d) (verwaltet nur Exec/TryExec; $(grep -m1 '^Icon=' "$DESK" 2>/dev/null || echo 'Icon=-') und Comment= werden nie verändert)"
-    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage @NEU_VERSION@  $ABLAGE_NEU: vorhanden"; else melde "Ablage @NEU_VERSION@  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
-    melde "Ablage @ALT_VERSION@  $ABLAGE_ALT: vorhanden (Rückfallziel)"
+    if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.0.7  $ABLAGE_NEU: vorhanden"; else melde "Ablage 0.0.7  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
+    melde "Ablage 0.0.6  $ABLAGE_ALT: vorhanden (Rückfallziel)"
+    local hg=${XDG_DATA_HOME:-$HOME/.local/share}/querencia/hintergruende
+    melde "eingebaute Bilder in $hg: $(find "$hg" -maxdepth 1 -name 'querencia-*.png' 2>/dev/null | wc -l) von 17 (Runtime hintergruende-integrieren.sh; ohne sie zeigt die Galerie nur „Querencia Blau“)"
     local m=${XDG_CONFIG_HOME:-$HOME/.config}/mimeapps.list
     if [ -f "$m" ]; then
         melde "mimeapps.list vorhanden ($(summe "$m" | cut -c1-16), $(grep -c '=' "$m") Einträge; wird vom Skript nie angefasst)"
@@ -281,9 +283,9 @@ aktivieren() {
     (invarianten) || zurueckrollen "Invarianten nach der Aktivierung verletzt"
     desktop-file-validate "$DESK" >/dev/null 2>&1 || zurueckrollen "Menüeintrag ungültig"
     trap - INT TERM HUP
-    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; @NEU_VERSION@ Galerie der Hintergründe; Menüeintrag $DESK nur Exec/TryExec; G2-AF)"
-    journal "aktiviert (Querencia Einstellungen @NEU_VERSION@ $NEU16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2af-integrieren.sh zurueck"
-    melde "aktiviert (geändert: ${GEAENDERT[*]:-nichts}). Gilt für jeden neuen Start; ein offenes Fenster läuft als @ALT_VERSION@ weiter."
+    protokoll "$PROG -> $ABLAGE_NEU/$PROG (aus $VORSCHLAG/$PROG; 0.0.7 Galerie der Hintergründe; Menüeintrag $DESK nur Exec/TryExec; G2-AF)"
+    journal "aktiviert (Querencia Einstellungen 0.0.7 $NEU16, Link, Menüeintrag; geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Rückfall: bash $HIER/einstellungen-g2af-integrieren.sh zurueck"
+    melde "aktiviert (geändert: ${GEAENDERT[*]:-nichts}). Gilt für jeden neuen Start; ein offenes Fenster läuft als 0.0.6 weiter."
 }
 
 zurueck() {
@@ -291,7 +293,7 @@ zurueck() {
     sperren
     invarianten
     zustaende_zulaessig
-    if [ "$(alle)" = "alt alt" ]; then melde "nichts zu tun (Stand ist bereits @ALT_VERSION@)"; return 0; fi
+    if [ "$(alle)" = "alt alt" ]; then melde "nichts zu tun (Stand ist bereits 0.0.6)"; return 0; fi
     sichern zurueck
     melde "Sicherung: $SICHERUNG (vorher: $(alle))"
     transaktion_beginnen "D P"
@@ -302,9 +304,9 @@ zurueck() {
     [ "$(alle)" = "alt alt" ] || zurueckrollen "Schlusskontrolle: $(alle)"
     (invarianten) || zurueckrollen "Invarianten nach dem Rückfall verletzt"
     trap - INT TERM HUP
-    protokoll "zurück: $PROG -> $ABLAGE_ALT/$PROG (@ALT_VERSION@; Ablage $NEU16 bleibt; G2-AF)"
-    journal "zurück auf @ALT_VERSION@ (geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Ablage $NEU16 bleibt liegen"
-    melde "zurück auf @ALT_VERSION@ (geändert: ${GEAENDERT[*]:-nichts}). Bereiche und Benutzerdateien sind in beiden Fassungen gleich."
+    protokoll "zurück: $PROG -> $ABLAGE_ALT/$PROG (0.0.6; Ablage $NEU16 bleibt; G2-AF)"
+    journal "zurück auf 0.0.6 (geändert: ${GEAENDERT[*]:-nichts}); Sicherung $SICHERUNG; Ablage $NEU16 bleibt liegen"
+    melde "zurück auf 0.0.6 (geändert: ${GEAENDERT[*]:-nichts}). Bereiche und Benutzerdateien sind in beiden Fassungen gleich."
 }
 
 case ${1:-} in

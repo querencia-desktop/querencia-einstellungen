@@ -45,3 +45,15 @@ Datei `desktop.ini` hat dasselbe Format wie bisher.
 - Die Übersicht im Kontrollzentrum (Erscheinungsbild) nennt bei einem
   eingebauten Bild den vollen Pfad statt des Namens (`bereiche.rs`, hier
   bewusst nicht geändert, weil G2-AG dort arbeitet).
+
+## Fähigkeiten des Desktops (Nebenbefund, 0.0.7)
+
+`faehigkeiten.rs` ruft `querencia-desktop --faehigkeiten` nur auf, wenn das
+Programm ein Kennzeichen enthält (Schutz vor HMP-10a, das die Option als
+zweiten Start missverstünde). Bis 0.0.6 war das nur die Zeichenkette
+`--faehigkeiten`. Im Release-Bau des Desktops G2-AD (`9d622162`) ist sie
+wegoptimiert; die Einstellungen hielten ihn deshalb für HMP-10a und sperrten
+Farbe, Zentrieren, Kacheln und die Symbole der Arbeitsfläche. Ab 0.0.7 gilt
+auch die Antwortzeile `type-color mode-centered` als Kennzeichen; sie steht in
+jedem Desktop mit der Option im Programm und nicht in HMP-10a (Unit-Test
+`kennzeichen_option_oder_antwortzeile`).
