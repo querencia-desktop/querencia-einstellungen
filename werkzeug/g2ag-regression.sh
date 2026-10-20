@@ -17,7 +17,7 @@ cd "$P"
 ALT=${REG_ALT:-~/opt/querencia/einstellungen/a4b3f4fd8f1f0df5/querencia-einstellungen}
 NEU=${REG_NEU:-$P/nachweis/g2ag/release/querencia-einstellungen}
 VA=${REG_ALT_NAME:-007}; VN=${REG_NEU_NAME:-008}
-R=nachweis/g2ag/regression
+R=${REG_ZIEL:-nachweis/g2ag/regression}
 mkdir -p "$R"
 TSVS="nachweis/g2aa/fenstersymbol-g2aa.tsv nachweis/g2c-direktstart.tsv nachweis/g2x/arbeitsflaeche-g2x.tsv nachweis/g2z/standardanwendungen-g2z.tsv nachweis/nachpruefung-release-g2c.tsv nachweis/pruefungen.tsv nachweis/regression-release-g2c.tsv"
 TSVS="$TSVS ${REG_TSV_ZUSATZ:-}"

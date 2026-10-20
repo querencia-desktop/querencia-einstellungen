@@ -16,6 +16,5 @@ export REG_NEU=${REG_NEU:-$P/nachweis/g2aj/release/querencia-einstellungen}
 export REG_ALT_NAME=008 REG_NEU_NAME=009
 export REG_SKRIPTE=${REG_SKRIPTE:-g2c g2g g2x g2z g2aa g2af g2ag}
 export REG_TSV_ZUSATZ="nachweis/g2af/g2af-gui.tsv nachweis/g2ag/gui-g2ag-f4879567.tsv"
-# Ablage der Ergebnisse: Kopie von g2ag-regression.sh mit eigenem Zielordner
-sed 's#^R=nachweis/g2ag/regression#R=nachweis/g2aj/regression#' werkzeug/g2ag-regression.sh > nachweis/g2aj/regression-lauf.sh
-bash nachweis/g2aj/regression-lauf.sh
+export REG_ZIEL=nachweis/g2aj/regression
+bash werkzeug/g2ag-regression.sh
