@@ -1,6 +1,6 @@
 [package]
 name = "querencia-einstellungen"
-version = "0.0.7"
+version = "0.0.8"
 description = "Querencia Einstellungen – Kontrollzentrum im Stil von GNOME 2 (Hintergrund QE-01, Bildschirm G2-G, Symbole der Arbeitsfläche G2-X, Standardanwendungen G2-Z, Fenstersymbol G2-AA, Tastatur, Maus, Fensterdesign, Arbeitsflächen G2-AG)"
 edition.workspace = true
 rust-version.workspace = true
