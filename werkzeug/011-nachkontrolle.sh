@@ -13,7 +13,7 @@ Z=szenarien/011
 K=nachweis/011/nachkontrolle
 V548=$P/$Z/vorgabe-548483c
 EN=$P/szenarien/010/daten-en
-export QE_APP_BIN=$(readlink -f ~/opt/querencia/bin/querencia-einstellungen)
+export QE_APP_BIN=$(readlink -f "$HOME/opt/querencia/bin/querencia-einstellungen")
 mkdir -p "$K"
 echo "App (installiert): $QE_APP_BIN $(sha256sum "$QE_APP_BIN" | cut -d' ' -f1)"
 werkzeug/produktiv-stand.sh > "$K/produktiv-vorher.txt"
