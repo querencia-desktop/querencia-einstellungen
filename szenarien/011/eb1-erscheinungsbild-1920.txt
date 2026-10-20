@@ -1,0 +1,10 @@
+extent 1920 1080
+wait 3500
+move 600 316
+click
+wait 1200
+shot 01-oben.png
+move 1100 560
+scroll 15
+wait 800
+shot 02-unten-hinweis.png
