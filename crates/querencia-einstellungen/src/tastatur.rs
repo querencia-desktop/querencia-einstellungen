@@ -1,8 +1,10 @@
 //! Bereich „Tastatur“ (G2-AG, QD-046 ③, QD-057): Belegung (Umgebung
 //! `XKB_DEFAULT_LAYOUT`/`_VARIANT` in `environment.d`), Tastenwiederholung und
-//! Num-Taste (`rc.xml <keyboard>`). labwc übernimmt alles mit
-//! `--reconfigure` sofort, auch die Belegung (labwc 0.9.8 liest die Umgebung
-//! beim Neuladen neu und setzt die Tastaturbelegung, `keyboard.c set_layout`).
+//! Num-Taste (`rc.xml <keyboard>`). labwc übernimmt Belegung und
+//! Wiederholung mit `--reconfigure` sofort (labwc 0.9.8 liest die Umgebung
+//! beim Neuladen neu und setzt die Tastaturbelegung, `keyboard.c set_layout`);
+//! die Num-Taste setzt es nur beim Erkennen einer Tastatur (`seat.c`,
+//! `new_keyboard`), also ab der nächsten Anmeldung oder beim Anstecken.
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -339,6 +341,7 @@ mod tests {
             env: m(env),
             env_ohne_eigene: m(vorgabe_env),
             vorgabe_neu: false,
+            fehler: None,
         }
     }
 

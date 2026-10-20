@@ -1,0 +1,13 @@
+# Ausnahmen für ai-clean/clean_check.py (G2-AG, 20.10.2026, „ok“ der
+# Status-Session). Bewusst KEINE Pfadeinträge: ein Pfad schaltet für ihn alle
+# Prüfungen ab, auch security. Die begründeten Ausnahmen stehen nur als
+# Kommentar hier (Format wie G2-AD):
+#
+# S004 Typografie („“, –, …, →) in crates/ und werkzeug/: deutsche
+#      Oberflächentexte sind Daten; Kommentare zitieren sie wörtlich und
+#      folgen derselben Typografie (Projektstil, nicht global ersetzen).
+# P002 Co-Authored-By in Commit-Texten: bleibt im Arbeitsrepo, der
+#      Veröffentlichungsklon entfernt die Zeilen (ENTSCHEIDUNGEN Nr. 10).
+# H005 Lizenzdatei, README.md, Arbeitsregeln fehlen: Altbestand; Lizenz entscheidet
+#      der Besitzer (ENTSCHEIDUNGEN), README/Arbeitsregeln eigener Auftrag (G2-Z).
+# H001 Logs unter nachweis/: Prüfbelege, auf die sich die Freigaben stützen.

@@ -81,15 +81,20 @@ pub struct Stand {
     /// rc.xml der Vorgabe (für „Standard wiederherstellen“)
     pub rc_vorgabe: String,
     /// wirksame Umgebung: environment (Benutzer, sonst Vorgabe), dann
-    /// environment.d/*.env in alphabetischer Reihenfolge
+    /// environment.d/*.env nach Bytes sortiert (labwc sortiert mit strcoll;
+    /// für Namen aus Kleinbuchstaben, Ziffern und Bindestrich gleich)
     pub env: BTreeMap<String, String>,
     /// dasselbe ohne die eigene Datei (= „Standard“ für Tastatur/Zeiger)
     pub env_ohne_eigene: BTreeMap<String, String>,
     /// eine neuere Vorgabe liegt bereit, die der Starter nicht übernommen hat
     pub vorgabe_neu: bool,
+    /// Benutzer-rc.xml vorhanden, aber nicht lesbar (z. B. Rechte): dann
+    /// wird nichts angezeigt oder geschrieben, statt still die Vorgabe zu zeigen
+    pub fehler: Option<String>,
 }
 
-/// Zeilen `NAME=WERT` wie labwc (`#` am Zeilenanfang = Kommentar).
+/// Zeilen `NAME=WERT` (`#` am Zeilenanfang = Kommentar), nur zur Anzeige:
+/// anders als labwc ohne Ersetzung von `$VAR`/`${VAR}` und `~`.
 pub fn env_parsen(text: &str, ziel: &mut BTreeMap<String, String>) {
     for zeile in text.lines() {
         let z = zeile.trim();
@@ -111,8 +116,13 @@ fn lesen_oder_leer(p: &Path) -> String {
 
 pub fn lesen(o: &Orte) -> Stand {
     let rc_vorgabe = lesen_oder_leer(&o.vorgabe.join("rc.xml"));
+    let mut fehler = None;
     let (rc, quelle) = match std::fs::read_to_string(o.rc()) {
         Ok(t) => (t, Quelle::Benutzer),
+        Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
+            fehler = Some(format!("{} nicht lesbar ({e})", o.rc().display()));
+            (String::new(), Quelle::Benutzer)
+        }
         Err(_) if !rc_vorgabe.is_empty() => (rc_vorgabe.clone(), Quelle::Vorgabe),
         Err(_) => (String::new(), Quelle::Keine),
     };
@@ -147,6 +157,7 @@ pub fn lesen(o: &Orte) -> Stand {
         env,
         env_ohne_eigene,
         vorgabe_neu: o.vorgabe_neu().is_file(),
+        fehler,
     }
 }
 
@@ -414,6 +425,9 @@ pub fn zeigen() -> i32 {
         ),
     }
     println!("vorgabe-neu={}", if st.vorgabe_neu { "ja" } else { "nein" });
+    if let Some(f) = &st.fehler {
+        println!("fehler={f}");
+    }
     for (pfad, schluessel) in labwc_xml::VERWALTET {
         let p: Vec<String> = pfad
             .iter()
@@ -623,6 +637,23 @@ mod tests {
         );
         assert_eq!(std::fs::read_to_string(o.vorgabe_basis()).unwrap(), neue);
         assert!(!o.vorgabe_neu().exists());
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn unlesbare_benutzerdatei_ist_ein_fehler_kein_rueckfall() {
+        let w = ordner("unlesbar");
+        let o = orte(&w);
+        // ein Ordner an Stelle der Datei: lesen scheitert nicht mit NotFound
+        std::fs::create_dir_all(o.rc()).unwrap();
+        let st = lesen(&o);
+        assert_eq!(st.quelle, Quelle::Benutzer);
+        assert!(st.rc.is_empty());
+        assert!(
+            st.fehler
+                .as_deref()
+                .is_some_and(|f| f.contains("nicht lesbar"))
+        );
         std::fs::remove_dir_all(&w).unwrap();
     }
 

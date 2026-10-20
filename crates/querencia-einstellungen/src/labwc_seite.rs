@@ -258,9 +258,13 @@ impl<B: Bereich> Seite<B> {
         self.stumm.set(false);
         let wirkung = lk::wirkung(&self.orte);
         let mut hinweis = lk::wirkung_text(&wirkung, &st);
-        if let Err(e) = crate::labwc_xml::gueltig(&st.rc) {
+        if let Some(f) = &st.fehler {
             hinweis = format!(
-                "{hinweis}\nAchtung: {e}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei repariert ist."
+                "{hinweis}\nAchtung: {f}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei lesbar ist."
+            );
+        } else if let Err(e) = crate::labwc_xml::gueltig(&st.rc) {
+            hinweis = format!(
+                "{hinweis}\nAchtung: {e}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt rc.xml nicht, bis die Datei repariert ist (Belegung und Zeiger werden trotzdem gespeichert)."
             );
         }
         // erster Satz fett: wann es wirkt
@@ -319,6 +323,9 @@ impl<B: Bereich> Seite<B> {
         };
         let neu = self.bereich.aktuell();
         let st = lk::lesen(&self.orte);
+        if let Some(f) = &st.fehler {
+            return self.fehler(f);
+        }
         // nicht unbemerkt überschreiben: nur die eigenen Werte zählen
         if B::lesen(&st) != alt {
             self.status.set_text("Die Einstellungen wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand.");
