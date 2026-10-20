@@ -185,6 +185,11 @@ for a in ("1920", "1024"):
             e = subprocess.run([sys.executable, "-I", os.path.join(P, "werkzeug", "g2aj-reste.py"), os.path.join(N, lauf), a], capture_output=True, text=True)
             pruef(lauf, f"keine Textreste nach Seitenwechsel ({r})", e.returncode == 0, e.stdout.strip().splitlines()[-1] if e.stdout.strip() else e.stderr)
 
+    lauf = f"{PRAEFIX}-z2-symbole-{a}"
+    if lauf_ok(lauf):
+        e = subprocess.run([sys.executable, "-I", os.path.join(P, "werkzeug", "g2aj-reste.py"), os.path.join(N, lauf), a], capture_output=True, text=True)
+        pruef(lauf, "keine Textreste auf „Symbole der Arbeitsfläche“ (gles2)", e.returncode == 0, e.stdout.strip().splitlines()[-1] if e.stdout.strip() else e.stderr)
+
     # --- w1/w2: Wirkung mit Settings-Portal (QE_PORTAL=settings)
     dx, dy = (0, 0) if a == "1920" else (-448, -156)
     lauf = f"{PRAEFIX}-w1-wirkung-{a}"

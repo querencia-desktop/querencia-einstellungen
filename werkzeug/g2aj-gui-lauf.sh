@@ -27,6 +27,7 @@ for a in 1920 1024; do
     done
     QE_WLR_RENDERER=gles2 bash werkzeug/g2aj-lauf.sh "$V-z1-gles2-$a" $s $Z/z1-wechsel-$a.txt
     bash werkzeug/g2aj-lauf.sh "$V-z1-pixman-$a" $s $Z/z1-wechsel-$a.txt
+    QE_WLR_RENDERER=gles2 bash werkzeug/g2aj-lauf.sh "$V-z2-symbole-$a" $s $Z/z2-symbole-$a.txt
 done
 werkzeug/produktiv-stand.sh > nachweis/g2aj/produktiv-nachher.txt
 gsettings list-recursively org.gnome.desktop.interface > nachweis/g2aj/gsettings-live-nachher.txt
