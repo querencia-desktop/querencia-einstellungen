@@ -50,3 +50,5 @@
 /nachweis/010/**/querencia-einstellungen
 /nachweis/010/**/*.mo
 /integration/**/*.mo
+# Python-Bytecode der Werkzeuge (010-deutsch-gleich.py importiert i18n.py)
+__pycache__/

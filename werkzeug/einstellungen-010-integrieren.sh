@@ -113,7 +113,7 @@ fehlerstelle() {
 ablage_vollstaendig() {
     local a=$1
     [ -d "$a" ] && [ ! -L "$a" ] || return 1
-    [ "$(cd "$a" && find . -type f | sort | tr '\n' ' ')" = "./SHA256SUMS ./$PROG ./$MO_DE ./$MO_EN " ] || return 1
+    [ "$(cd "$a" && find . -type f | LC_ALL=C sort | tr '\n' ' ')" = "./SHA256SUMS ./$PROG ./$MO_DE ./$MO_EN " ] || return 1
     [ "$(summe "$a/$PROG")" = "$PROG_NEU" ] && [ "$(summe "$a/$MO_DE")" = "$DE_NEU" ] && [ "$(summe "$a/$MO_EN")" = "$EN_NEU" ] || return 1
     (cd "$a" && sha256sum -c --quiet SHA256SUMS >/dev/null 2>&1) || return 1
     [ -z "$(find "$a" -perm /222 2>/dev/null)" ]
@@ -305,7 +305,7 @@ pruefen() {
     melde "Menüeintrag   $DESK: $(zustand_d) (neu = zweisprachiger Menüeintrag der Vorlage, $(grep -m1 '^Icon=' "$VORSCHLAG/$DESKNAME"); alt = Exec/TryExec auf $ALT16)"
     if [ -e "$ABLAGE_NEU" ]; then melde "Ablage 0.1.0  $ABLAGE_NEU: $(ablage_vollstaendig "$ABLAGE_NEU" && echo 'vollständig (Binary, de.mo, en.mo)' || echo UNVOLLSTÄNDIG)"; else melde "Ablage 0.1.0  $ABLAGE_NEU: fehlt (wird bei aktivieren angelegt)"; fi
     melde "Ausgangsstand $ABLAGE_ALT: vorhanden (Rückfallziel)"
-    if [ -f "$MENUE_VORHER" ]; then melde "gemerkter Menüeintrag $MENUE_VORHER: $(zustand_datei "$MENUE_VORHER")"; fi
+    if [ -f "$MENUE_VORHER" ]; then melde "Rückfall-Kopie des Menüeintrags $MENUE_VORHER: $(zustand_datei "$MENUE_VORHER")"; fi
     local l=${XDG_CONFIG_HOME:-$HOME/.config}/querencia/labwc
     melde "labwc-Benutzerkopie $l: $([ -d "$l" ] && echo vorhanden || echo 'fehlt (Teil A legt sie bei der Anmeldung an)'); wird vom Skript nie angefasst"
     melde "unverändert bleiben: gsettings/dconf, Links querencia-desktop/-panel, ~/.config/querencia/labwc, Runtime-Repo, mimeapps.list, desktop.ini, panel.ini, Autostart"
