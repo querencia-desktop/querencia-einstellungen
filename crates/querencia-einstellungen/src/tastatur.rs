@@ -228,6 +228,7 @@ pub struct Tastatur {
 impl Bereich for Tastatur {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Keyboard");
+    const PROTOKOLL: &'static str = "Tastatur";
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc: rc.xml <keyboard> (repeat, Num Lock), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT, XKB_DEFAULT_OPTIONS; default in environment).",
     );

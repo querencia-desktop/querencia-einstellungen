@@ -23,6 +23,8 @@ use crate::{faehigkeiten, hintergrund, ini};
 /// Überschrift, Fenstertitel, Protokoll). Entscheidung 19.10.2026: „Symbole
 /// der Arbeitsfläche“ (nicht „Arbeitsfläche“, zu nah an „Arbeitsflächen“).
 pub const NAME: &str = gettext_noop("Desktop Icons");
+/// Name im Protokoll (stderr), fest deutsch wie bis 0.0.9.
+const PROTOKOLL: &str = "Symbole der Arbeitsfläche";
 
 /// Fenstertitel des eigenen Fensters (`--arbeitsflaeche`).
 pub fn titel() -> String {
@@ -293,7 +295,7 @@ impl Oberflaeche {
                 &[],
             )
         });
-        eprintln!("querencia-einstellungen: {NAME} geladen: {}", kurz(&a));
+        eprintln!("querencia-einstellungen: {PROTOKOLL} geladen: {}", kurz(&a));
     }
 
     fn zeigen(&self, a: &Arbeitsflaeche) {
@@ -361,7 +363,7 @@ impl Oberflaeche {
         }
         if fehlt.is_empty() {
             self.hinweis.set_visible(false);
-            eprintln!("querencia-einstellungen: {NAME}: Desktop wertet alles aus");
+            eprintln!("querencia-einstellungen: {PROTOKOLL}: Desktop wertet alles aus");
             return;
         }
         let was = if fehlt.len() == 3 {
@@ -373,7 +375,7 @@ impl Oberflaeche {
             "Note: The running desktop does not evaluate {what} yet. They are saved anyway and take effect as soon as a newer Querencia Desktop is running.",
             &[("what", &was)],
         );
-        eprintln!("querencia-einstellungen: {NAME}: {text}");
+        eprintln!("querencia-einstellungen: {PROTOKOLL}: {text}");
         self.hinweis.set_text(&text);
         self.hinweis.set_visible(true);
     }
@@ -388,7 +390,7 @@ impl Oberflaeche {
             self.status.set_text(&gettext(
                 "The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state.",
             ));
-            eprintln!("querencia-einstellungen: {NAME}: Konflikt, nicht geschrieben");
+            eprintln!("querencia-einstellungen: {PROTOKOLL}: Konflikt, nicht geschrieben");
             return;
         }
         let text = neu.in_datei(&jetzt);
@@ -413,14 +415,17 @@ impl Oberflaeche {
                     ),
                     None => gettext_f("Applied at {time}.", &[("time", &uhr)]),
                 });
-                eprintln!("querencia-einstellungen: {NAME} übernommen: {}", kurz(&neu));
+                eprintln!(
+                    "querencia-einstellungen: {PROTOKOLL} übernommen: {}",
+                    kurz(&neu)
+                );
             }
             Err(err) => {
                 self.status.set_text(&gettext_f(
                     "Not saved: {error}",
                     &[("error", &err.to_string())],
                 ));
-                eprintln!("querencia-einstellungen: {NAME} nicht gespeichert: {err}");
+                eprintln!("querencia-einstellungen: {PROTOKOLL} nicht gespeichert: {err}");
             }
         }
     }

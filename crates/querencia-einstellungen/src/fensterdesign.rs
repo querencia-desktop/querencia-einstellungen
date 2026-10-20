@@ -83,6 +83,7 @@ pub struct Fensterdesign {
 impl Bereich for Fensterdesign {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Window Design");
+    const PROTOKOLL: &'static str = "Fensterdesign";
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes.",
     );

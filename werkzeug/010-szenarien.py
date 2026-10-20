@@ -222,6 +222,15 @@ def kalibrieren(breite):
     s.schreiben("e1-kalibrieren")
 
 
+def fenster(breite):
+    """Eigenständige Fenster (QE_APP_ARGS=--hintergrund usw.): nur fotografieren."""
+    s = Szenario(breite)
+    s.roh("wait 1500")
+    s.bild("01-fenster.png")
+    s.roh(MAPS, "wait 500")
+    s.schreiben("d1-fenster")
+
+
 if __name__ == "__main__":
     for b in (1920, 1024):
         alle_seiten(b)
@@ -231,3 +240,4 @@ if __name__ == "__main__":
         sprache_en(b)
         neuanmeldung(b)
         tastatur(b)
+        fenster(b)

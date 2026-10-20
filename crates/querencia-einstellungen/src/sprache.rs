@@ -447,6 +447,7 @@ fn sitzung_text() -> String {
 impl Bereich for Sprache {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Language and Region");
+    const PROTOKOLL: &'static str = "Sprache und Region";
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (LANG, LANGUAGE, LC_TIME, LC_NUMERIC, LC_MONETARY, LC_PAPER, LC_MEASUREMENT; default in environment); languages from the catalogs of this program, formats from “locale -a”.",
     );

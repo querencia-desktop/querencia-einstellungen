@@ -84,6 +84,7 @@ pub struct Maus {
 impl Bereich for Maus {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Mouse");
+    const PROTOKOLL: &'static str = "Maus";
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE).",
     );

@@ -68,6 +68,7 @@ pub struct Arbeitsflaechen {
 impl Bereich for Arbeitsflaechen {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Workspaces");
+    const PROTOKOLL: &'static str = "Arbeitsflächen";
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); the switcher in the panel follows ext-workspace.",
     );

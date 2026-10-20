@@ -87,6 +87,7 @@ fn ist_fett(wert: Option<String>) -> bool {
 impl Bereich for Schriften {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Fonts");
+    const PROTOKOLL: &'static str = "Schriften";
     const QUELLE: &'static str = gettext_noop(
         "gsettings org.gnome.desktop.interface (font-name, document-font-name, monospace-font-name); ~/.config/querencia/labwc/rc.xml <theme><font place=\"ActiveWindow\"> and \"InactiveWindow\" (name, size, weight).",
     );

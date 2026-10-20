@@ -224,6 +224,7 @@ fn gewaehlt(l: &RefCell<Vec<(String, gtk4::CheckButton)>>) -> String {
 impl Bereich for Erscheinungsbild {
     type Werte = Werte;
     const NAME: &'static str = gettext_noop("Appearance");
+    const PROTOKOLL: &'static str = "Erscheinungsbild";
     const QUELLE: &'static str = gettext_noop(
         "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes.",
     );

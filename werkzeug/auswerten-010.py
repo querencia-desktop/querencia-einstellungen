@@ -99,7 +99,7 @@ for a in ("1920", "1024"):
         pruef(lauf, "English + Formate Schweiz: LANGUAGE=en, LC_*=de_CH.UTF-8, kein LANG", ok, d)
         ok, d = nur(e3, {}, SPRACHE)
         pruef(lauf, "Standard: keine eigenen Angaben mehr", ok, d)
-        u = [z for z in uebernommen(lauf) if "Language and Region" in z]
+        u = [z for z in uebernommen(lauf) if "Sprache und Region übernommen" in z]
         pruef(lauf, "dreimal übernommen", len(u) == 3, str(len(u)))
         pruef(lauf, "Hinweis „wirksam ab der nächsten Anmeldung“, kein labwc-Neuladen",
               all("wirksam ab der nächsten Anmeldung" in z and "neu geladen" not in z for z in u) and u,
@@ -141,12 +141,20 @@ for a in ("1920", "1024"):
         pruef(lauf, "entfernt: nur ch, Umschalttaste weg", ok, d)
         ok, d = nur(e[3], {}, XKB)
         pruef(lauf, "Standard: keine eigenen XKB-Angaben (Vorgabe de)", ok, d)
-        u = [z for z in uebernommen(lauf) if "Keyboard" in z]
+        u = [z for z in uebernommen(lauf) if "Tastatur übernommen" in z]
         pruef(lauf, "viermal übernommen, labwc jedes Mal neu geladen",
               len(u) == 4 and all("labwc hat die Konfiguration neu geladen" in z for z in u), str(len(u)))
         vorher = lesen(N, lauf, "labwc-vorher", "rc.xml")
         pruef(lauf, "rc.xml unverändert (nur Umgebung geändert)",
               all(lesen(N, lauf, f"rc-{i}.xml") == vorher for i in (1, 2, 3, 4)))
+
+    # --- d1: eigenständige Fenster deutsch und englisch (Katalog in /proc/<pid>/maps)
+    for f in ("hintergrund", "bildschirm", "arbeitsflaeche", "standardanwendungen"):
+        for spr, mo, fremd in (("de", DE_MO, EN_MO), ("en", EN_MO, DE_MO)):
+            lauf = f"{PRAEFIX}-d1-{f}-{spr}-{a}"
+            if lauf_ok(lauf):
+                m = lesen(N, lauf, "maps.txt") or ""
+                pruef(lauf, f"Fenster --{f} offen, Katalog {spr}", "01-fenster.png" in bilder(lauf) and mo in m and fremd not in m, m.strip())
 
 with open(ZIEL, "w", encoding="utf-8") as f:
     f.write("lauf\tfall\tergebnis\tdetail\n")

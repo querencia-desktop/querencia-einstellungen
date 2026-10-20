@@ -36,6 +36,11 @@ for a in 1920 1024; do
     cp "nachweis/$V-sp1-$a/env-2.txt" "$d/environment.d/zz-querencia-einstellungen.env" 2>/dev/null
     QE_LABWC_DATEIEN=$d bash werkzeug/g2aj-lauf.sh "$V-n1-$a" $s $Z/n1-neuanmeldung-$a.txt
     bash werkzeug/g2aj-lauf.sh "$V-tb1-$a" $s $Z/tb1-tastatur-$a.txt
+    # eigenständige Fenster der Desktop-Menüpunkte, deutsch und englisch
+    for f in hintergrund bildschirm arbeitsflaeche standardanwendungen; do
+        QE_APP_ARGS=--$f bash werkzeug/g2aj-lauf.sh "$V-d1-$f-de-$a" $s $Z/d1-fenster-$a.txt
+        QE_APP_ARGS=--$f QE_LABWC_DATEIEN=$EN bash werkzeug/g2aj-lauf.sh "$V-d1-$f-en-$a" $s $Z/d1-fenster-$a.txt
+    done
 done
 werkzeug/produktiv-stand.sh > nachweis/010/produktiv-nachher.txt
 gsettings list-recursively org.gnome.desktop.interface > nachweis/010/gsettings-live-nachher.txt

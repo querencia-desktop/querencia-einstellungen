@@ -25,6 +25,9 @@ pub trait Bereich: Sized + 'static {
     type Werte: Clone + PartialEq + Debug;
     /// Name (msgid, mit `gettext_noop` markiert; angezeigt über `gettext`).
     const NAME: &'static str;
+    /// Name im Protokoll (stderr), fest deutsch wie bis 0.0.9 und unabhängig
+    /// von der Oberflächensprache: Prüfwerkzeuge suchen diese Zeilen.
+    const PROTOKOLL: &'static str;
     /// Quelle der Werte (msgid wie `NAME`).
     const QUELLE: &'static str;
     /// `labwc --reconfigure` nach dem Schreiben, wenn labwc die Benutzerkopie
@@ -357,7 +360,7 @@ impl<B: Bereich> Seite<B> {
         self.vorgabe_kasten.set_visible(st.vorgabe_neu);
         eprintln!(
             "querencia-einstellungen: {} geladen ({:?}, {}): {w:?}",
-            B::NAME,
+            B::PROTOKOLL,
             st.quelle,
             match &wirkung {
                 Wirkung::Sofort { .. } => "sofort",
@@ -409,7 +412,7 @@ impl<B: Bereich> Seite<B> {
             self.status.set_text(&gettext("The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."));
             eprintln!(
                 "querencia-einstellungen: {}: Konflikt, nicht geschrieben",
-                B::NAME
+                B::PROTOKOLL
             );
             return;
         }
@@ -482,7 +485,7 @@ impl<B: Bereich> Seite<B> {
         }
         eprintln!(
             "querencia-einstellungen: {} übernommen: {neu:?} (gsettings {gs:?}) – {text}",
-            B::NAME
+            B::PROTOKOLL
         );
         self.laden();
         self.status.set_text(&text);
@@ -510,7 +513,7 @@ impl<B: Bereich> Seite<B> {
                 self.status.set_text(&text);
                 eprintln!(
                     "querencia-einstellungen: {}: neue Vorgabe übernommen",
-                    B::NAME
+                    B::PROTOKOLL
                 );
             }
             Err(e) => self.fehler(&gettext_f(
@@ -525,7 +528,7 @@ impl<B: Bereich> Seite<B> {
             .set_text(&gettext_f("Not saved: {error}", &[("error", text)]));
         eprintln!(
             "querencia-einstellungen: {}: nicht gespeichert: {text}",
-            B::NAME
+            B::PROTOKOLL
         );
     }
 }
