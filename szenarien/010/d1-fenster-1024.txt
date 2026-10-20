@@ -1,0 +1,6 @@
+extent 1024 768
+wait 3500
+wait 1500
+shot 01-fenster.png
+run for p in $(pgrep -f "^$QE_APP"); do grep -qz "^XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR$" /proc/$p/environ && grep -o "share/locale/.*mo" /proc/$p/maps; done | sort -u > maps.txt
+wait 500
