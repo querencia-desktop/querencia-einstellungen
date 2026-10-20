@@ -1,0 +1,32 @@
+extent 1920 1080
+wait 3500
+run cat "$XDG_CONFIG_HOME/querencia/labwc"/rc.xml > rc-0.xml
+run (cd "$XDG_CONFIG_HOME/querencia/labwc" && find . -type f | LC_ALL=C sort | xargs -d '\n' sha256sum) > dateien-0.txt
+wait 500
+move 600 484
+click
+wait 1200
+shot 01-tastatur.png
+move 1221 542
+click
+wait 500
+shot 02-verzoegerung-610.png
+mark uebernehmen 1
+move 1319 825
+click
+wait 2000
+shot 03-uebernommen.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc"/rc.xml > rc-1.xml
+run (cd "$XDG_CONFIG_HOME/querencia/labwc" && find . -type f | LC_ALL=C sort | xargs -d '\n' sha256sum) > dateien-1.txt
+wait 500
+move 1196 542
+click
+wait 500
+mark uebernehmen 2
+move 1319 825
+click
+wait 2000
+shot 04-zurueck-600.png
+run cat "$XDG_CONFIG_HOME/querencia/labwc"/rc.xml > rc-2.xml
+run (cd "$XDG_CONFIG_HOME/querencia/labwc" && find . -type f | LC_ALL=C sort | xargs -d '\n' sha256sum) > dateien-2.txt
+wait 500

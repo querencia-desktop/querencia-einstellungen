@@ -1,0 +1,6 @@
+Nachkontrolle Einstellungen 0.1.1 (21.10.2026, nach der Aktivierung 00:33:46): Daten und
+Szenario für die Rotation der Sicherungen mit der installierten Binary. daten-rotation wird
+über QE_LABWC_DATEIEN in die Benutzerkopie des Profils kopiert: sechs eigene, ältere
+Sicherungen (rc.xml.einstellungen-vorher-20261019-00000{1..6}) und fremde *.vorher-* wie live
+(Starter, Rückfallpfad 11:28) plus eine fremde .env.vorher-*. rot-1920.txt = die ersten zwei
+Schritte von r1 (Tastatur 600→610→600, je Übernehmen).
