@@ -1,4 +1,4 @@
-//! Querencia Einstellungen – Kontrollzentrum im Stil von GNOME 2 (Prototyp).
+//! Querencia Einstellungen – Kontrollzentrum im Stil von GNOME 2.
 //!
 //!   querencia-einstellungen                 Kontrollzentrum
 //!   querencia-einstellungen --hintergrund   nur der Dialog „Querencia – Hintergrund“
