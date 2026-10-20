@@ -52,6 +52,24 @@ derselben Fassung:
 | pixman 1920×1080 | 4/4 | 2/4 |
 | pixman 1024×768 | 4/4 | 2/4 |
 
+Seite „Symbole der Arbeitsfläche“ (pottrauschens fünftes Bild: Reste zwischen
+der Quelle-Zeile unter dem Laufwerke-Rahmen und dem Hinweis „Änderungen
+gelten erst nach „Übernehmen““), Szenario `z2-symbole`, gles2:
+
+| Lauf | 1920×1080 | 1024×768 |
+|---|---|---|
+| 0.0.8 (Querencia-Klassisch) | 0/4 | 0/4 |
+| 0.0.8 mit eingebautem GTK-Thema | 0/4 | 0/4 |
+| 0.0.9, `GSK_DEBUG=` (Behebung aus) | 0/4 | 0/4 |
+| 0.0.9 | 4/4 | 4/4 |
+
+Geprüft und ausgeschlossen: Die Seiten werden einmal gebaut
+(`bereiche::alle`), ein Seitenwechsel baut nichts neu, und jeder Neuaufbau
+(`labwc_seite::optionen`, Panels-Raster, Symbolvorschau) entfernt zuerst
+die alten Widgets. Die Labels überlappen nicht (die Referenzbilder nach
+vollem Neuzeichnen zeigen sie sauber getrennt). Das Thema ist nicht die
+Ursache (gleiches Bild mit dem eingebauten GTK-Thema).
+
 Andere GTK-4-Programme von Querencia haben denselben Fehler, sobald sich
 Text an einer Stelle ändert (Files, Systemmonitor, Dialoge). Eine
 gemeinsame Lösung gehört in die Sitzung (Umgebung) oder zu GTK selbst.
