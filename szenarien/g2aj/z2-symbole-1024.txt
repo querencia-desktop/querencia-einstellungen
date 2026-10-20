@@ -1,0 +1,206 @@
+extent 1024 768
+wait 3500
+move 152 160
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 216
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel erscheinungsbild symbole
+shot w01-erscheinungsbild-symbole.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w01-erscheinungsbild-symbole-ref.png
+move 152 440
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 216
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel standardanwendungen symbole
+shot w02-standardanwendungen-symbole.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w02-standardanwendungen-symbole-ref.png
+move 152 328
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 216
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel tastatur symbole
+shot w03-tastatur-symbole.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w03-tastatur-symbole-ref.png
+move 152 272
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 216
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel schriften symbole
+shot w04-schriften-symbole.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w04-schriften-symbole-ref.png

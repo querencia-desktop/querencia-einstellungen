@@ -25,7 +25,7 @@ schreibt nichts.
 | Webbrowser | `x-scheme-handler/http`, `x-scheme-handler/https`, `text/html`, `application/xhtml+xml` | – |
 | E-Mail | `x-scheme-handler/mailto` | – |
 | Texteditor | `text/plain`, `text/markdown`, `text/x-markdown` | `org.querencia.Editor.desktop` |
-| Terminal | – (nur Anzeige, siehe unten) | `org.example.Querencia.Terminal.desktop` |
+| Terminal | – (nur Anzeige, siehe unten) | `org.querencia.Terminal.desktop` (Rückgriff `org.example.Querencia.Terminal.desktop`) |
 | Bilder | `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/bmp`, `image/svg+xml`, `image/tiff` | `org.querencia.Bilder.desktop` |
 | Musik | `audio/mpeg`, `audio/ogg`, `audio/x-vorbis+ogg`, `audio/flac`, `audio/x-wav`, `audio/mp4` | – |
 | Video | `video/mp4`, `video/webm`, `video/x-matroska`, `video/ogg`, `video/mpeg` | – |
@@ -72,8 +72,11 @@ schreibt nichts.
 ## Terminal
 
 Für Terminals gibt es keinen MIME-Typ und keinen Schreibweg über GIO. Panel
-und Desktop haben `org.example.Querencia.Terminal.desktop` fest eingebaut
-(`TERMINAL_APP` im Runtime-Repo); labwc nutzt `lab-sensible-terminal`. Die
+und Desktop starten Querencia Terminal fest (`TERMINAL_APP` im Runtime-Repo);
+labwc nutzt `lab-sensible-terminal`. Angezeigt wird der Starter
+`org.querencia.Terminal.desktop` (seit 20.10.2026, QD-066); fehlt er, die
+alte ID `org.example.Querencia.Terminal.desktop`, die heute nur noch eine
+Brücke (NoDisplay) ist (`standardanwendungen_modell::terminal_id`, G2-AJ). Die
 Zeile zeigt deshalb nur an. Eine Auswahl ohne Wirkung wäre ein Knopf, der
 nichts tut. Eine echte Auswahl braucht einen eigenen Baustein, etwa eine
 gemeinsame Einstellung, die Panel und Desktop lesen. `xdg-terminals.list`

@@ -87,6 +87,11 @@ fn anwendung(desktop_id: &str) -> Option<gio::AppInfo> {
         .find(|a| id(a) == desktop_id)
 }
 
+/// Starter des Terminals (neue ID, sonst die Brücke älterer Installationen).
+fn terminal() -> &'static str {
+    sm::terminal_id(|i| anwendung(i).is_some())
+}
+
 /// `--standardanwendungen-zeigen`: Ist-Stand als Text (Prüfung), schreibt nichts.
 pub fn zeigen() -> i32 {
     let pfad = mimeapps_pfad();
@@ -126,8 +131,8 @@ pub fn zeigen() -> i32 {
             Art::NurAnzeige => println!(
                 "{}\t-\tfest={}\tvorhanden={}\tvorschlag={}",
                 k.schluessel,
-                sm::TERMINAL_ID,
-                if anwendung(sm::TERMINAL_ID).is_some() {
+                terminal(),
+                if anwendung(terminal()).is_some() {
                     "ja"
                 } else {
                     "nein"
@@ -159,9 +164,9 @@ impl Seite {
             let k = z.kategorie;
             let (app, text) = match k.art {
                 Art::NurAnzeige => {
-                    let a = anwendung(sm::TERMINAL_ID);
+                    let a = anwendung(terminal());
                     let t = a.as_ref().map_or_else(
-                        || format!("{} (nicht installiert)", sm::TERMINAL_ID),
+                        || format!("{} (nicht installiert)", terminal()),
                         |a| a.display_name().to_string(),
                     );
                     (a, t)

@@ -127,14 +127,14 @@ for a in ("1920", "1024"):
         pruef(lauf, "labwc neu geladen (Zeiger)", app.count("labwc hat die Konfiguration neu geladen") >= 2)
         pruef(lauf, "Statuszeile: sofort in Programmen", "GTK-Programme, Panel und Desktop übernehmen es sofort" in app)
 
-    # --- k1: Konflikt
+    # --- k1: jemand anderes ändert gsettings, während die Seite offen ist
     lauf = f"{PRAEFIX}-k1-konflikt-{a}"
     if lauf_ok(lauf):
         g1 = lesen(N, lauf, "gs-1.txt")
         pruef(lauf, "fremder Wert bleibt (Humanity)", gs(g1, "icon-theme") == "Humanity", str(gs(g1, "icon-theme")))
         pruef(lauf, "Konflikt gemeldet", "Erscheinungsbild: Konflikt, nicht geschrieben" in protokoll(lauf))
 
-    # --- s2: Schriften
+    # --- s2: Programmschriften über gsettings, Fenstertitel über rc.xml
     lauf = f"{PRAEFIX}-s2-schriften-{a}"
     if lauf_ok(lauf):
         g1, r1 = lesen(N, lauf, "gs-1.txt"), lesen(N, lauf, "rc-1.xml")
@@ -172,7 +172,7 @@ for a in ("1920", "1024"):
         pruef(lauf, "Aufbau beim Start gelesen", len(zeilen_p) >= 1, zeilen_p[0] if zeilen_p else "")
         pruef(lauf, "Änderung von außen angezeigt (Lautstärke neu)", any("Lautstärke" in z for z in zeilen_p[1:]), zeilen_p[-1] if zeilen_p else "")
 
-    # --- s1: alle Seiten, keine „Noch nicht verfügbar“ im Protokoll, alle Bilder da
+    # --- s1: alle zwölf Seiten fotografiert (Vorher/Nachher-Bilder)
     lauf = f"{PRAEFIX}-s1-alle-seiten-{a}"
     if lauf_ok(lauf):
         bilder = [b for b in os.listdir(os.path.join(N, lauf)) if re.match(r"\d\d-.*\.png$", b)]
@@ -211,6 +211,13 @@ for a in ("1920", "1024"):
         e1 = lesen(N, lauf, "env-1.txt")
         pruef(lauf, "Benutzerkopie angelegt, XCURSOR_THEME=DMZ-Black", env(e1, "XCURSOR_THEME") == "DMZ-Black", str(env(e1, "XCURSOR_THEME")))
         pruef(lauf, "Hinweis: ab der nächsten Anmeldung", "wirksam ab der nächsten Anmeldung" in protokoll(lauf))
+
+# Kein Platzhaltertext mehr im geprüften Programm (Release, falls vorhanden)
+REL = os.path.join(N, "g2aj", "release", "querencia-einstellungen")
+if os.path.exists(REL):
+    with open(REL, "rb") as f:
+        inhalt = f.read()
+    pruef("release", "kein „Noch nicht verfügbar“ im Programm", "Noch nicht verfügbar".encode() not in inhalt)
 
 os.makedirs(os.path.dirname(os.path.abspath(ZIEL)), exist_ok=True)
 with open(ZIEL, "w", encoding="utf-8") as f:

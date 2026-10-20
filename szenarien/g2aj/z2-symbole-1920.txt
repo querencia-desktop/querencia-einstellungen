@@ -1,0 +1,206 @@
+extent 1920 1080
+wait 3500
+move 600 316
+click
+wait 800
+move 640 330
+wait 40
+move 640 358
+wait 40
+move 640 386
+wait 40
+move 640 414
+wait 40
+move 640 442
+wait 40
+move 640 470
+wait 40
+move 640 498
+wait 40
+move 640 526
+wait 40
+move 600 372
+click
+wait 800
+move 640 554
+wait 40
+move 640 526
+wait 40
+move 640 498
+wait 40
+move 640 470
+wait 40
+move 640 442
+wait 40
+move 640 414
+wait 40
+move 640 386
+wait 40
+move 640 358
+wait 40
+move 1200 900
+wait 600
+mark wechsel erscheinungsbild symbole
+shot w01-erscheinungsbild-symbole.png
+move 760 239
+dclick
+wait 900
+move 760 44
+dclick
+wait 900
+move 1200 900
+wait 600
+shot w01-erscheinungsbild-symbole-ref.png
+move 600 596
+click
+wait 800
+move 640 330
+wait 40
+move 640 358
+wait 40
+move 640 386
+wait 40
+move 640 414
+wait 40
+move 640 442
+wait 40
+move 640 470
+wait 40
+move 640 498
+wait 40
+move 640 526
+wait 40
+move 600 372
+click
+wait 800
+move 640 554
+wait 40
+move 640 526
+wait 40
+move 640 498
+wait 40
+move 640 470
+wait 40
+move 640 442
+wait 40
+move 640 414
+wait 40
+move 640 386
+wait 40
+move 640 358
+wait 40
+move 1200 900
+wait 600
+mark wechsel standardanwendungen symbole
+shot w02-standardanwendungen-symbole.png
+move 760 239
+dclick
+wait 900
+move 760 44
+dclick
+wait 900
+move 1200 900
+wait 600
+shot w02-standardanwendungen-symbole-ref.png
+move 600 484
+click
+wait 800
+move 640 330
+wait 40
+move 640 358
+wait 40
+move 640 386
+wait 40
+move 640 414
+wait 40
+move 640 442
+wait 40
+move 640 470
+wait 40
+move 640 498
+wait 40
+move 640 526
+wait 40
+move 600 372
+click
+wait 800
+move 640 554
+wait 40
+move 640 526
+wait 40
+move 640 498
+wait 40
+move 640 470
+wait 40
+move 640 442
+wait 40
+move 640 414
+wait 40
+move 640 386
+wait 40
+move 640 358
+wait 40
+move 1200 900
+wait 600
+mark wechsel tastatur symbole
+shot w03-tastatur-symbole.png
+move 760 239
+dclick
+wait 900
+move 760 44
+dclick
+wait 900
+move 1200 900
+wait 600
+shot w03-tastatur-symbole-ref.png
+move 600 428
+click
+wait 800
+move 640 330
+wait 40
+move 640 358
+wait 40
+move 640 386
+wait 40
+move 640 414
+wait 40
+move 640 442
+wait 40
+move 640 470
+wait 40
+move 640 498
+wait 40
+move 640 526
+wait 40
+move 600 372
+click
+wait 800
+move 640 554
+wait 40
+move 640 526
+wait 40
+move 640 498
+wait 40
+move 640 470
+wait 40
+move 640 442
+wait 40
+move 640 414
+wait 40
+move 640 386
+wait 40
+move 640 358
+wait 40
+move 1200 900
+wait 600
+mark wechsel schriften symbole
+shot w04-schriften-symbole.png
+move 760 239
+dclick
+wait 900
+move 760 44
+dclick
+wait 900
+move 1200 900
+wait 600
+shot w04-schriften-symbole-ref.png

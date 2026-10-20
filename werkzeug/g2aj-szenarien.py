@@ -67,16 +67,25 @@ def alle_seiten(breite):
     s.schreiben("s1-alle-seiten")
 
 
-def wechsel(breite):
+WECHSEL_Z1 = [
+    ("erscheinungsbild", "hintergrundbild"),
+    ("schriften", "panels"),
+    ("standardanwendungen", "hintergrundbild"),
+    ("tastatur", "panels"),
+]
+# pottrauschens fünftes Bild: Reste unter dem Laufwerke-Rahmen von „Symbole der Arbeitsfläche“
+WECHSEL_Z2 = [
+    ("erscheinungsbild", "symbole"),
+    ("standardanwendungen", "symbole"),
+    ("tastatur", "symbole"),
+    ("schriften", "symbole"),
+]
+
+
+def wechsel(breite, folge=WECHSEL_Z1, name="z1-wechsel"):
     """Zeichenfehler: zwischen langen und kurzen Seiten hin und her, mit
     Zeigerbewegung über der Seitenleiste (Hover erzeugt kleine Teilbilder)."""
     s = Szenario(breite)
-    folge = [
-        ("erscheinungsbild", "hintergrundbild"),
-        ("schriften", "panels"),
-        ("standardanwendungen", "hintergrundbild"),
-        ("tastatur", "panels"),
-    ]
     n = 0
     for lang, kurz in folge:
         s.seite(lang, warten=800)
@@ -97,7 +106,7 @@ def wechsel(breite):
         s.roh(f"move {760 + s.dx} 44", "dclick", "wait 900")
         s.roh(f"move {1200 + s.dx} {900 + s.dy}", "wait 600")
         s.bild(f"w{n:02d}-{lang}-{kurz}-ref.png")
-    s.schreiben("z1-wechsel")
+    s.schreiben(name)
 
 
 # Knöpfe der Fußleiste (labwc-Seiten und Hintergrundbild)
@@ -279,6 +288,7 @@ if __name__ == "__main__":
     for b in (1920, 1024):
         alle_seiten(b)
         wechsel(b)
+        wechsel(b, WECHSEL_Z2, "z2-symbole")
         erscheinungsbild(b)
         konflikt(b)
         schriften(b)

@@ -39,3 +39,7 @@
 !/nachweis/g2ag/
 /nachweis/g2ag/**/*.png
 /nachweis/g2ag/**/querencia-einstellungen
+# G2-AJ: wie G2-AG – Textnachweise unter nachweis/g2aj/ ins Repo, Binaries/Bilder/Läufe nicht
+!/nachweis/g2aj/
+/nachweis/g2aj/**/*.png
+/nachweis/g2aj/**/querencia-einstellungen
