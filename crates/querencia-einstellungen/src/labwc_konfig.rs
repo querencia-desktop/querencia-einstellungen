@@ -400,6 +400,11 @@ pub fn env_schreiben(
         let sicherung = sichern(&pfad, zeit).map_err(io)?;
         std::fs::remove_file(&pfad).map_err(io)?;
         nachher(&pfad, None);
+        // ein leer gewordenes environment.d auch (remove_dir scheitert, wenn
+        // noch etwas darin liegt)
+        if let Some(d) = pfad.parent() {
+            let _ = std::fs::remove_dir(d);
+        }
         return Ok(sicherung.filter(|s| s.is_file()));
     }
     ersetzen_mit_sicherung(&pfad, &neu, zeit).map_err(io)
@@ -781,11 +786,16 @@ mod tests {
         assert!(o.env_datei().is_file());
         env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "2").unwrap();
         assert!(!o.env_datei().exists());
-        let reste: Vec<_> = std::fs::read_dir(o.env_datei().parent().unwrap())
-            .unwrap()
-            .flatten()
-            .collect();
-        assert!(reste.is_empty(), "{reste:?}");
+        // keine Sicherung, kein leerer Ordner environment.d
+        assert!(!o.env_datei().parent().unwrap().exists());
+        // eine fremde Datei hält den Ordner
+        std::fs::create_dir_all(o.env_datei().parent().unwrap()).unwrap();
+        std::fs::write(o.benutzer.join("environment.d/querencia-x.env"), "B=1\n").unwrap();
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", Some("us".into()))], "2a").unwrap();
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "2b").unwrap();
+        assert!(!o.env_datei().exists());
+        assert!(o.benutzer.join("environment.d/querencia-x.env").is_file());
+        std::fs::remove_file(o.benutzer.join("environment.d/querencia-x.env")).unwrap();
         // fremde Zeilen halten die Datei
         std::fs::write(o.env_datei(), "# eigen\nA=1\n").unwrap();
         lauf_vergessen(&w);

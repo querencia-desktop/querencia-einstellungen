@@ -846,6 +846,11 @@ fn nur_leerraum_anders(a: &str, b: &str) -> bool {
 /// Sitzungsstarter die Datei wieder als unverändert an und zieht neue
 /// Vorgaben nach.
 pub fn angleichen(neu: &str, vorher: &str, basis: &str) -> Result<String, Fehler> {
+    // nichts geändert (z. B. „Sprache und Region“): die Datei bleibt, wie sie
+    // ist, auch wenn sie sich nur im Leerraum von der Basis unterscheidet
+    if neu == vorher {
+        return Ok(neu.to_owned());
+    }
     let basis_text = if basis.trim().is_empty() { LEER } else { basis };
     let mut t = neu.to_owned();
     for (pfad, schluessel) in VERWALTET {
@@ -1204,6 +1209,26 @@ mod tests {
         let g = setzen(VORGABE, GERAET, "leftHanded", "yes").unwrap();
         let r = hin_und_zurueck(&g, GERAET, "accelProfile", "flat", "adaptive");
         assert_eq!(r, g);
+    }
+
+    #[test]
+    fn angleichen_ohne_aenderung_laesst_die_datei() {
+        // nur im Leerraum anders als die Basis, und dieses Übernehmen ändert
+        // rc.xml nicht: kein Zurückschreiben der Basis
+        let umformatiert = VORGABE.replace("  <keyboard>\n", "  <keyboard>\n\n");
+        assert_eq!(
+            angleichen(&umformatiert, &umformatiert, VORGABE).unwrap(),
+            umformatiert
+        );
+        // ändert es etwas und landet bei der Basis, gilt die Basis
+        let a = setzen(&umformatiert, TASTATUR, "repeatDelay", "610").unwrap();
+        let z = angleichen(
+            &setzen(&a, TASTATUR, "repeatDelay", "600").unwrap(),
+            &a,
+            VORGABE,
+        )
+        .unwrap();
+        assert_eq!(z, VORGABE);
     }
 
     #[test]

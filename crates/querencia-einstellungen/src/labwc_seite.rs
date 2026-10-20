@@ -739,6 +739,7 @@ mod tests {
             v.belegungen = vec![("de".into(), String::new())]
         });
         assert_eq!(dateien(&o), vorher);
+        assert!(!o.benutzer.join("environment.d").exists());
         std::fs::remove_dir_all(&w).unwrap();
     }
 
