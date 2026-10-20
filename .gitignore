@@ -52,3 +52,9 @@
 /integration/**/*.mo
 # Python-Bytecode der Werkzeuge (010-deutsch-gleich.py importiert i18n.py)
 __pycache__/
+# Einstellungen 0.1.1: wie 0.1.0 – Textnachweise unter nachweis/011/ ins Repo,
+# Binaries, Kataloge, Bilder und Läufe nicht
+!/nachweis/011/
+/nachweis/011/**/*.png
+/nachweis/011/**/querencia-einstellungen
+/nachweis/011/**/*.mo
