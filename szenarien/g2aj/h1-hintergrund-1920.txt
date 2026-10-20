@@ -1,0 +1,37 @@
+extent 1920 1080
+wait 3500
+move 600 344
+click
+wait 1200
+shot 01-hintergrund.png
+move 1003 560
+click
+wait 900
+shot 02-abend-gewaehlt.png
+mark uebernehmen 1
+move 1319 825
+click
+wait 2500
+shot 03-abend-uebernommen.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-1.txt
+wait 700
+move 855 560
+click
+wait 900
+mark uebernehmen 2
+move 1319 825
+click
+wait 2500
+shot 04-blau-uebernommen.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-2.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-2.txt
+wait 700
+move 1107 425
+click
+wait 2500
+shot 05-dialog.png

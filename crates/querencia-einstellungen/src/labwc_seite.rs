@@ -5,6 +5,9 @@
 //! Runtime-Repos, „Neu laden“ liest die Dateien neu. Jeder Bereich ändert
 //! nur seine eigenen Werte auf dem **aktuellen** Dateistand; was andere
 //! Bereiche inzwischen geschrieben haben, bleibt stehen.
+//! G2-AJ: Bereiche können zusätzlich Werte aus `org.gnome.desktop.interface`
+//! führen (Erscheinungsbild, Schriften); die stehen in [`Stand::gs`], werden
+//! beim „Übernehmen“ nach rc.xml und Umgebung geschrieben und wirken sofort.
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
@@ -12,6 +15,7 @@ use std::rc::Rc;
 use gtk4::glib;
 use gtk4::prelude::*;
 
+use crate::gsettings;
 use crate::labwc_konfig::{self as lk, Orte, Stand, Wirkung};
 use crate::labwc_xml::Fehler;
 
@@ -32,6 +36,17 @@ pub trait Bereich: Sized + 'static {
     ) -> Vec<(&'static str, Option<String>)> {
         Vec::new()
     }
+    /// Schlüssel aus `org.gnome.desktop.interface`, die `lesen` in `st.gs` braucht.
+    const GSETTINGS: &'static [&'static str] = &[];
+    /// gsettings: die geänderten Werte (wirken sofort).
+    fn gs_aenderungen(_neu: &Self::Werte, _alt: &Self::Werte) -> Vec<(&'static str, String)> {
+        Vec::new()
+    }
+    /// Eigener Hinweis oben auf der Seite (erster Satz fett) statt des
+    /// labwc-Wirkungstexts.
+    fn hinweis(_w: &Wirkung, _st: &Stand) -> Option<String> {
+        None
+    }
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box);
     fn zeigen(&self, w: &Self::Werte);
     fn aktuell(&self) -> Self::Werte;
@@ -42,6 +57,7 @@ pub fn standard<B: Bereich>(st: &Stand) -> B::Werte {
     let mut v = st.clone();
     v.rc = st.rc_vorgabe.clone();
     v.env = st.env_ohne_eigene.clone();
+    v.gs = gsettings::standard(B::GSETTINGS);
     B::lesen(&v)
 }
 
@@ -123,6 +139,44 @@ pub fn optionen(
     if !knoepfe.iter().any(|(_, k)| k.is_active()) {
         anker.set_active(true);
     }
+    *ziel.borrow_mut() = knoepfe;
+}
+
+/// Wie [`optionen`], aber in einem Raster mit `spalten` Spalten (G2-AJ:
+/// lange Listen wie die Symbolthemen bleiben so auf einen Blick sichtbar).
+pub fn optionen_raster(
+    raster: &gtk4::Grid,
+    ziel: &RefCell<Vec<(String, gtk4::CheckButton)>>,
+    liste: &[(String, String)],
+    aktuell: &str,
+    geaendert: &Rc<dyn Fn()>,
+    spalten: usize,
+) {
+    while let Some(c) = raster.first_child() {
+        raster.remove(&c);
+    }
+    let anker = gtk4::CheckButton::new();
+    anker.set_visible(false);
+    let mut knoepfe: Vec<(String, gtk4::CheckButton)> = Vec::new();
+    for (i, (schluessel, text)) in liste.iter().enumerate() {
+        let k = gtk4::CheckButton::with_label(text);
+        k.set_group(Some(&anker));
+        k.set_active(schluessel == aktuell);
+        k.set_hexpand(true);
+        let g = geaendert.clone();
+        k.connect_toggled(move |k| {
+            if k.is_active() {
+                g();
+            }
+        });
+        raster.attach(&k, (i % spalten) as i32, (i / spalten) as i32, 1, 1);
+        knoepfe.push((schluessel.clone(), k));
+    }
+    if !knoepfe.iter().any(|(_, k)| k.is_active()) {
+        anker.set_active(true);
+    }
+    // der Anker gehört zur Gruppe, braucht aber keinen Platz im Raster
+    raster.attach(&anker, 0, liste.len().div_ceil(spalten) as i32, 1, 1);
     *ziel.borrow_mut() = knoepfe;
 }
 
@@ -250,14 +304,21 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
 }
 
 impl<B: Bereich> Seite<B> {
+    fn stand_lesen(&self) -> Stand {
+        let mut st = lk::lesen(&self.orte);
+        st.gs = gsettings::lesen(B::GSETTINGS);
+        st
+    }
+
     fn laden(&self) {
-        let st = lk::lesen(&self.orte);
+        let st = self.stand_lesen();
         let w = B::lesen(&st);
         self.stumm.set(true);
         self.bereich.zeigen(&w);
         self.stumm.set(false);
         let wirkung = lk::wirkung(&self.orte);
-        let mut hinweis = lk::wirkung_text(&wirkung, &st);
+        let mut hinweis =
+            B::hinweis(&wirkung, &st).unwrap_or_else(|| lk::wirkung_text(&wirkung, &st));
         if let Some(f) = &st.fehler {
             hinweis = format!(
                 "{hinweis}\nAchtung: {f}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei lesbar ist."
@@ -322,7 +383,7 @@ impl<B: Bereich> Seite<B> {
             return;
         };
         let neu = self.bereich.aktuell();
-        let st = lk::lesen(&self.orte);
+        let st = self.stand_lesen();
         if let Some(f) = &st.fehler {
             return self.fehler(f);
         }
@@ -357,8 +418,19 @@ impl<B: Bereich> Seite<B> {
             }
             geschrieben = true;
         }
+        let gs = B::gs_aenderungen(&neu, &alt);
+        if let Err(e) = gsettings::schreiben(&gs) {
+            return self.fehler(&if geschrieben {
+                format!("{e} (labwc-Konfiguration ist schon gespeichert)")
+            } else {
+                e
+            });
+        }
         let uhr = jetzt_text("%H:%M:%S");
         let mut text = format!("Übernommen um {uhr}.");
+        if !gs.is_empty() {
+            text.push_str(" GTK-Programme, Panel und Desktop übernehmen es sofort.");
+        }
         if geschrieben {
             let w = lk::wirkung(&self.orte);
             match (&w, lk::neu_laden(&w)) {
@@ -381,7 +453,7 @@ impl<B: Bereich> Seite<B> {
             text.push_str(&format!(" Vorher gesichert als {}.", namen.join(", ")));
         }
         eprintln!(
-            "querencia-einstellungen: {} übernommen: {neu:?} – {text}",
+            "querencia-einstellungen: {} übernommen: {neu:?} (gsettings {gs:?}) – {text}",
             B::NAME
         );
         self.laden();

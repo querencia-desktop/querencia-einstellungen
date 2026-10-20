@@ -271,6 +271,7 @@ mod tests {
             env_ohne_eigene: BTreeMap::new(),
             vorgabe_neu: false,
             fehler: None,
+            gs: BTreeMap::new(),
         }
     }
 

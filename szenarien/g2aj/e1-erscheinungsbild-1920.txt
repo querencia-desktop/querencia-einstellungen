@@ -1,0 +1,50 @@
+extent 1920 1080
+wait 3500
+move 600 316
+click
+wait 1200
+shot 01-erscheinungsbild.png
+move 1180 454
+click
+wait 600
+shot 02-gnome-human.png
+move 796 658
+click
+wait 300
+move 796 688
+click
+wait 300
+move 1070 600
+scroll 5
+wait 600
+move 950 621
+click
+wait 300
+move 970 652
+click
+wait 300
+shot 03-geaendert.png
+mark uebernehmen 1
+move 1319 825
+click
+wait 1500
+shot 04-uebernommen.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-1.txt
+wait 700
+move 877 825
+click
+wait 600
+shot 05-standard.png
+mark uebernehmen 2
+move 1319 825
+click
+wait 1500
+shot 06-standard-uebernommen.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-2.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-2.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-2.txt
+wait 700

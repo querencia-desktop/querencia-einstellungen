@@ -97,6 +97,9 @@ pub const VERWALTET: &[(Pfad, &str)] = &[
     (SCHRIFT_AKTIV, "size"),
     (SCHRIFT_INAKTIV, "name"),
     (SCHRIFT_INAKTIV, "size"),
+    // G2-AJ: Bereich „Schriften“ schreibt auch Fett
+    (SCHRIFT_AKTIV, "weight"),
+    (SCHRIFT_INAKTIV, "weight"),
     (ARBEITSFLAECHEN, "number"),
     (ARBEITSFLAECHEN, "popupTime"),
 ];

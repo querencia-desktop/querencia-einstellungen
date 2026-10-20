@@ -1,0 +1,10 @@
+extent 1024 768
+wait 3500
+move 152 300
+click
+wait 1200
+shot 01-panels.png
+run cp ../../szenarien/g2aj/panel-geaendert.ini "$XDG_CONFIG_HOME/querencia/panel.ini.neu" && mv "$XDG_CONFIG_HOME/querencia/panel.ini.neu" "$XDG_CONFIG_HOME/querencia/panel.ini"
+wait 1500
+mark panel.ini geaendert
+shot 02-panels-neu.png

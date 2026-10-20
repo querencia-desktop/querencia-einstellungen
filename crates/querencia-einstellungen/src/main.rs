@@ -27,10 +27,13 @@ mod ausgaben;
 mod bereiche;
 mod bildschirm;
 mod bildschirm_modell;
+mod erscheinungsbild;
 mod faehigkeiten;
 mod fensterdesign;
+mod gsettings;
 mod hintergrund;
 mod hintergrund_katalog;
+mod hintergrund_seite;
 mod ini;
 mod labwc_konfig;
 mod labwc_seite;
@@ -38,6 +41,8 @@ mod labwc_xml;
 mod logo;
 mod maus;
 mod modell;
+mod panels;
+mod schriften;
 mod standardanwendungen;
 mod standardanwendungen_modell;
 mod tastatur;
@@ -76,6 +81,7 @@ fn fenstersymbol_einrichten() {
 }
 
 fn main() -> glib::ExitCode {
+    vollstaendig_zeichnen();
     let args: Vec<String> = std::env::args().collect();
     if args.iter().any(|a| a == "--version") {
         println!("querencia-einstellungen {}", env!("CARGO_PKG_VERSION"));
@@ -171,6 +177,24 @@ fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
     aussen.append(&teilung);
     fenster.set_child(Some(&aussen));
     fenster
+}
+
+/// G2-AJ, Zeichenfehler: Nach einem Seitenwechsel (und beim Filtern im
+/// Schriftwähler) blieben einzelne Pixelzeilen alter Texte stehen. GTK 4.22
+/// zeichnet nur den Bereich neu, in dem sich die Darstellung geändert hat,
+/// und bestimmt ihn aus den Grenzen der Textknoten; mit Hinting (Querencia:
+/// „slight“) ragen Glyphen bis zu einem Pixel darüber hinaus, diese Reihe
+/// wird nicht übermalt – mit jedem Renderer (Vulkan, GL, Cairo), belegt mit
+/// `werkzeug/g2aj-reste.py`. `GSK_DEBUG=full-redraw` (dokumentierte
+/// GTK-Variable) lässt GTK jedes Bild ganz zeichnen; für ein Fenster dieser
+/// Größe kostet das nichts Spürbares. Wer `GSK_DEBUG` selbst setzt (auch
+/// leer), behält seinen Wert.
+fn vollstaendig_zeichnen() {
+    if std::env::var_os("GSK_DEBUG").is_none() {
+        // SAFETY: läuft als Erstes in `main`, bevor GTK oder ein anderer
+        // Faden startet; niemand liest die Umgebung gleichzeitig.
+        unsafe { std::env::set_var("GSK_DEBUG", "full-redraw") };
+    }
 }
 
 #[cfg(test)]

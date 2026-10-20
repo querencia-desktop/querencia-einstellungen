@@ -2,12 +2,15 @@
 //! Zeigergeschwindigkeit, Beschleunigung, Linkshändig, natürliches Rollen
 //! (`<libinput><device category="default">`, gilt für alle Zeigegeräte ohne
 //! eigenes Profil) und Zeigerthema/-größe (Umgebung `XCURSOR_THEME`,
-//! `XCURSOR_SIZE` in `environment.d`).
+//! `XCURSOR_SIZE` in `environment.d`). G2-AJ: ein geänderter Zeiger geht
+//! zusätzlich nach gsettings (`cursor-theme`, `cursor-size`), wie im Bereich
+//! „Erscheinungsbild“, damit GTK-Programme denselben Zeiger zeigen.
 use std::path::PathBuf;
 use std::rc::Rc;
 
 use gtk4::prelude::*;
 
+use crate::gsettings as gs;
 use crate::labwc_konfig::Stand;
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
@@ -167,6 +170,25 @@ impl Bereich for Maus {
         v
     }
 
+    fn gs_aenderungen(neu: &Werte, alt: &Werte) -> Vec<(&'static str, String)> {
+        let mut v = Vec::new();
+        // „Standard“ (kein XCURSOR_THEME) heißt für GTK: Querencias Zeiger
+        if neu.zeigerthema != alt.zeigerthema {
+            let thema = if neu.zeigerthema.is_empty() {
+                gs::standard(&[gs::ZEIGERTHEMA])
+                    .remove(gs::ZEIGERTHEMA)
+                    .unwrap_or_default()
+            } else {
+                neu.zeigerthema.clone()
+            };
+            v.push((gs::ZEIGERTHEMA, thema));
+        }
+        if neu.zeigergroesse != alt.zeigergroesse {
+            v.push((gs::ZEIGERGROESSE, neu.zeigergroesse.to_string()));
+        }
+        v
+    }
+
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {
         let inhalt = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
@@ -221,7 +243,7 @@ impl Bereich for Maus {
             groessen.push(k);
         }
         b.append(&ls::zeile("Größe:", &gr));
-        b.append(&ls::grau("Zeiger von labwc (Fensterrahmen, Arbeitsfläche) sofort nach „Übernehmen“, in Programmen ab der nächsten Anmeldung."));
+        b.append(&ls::grau("Zeiger von labwc (Fensterrahmen, Arbeitsfläche) und GTK-Programmen sofort nach „Übernehmen“, in anderen Programmen ab der nächsten Anmeldung."));
         inhalt.append(&f);
 
         let m = Maus {
@@ -345,6 +367,7 @@ mod tests {
             env_ohne_eigene: BTreeMap::new(),
             vorgabe_neu: false,
             fehler: None,
+            gs: BTreeMap::new(),
         }
     }
 

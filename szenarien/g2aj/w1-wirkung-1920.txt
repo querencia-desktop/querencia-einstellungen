@@ -1,0 +1,29 @@
+extent 1920 1080
+wait 3500
+move 600 316
+click
+wait 1200
+move 1200 980
+wait 300
+shot 01-vorher.png
+move 1180 480
+click
+wait 400
+move 796 658
+click
+wait 300
+move 796 688
+click
+wait 300
+mark uebernehmen wirkung
+move 1319 825
+click
+wait 2500
+move 1200 980
+wait 500
+shot 02-nachher.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-1.txt
+wait 700

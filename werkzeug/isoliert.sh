@@ -50,6 +50,15 @@ if [ ! -e "$PROFIL/config/gtk-4.0/settings.ini" ]; then
         printf '[Settings]\ngtk-font-name=%s\n' "$SCHRIFT" > "$PROFIL/config/gtk-4.0/settings.ini"
     fi
 fi
+# G2-AJ: QE_GTK_THEMA="<GTK-Thema>[:<Symbolthema>]" legt Thema und Symbole des
+# Fensters fest (ohne Portal liest GTK nur settings.ini), z. B.
+# "Querencia-Klassisch:Querencia" wie live seit 20.10.
+if [ -n "${QE_GTK_THEMA:-}" ]; then
+    mkdir -p "$PROFIL/config/gtk-4.0"
+    [ -e "$PROFIL/config/gtk-4.0/settings.ini" ] || printf '[Settings]\n' > "$PROFIL/config/gtk-4.0/settings.ini"
+    printf 'gtk-theme-name=%s\n' "${QE_GTK_THEMA%%:*}" >> "$PROFIL/config/gtk-4.0/settings.ini"
+    case $QE_GTK_THEMA in *:*) printf 'gtk-icon-theme-name=%s\n' "${QE_GTK_THEMA#*:}" >> "$PROFIL/config/gtk-4.0/settings.ini";; esac
+fi
 mkdir -p "$PROFIL/state" "$PROFIL/schreibtisch" "$PROFIL/bilder" "$PROFIL/bin"
 # A3: querencia-einstellungen über PATH (nur in dieser isolierten Sitzung)
 ln -s "$APP" "$PROFIL/bin/querencia-einstellungen"
@@ -106,6 +115,21 @@ cat > "$N/start.sh" <<EOF
 # läuft innerhalb des isolierten labwc (-S), WAYLAND_DISPLAY gesetzt
 set -u
 cd "$N"
+# G2-AJ: gsettings im Profil-dconf vorbelegen (QE_GSETTINGS: Zeilen
+# "schlüssel wert" für org.gnome.desktop.interface); Stand am Anfang und Ende.
+if [ -n "\$QE_GSETTINGS" ]; then
+    while read -r k v; do [ -n "\$k" ] && gsettings set org.gnome.desktop.interface "\$k" "\$v"; done < "\$QE_GSETTINGS"
+fi
+gsettings list-recursively org.gnome.desktop.interface > gsettings-start.txt 2>&1
+# G2-AJ: QE_PORTAL=settings startet den Settings-Portal-Ersatz (nur
+# org.freedesktop.portal.Settings aus dem Profil-dconf); GTK-Programme folgen
+# dann gsettings-Änderungen sofort wie in der echten Sitzung.
+PORTAL=
+if [ "\$QE_PORTAL" = settings ]; then
+    python3 -I "$P/werkzeug/g2aj-settings-portal.py" >> logs/portal.log 2>&1 &
+    PORTAL=\$!
+    sleep 0.8
+fi
 "$WERKSTATT_WERK/qausgabe" "$AUFL" >> logs/qausgabe.log 2>&1; sleep 0.5
 "$DESKTOP_BIN" >> logs/desktop.log 2>&1 &
 DPID=\$!
@@ -142,7 +166,8 @@ if [ "\$("$APP" --version 2>/dev/null)" != "querencia-einstellungen 0.0.1" ]; th
     timeout 10 "$APP" --bildschirm-zeigen > logs/ausgaben-ende.txt 2>>logs/ausgaben.log || true
 fi
 cp "\$XDG_CONFIG_HOME/querencia/bildschirm.ini" bildschirm.ini.nachher 2>/dev/null || true
-kill -TERM \$PPID_ \$DPID 2>/dev/null || true
+gsettings list-recursively org.gnome.desktop.interface > gsettings-ende.txt 2>&1
+kill -TERM \$PPID_ \$DPID \$PORTAL 2>/dev/null || true
 sleep 1
 cp "\$XDG_STATE_HOME/querencia/desktop-symbole" symbole-ende 2>/dev/null || echo fehlt > symbole-ende
 EOF
@@ -151,10 +176,14 @@ echo "Profil $PROFIL, Laufzeit $RT, Auflösung $AUFL"
 HOME_REAL=$HOME
 (
   export XDG_RUNTIME_DIR="$RT" XDG_CONFIG_HOME="$PROFIL/config" XDG_STATE_HOME="$PROFIL/state" XDG_CACHE_HOME="$PROFIL/cache"
-  export WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_HEADLESS_OUTPUTS="${QE_OUTPUTS:-1}" WLR_LIBINPUT_NO_DEVICES=1
+  # G2-AJ: QE_WLR_RENDERER=gles2 lässt den headless labwc auf der Grafikkarte
+  # zeichnen (Render-Node, dmabuf) wie die echte Sitzung; Standard bleibt pixman.
+  # QE_GSK_RENDERER setzt GSK_RENDERER der App (Vergleich der GTK-Renderer).
+  export WLR_BACKENDS=headless WLR_RENDERER=${QE_WLR_RENDERER:-pixman} WLR_HEADLESS_OUTPUTS="${QE_OUTPUTS:-1}" WLR_LIBINPUT_NO_DEVICES=1
+  if [ -n "${QE_GSK_RENDERER:-}" ]; then export GSK_RENDERER=$QE_GSK_RENDERER; fi
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
-  export GDK_DEBUG=no-portals GTK_USE_PORTAL=0
-  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
+  if [ "${QE_PORTAL:-}" = settings ]; then export GTK_USE_PORTAL=0; else export GDK_DEBUG=no-portals GTK_USE_PORTAL=0; fi
+  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_GSETTINGS="${QE_GSETTINGS:+$(readlink -f "$QE_GSETTINGS")}" QE_PORTAL="${QE_PORTAL:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
   export QE_LABWC_VORGABE="$PROFIL/vorgabe"
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
   if [ -n "${QE_DATA_HOME:-}" ]; then export XDG_DATA_HOME="$PROFIL/share"; fi

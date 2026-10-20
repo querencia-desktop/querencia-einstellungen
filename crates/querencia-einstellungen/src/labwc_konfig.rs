@@ -91,6 +91,9 @@ pub struct Stand {
     /// Benutzer-rc.xml vorhanden, aber nicht lesbar (z. B. Rechte): dann
     /// wird nichts angezeigt oder geschrieben, statt still die Vorgabe zu zeigen
     pub fehler: Option<String>,
+    /// G2-AJ: Werte aus `org.gnome.desktop.interface`, die der Bereich liest
+    /// (füllt das Seitengerüst, [`lesen`] lässt die Liste leer)
+    pub gs: BTreeMap<String, String>,
 }
 
 /// Zeilen `NAME=WERT` (`#` am Zeilenanfang = Kommentar), nur zur Anzeige:
@@ -158,6 +161,7 @@ pub fn lesen(o: &Orte) -> Stand {
         env_ohne_eigene,
         vorgabe_neu: o.vorgabe_neu().is_file(),
         fehler,
+        gs: BTreeMap::new(),
     }
 }
 

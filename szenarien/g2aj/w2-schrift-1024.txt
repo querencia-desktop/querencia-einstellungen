@@ -1,0 +1,35 @@
+extent 1024 768
+wait 3500
+move 152 272
+click
+wait 1200
+shot 01-vorher.png
+move 534 285
+click
+wait 1500
+type Serif
+wait 900
+move 403 287
+click
+wait 400
+move 689 620
+click
+wait 200
+move 689 620
+click
+wait 400
+move 657 165
+click
+wait 1000
+mark uebernehmen schrift
+move 871 669
+click
+wait 2500
+move 752 824
+wait 500
+shot 02-nachher.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-1.txt
+wait 700

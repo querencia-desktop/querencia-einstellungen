@@ -49,7 +49,7 @@ pub fn eingebautes_bild() -> Option<PathBuf> {
 
 /// G2-AF: Datei einer Galerie-Kachel für ein Format; „Querencia Blau“ ist
 /// `None` (leeres `File=`, wie bisher der Standard).
-fn eingebaut_datei(wahl: Wahl, format: Format) -> Option<PathBuf> {
+pub(crate) fn eingebaut_datei(wahl: Wahl, format: Format) -> Option<PathBuf> {
     if wahl == Wahl::STANDARD {
         return None;
     }
@@ -57,7 +57,7 @@ fn eingebaut_datei(wahl: Wahl, format: Format) -> Option<PathBuf> {
 }
 
 /// Kachel zur Einstellung: leeres `File=` ist „Querencia Blau“.
-fn erkannt(datei: Option<&Path>) -> Option<Wahl> {
+pub(crate) fn erkannt(datei: Option<&Path>) -> Option<Wahl> {
     match datei {
         None => Some(Wahl::STANDARD),
         Some(p) => katalog::erkennen(p),
@@ -65,7 +65,7 @@ fn erkannt(datei: Option<&Path>) -> Option<Wahl> {
 }
 
 /// Format des (ersten) Bildschirms; ohne Bildschirm 16:9.
-fn bildschirm_format() -> Format {
+pub(crate) fn bildschirm_format() -> Format {
     gdk::Display::default()
         .and_then(|d| d.monitors().iter::<gdk::Monitor>().find_map(Result::ok))
         .map_or(Format::Breit, |m| {
@@ -528,7 +528,9 @@ const KACHEL: (i32, i32) = (112, 63);
 
 /// G2-AF: Galerie mit je einer Kachel (Vorschaubild, Name) für jedes
 /// installierte eingebaute Bild; die Vorschaubilder lädt ein Hintergrundfaden.
-fn galerie_bauen(bildschirm: Format) -> (gtk4::FlowBox, Vec<(Wahl, gtk4::FlowBoxChild)>) {
+pub(crate) fn galerie_bauen(
+    bildschirm: Format,
+) -> (gtk4::FlowBox, Vec<(Wahl, gtk4::FlowBoxChild)>) {
     let galerie = gtk4::FlowBox::new();
     galerie.set_selection_mode(gtk4::SelectionMode::Single);
     galerie.set_activate_on_single_click(true);
@@ -643,7 +645,10 @@ fn laden() -> (Hintergrund, String, Vec<String>) {
 /// Textur für die Einstellung: die Datei, sonst das eingebaute Bild. Der
 /// zweite Wert ist eine Fehlermeldung für ein unlesbares oder fehlendes Bild.
 /// G2-AF: Ein eingebautes Bild erscheint in der Fassung für `format`.
-fn textur_fuer(h: &Hintergrund, format: Format) -> (Option<gdk::Texture>, Option<String>) {
+pub(crate) fn textur_fuer(
+    h: &Hintergrund,
+    format: Format,
+) -> (Option<gdk::Texture>, Option<String>) {
     let fassung = h
         .datei
         .as_deref()
@@ -820,8 +825,9 @@ impl Oberflaeche {
             Err(grund) => {
                 self.uebernehmen.set_sensitive(false);
                 self.uebernehmen.set_tooltip_text(Some(&grund));
-                self.status
-                    .set_text(&format!("Noch nicht verfügbar: {grund}"));
+                self.status.set_text(&format!(
+                    "Kann der laufende Desktop nicht darstellen: {grund}"
+                ));
             }
         }
     }
@@ -876,7 +882,7 @@ impl Oberflaeche {
 }
 
 /// Die Gruppe dieses Dialogs in `desktop.ini`.
-const GRUPPE: &str = "Background";
+pub(crate) const GRUPPE: &str = "Background";
 
 /// Schreibt die Einstellung atomar (temporäre Datei, `rename`); eine vorhandene
 /// Datei wird vorher als `desktop.ini.vorher-<Zeit>` gesichert. G2-X: nur

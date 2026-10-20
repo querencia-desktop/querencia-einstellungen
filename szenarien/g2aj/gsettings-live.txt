@@ -1,0 +1,7 @@
+icon-theme Querencia
+gtk-theme Querencia-Klassisch
+cursor-theme DMZ-White
+cursor-size 24
+font-name DejaVu Sans 10
+document-font-name DejaVu Sans 10
+monospace-font-name DejaVu Sans Mono 10

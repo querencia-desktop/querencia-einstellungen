@@ -1,0 +1,206 @@
+extent 1024 768
+wait 3500
+move 152 160
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 188
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel erscheinungsbild hintergrundbild
+shot w01-erscheinungsbild-hintergrundbild.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w01-erscheinungsbild-hintergrundbild-ref.png
+move 152 272
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 300
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel schriften panels
+shot w02-schriften-panels.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w02-schriften-panels-ref.png
+move 152 440
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 188
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel standardanwendungen hintergrundbild
+shot w03-standardanwendungen-hintergrundbild.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w03-standardanwendungen-hintergrundbild-ref.png
+move 152 328
+click
+wait 800
+move 192 174
+wait 40
+move 192 202
+wait 40
+move 192 230
+wait 40
+move 192 258
+wait 40
+move 192 286
+wait 40
+move 192 314
+wait 40
+move 192 342
+wait 40
+move 192 370
+wait 40
+move 152 300
+click
+wait 800
+move 192 398
+wait 40
+move 192 370
+wait 40
+move 192 342
+wait 40
+move 192 314
+wait 40
+move 192 286
+wait 40
+move 192 258
+wait 40
+move 192 230
+wait 40
+move 192 202
+wait 40
+move 752 744
+wait 600
+mark wechsel tastatur panels
+shot w04-tastatur-panels.png
+move 312 83
+dclick
+wait 900
+move 312 44
+dclick
+wait 900
+move 752 744
+wait 600
+shot w04-tastatur-panels-ref.png

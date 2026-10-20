@@ -1,0 +1,22 @@
+extent 1920 1080
+wait 3500
+move 600 316
+click
+wait 1200
+move 1070 600
+scroll 5
+wait 600
+move 950 621
+click
+wait 300
+shot 01-geaendert.png
+mark uebernehmen ohne kopie
+move 1319 825
+click
+wait 1500
+shot 02-uebernommen.png
+run gsettings list-recursively org.gnome.desktop.interface > gs-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/environment.d/zz-querencia-einstellungen.env" > env-1.txt
+run cat "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" > rc-1.xml
+run cat "$XDG_CONFIG_HOME/querencia/desktop.ini" > ini-1.txt
+wait 700
