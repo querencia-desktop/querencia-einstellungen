@@ -1,7 +1,8 @@
 //! Gemeinsames Gerüst der Bereiche, die labwc einstellen (G2-AG): Tastatur,
 //! Maus, Fensterdesign, Arbeitsflächen. Bedienmuster wie „Symbole der
 //! Arbeitsfläche“ (G2-X): Ändern → „Übernehmen“ schreibt (atomar, mit
-//! Sicherung), „Standard wiederherstellen“ zeigt die Vorgabe des
+//! Sicherung; ein auf den Vorgabewert zurückgestellter Wert steht danach
+//! wie in der Vorgabe), „Standard wiederherstellen“ zeigt die Vorgabe des
 //! Runtime-Repos, „Neu laden“ liest die Dateien neu. Jeder Bereich ändert
 //! nur seine eigenen Werte auf dem **aktuellen** Dateistand; was andere
 //! Bereiche inzwischen geschrieben haben, bleibt stehen.
@@ -205,6 +206,34 @@ fn jetzt_text(format: &str) -> String {
         .and_then(|d| d.format(format).ok())
         .map(|s| s.to_string())
         .unwrap_or_default()
+}
+
+/// Was „Übernehmen“ in die labwc-Benutzerkopie schreibt (ohne Oberfläche
+/// und gsettings): rc.xml mit den geänderten Werten, zurückgestellte Werte
+/// wie in der Vorgabe (0.1.1, Werkstatt QREL-06 A17.6), und die eigene
+/// Umgebungsdatei. Rückgabe: ob geschrieben wurde, und die Sicherungen.
+pub fn dateien_schreiben<B: Bereich>(
+    orte: &Orte,
+    st: &Stand,
+    neu: &B::Werte,
+    alt: &B::Werte,
+    zeit: &str,
+) -> Result<(bool, Vec<std::path::PathBuf>), String> {
+    let mut gesichert = Vec::new();
+    let mut geschrieben = false;
+    let rc_neu = B::rc_aendern(neu, alt, &st.rc)
+        .and_then(|t| crate::labwc_xml::angleichen(&t, &st.rc, &st.rc_basis))
+        .map_err(|e| e.to_string())?;
+    if rc_neu != st.rc {
+        gesichert.extend(lk::rc_schreiben(orte, &rc_neu, st, zeit)?);
+        geschrieben = true;
+    }
+    let env = B::env_aenderungen(neu, alt, st);
+    if !env.is_empty() {
+        gesichert.extend(lk::env_schreiben(orte, &env, zeit)?);
+        geschrieben = true;
+    }
+    Ok((geschrieben, gesichert))
 }
 
 /// Seite für das Kontrollzentrum.
@@ -417,27 +446,11 @@ impl<B: Bereich> Seite<B> {
             return;
         }
         let zeit = jetzt_text("%Y%m%d-%H%M%S");
-        let mut gesichert = Vec::new();
-        let mut geschrieben = false;
-        let rc_neu = match B::rc_aendern(&neu, &alt, &st.rc) {
-            Ok(t) => t,
-            Err(e) => return self.fehler(&e.to_string()),
-        };
-        if rc_neu != st.rc {
-            match lk::rc_schreiben(&self.orte, &rc_neu, &st, &zeit) {
-                Ok(s) => gesichert.extend(s),
+        let (geschrieben, gesichert) =
+            match dateien_schreiben::<B>(&self.orte, &st, &neu, &alt, &zeit) {
+                Ok(e) => e,
                 Err(e) => return self.fehler(&e),
-            }
-            geschrieben = true;
-        }
-        let env = B::env_aenderungen(&neu, &alt, &st);
-        if !env.is_empty() {
-            match lk::env_schreiben(&self.orte, &env, &zeit) {
-                Ok(s) => gesichert.extend(s),
-                Err(e) => return self.fehler(&e),
-            }
-            geschrieben = true;
-        }
+            };
         let gs = B::gs_aenderungen(&neu, &alt);
         if let Err(e) = gsettings::schreiben(&gs) {
             return self.fehler(&if geschrieben {
@@ -529,6 +542,226 @@ impl<B: Bereich> Seite<B> {
         eprintln!(
             "querencia-einstellungen: {}: nicht gespeichert: {text}",
             B::PROTOKOLL
+        );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    //! Werkstatt QREL-06 A17.6: Ändern und Zurückstellen in Tastatur, Maus,
+    //! Fensterdesign und Arbeitsflächen über denselben Schreibweg wie
+    //! „Übernehmen“ ([`dateien_schreiben`]).
+    use super::*;
+    use crate::arbeitsflaechen::Arbeitsflaechen;
+    use crate::fensterdesign::Fensterdesign;
+    use crate::labwc_xml as lx;
+    use crate::maus::Maus;
+    use crate::tastatur::Tastatur;
+    use std::collections::BTreeMap;
+    use std::path::{Path, PathBuf};
+
+    /// Runtime `main` 548483c, `session/querencia/labwc/rc.xml` (live seit 20.10.)
+    const VORGABE: &str = include_str!("../testdaten/rc-vorgabe-548483c.xml");
+    /// feste Kopie der GUI-Läufe (`szenarien/labwc/vorgabe`, Runtime bb90803)
+    const VORGABE_BB90803: &str = include_str!("../../../szenarien/labwc/vorgabe/rc.xml");
+
+    fn ordner(name: &str) -> PathBuf {
+        let p = std::env::temp_dir().join(format!("qe-a176-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&p);
+        std::fs::create_dir_all(&p).unwrap();
+        p
+    }
+
+    /// Vorgabe im „Repo“; mit `kopie` wie nach der Anmeldung: Benutzerkopie
+    /// und `.vorgabe/` vom Sitzungsstarter angelegt.
+    fn orte(w: &Path, vorgabe: &str, kopie: bool) -> Orte {
+        let o = Orte {
+            benutzer: w.join("config/querencia/labwc"),
+            vorgabe: w.join("repo/labwc"),
+        };
+        std::fs::create_dir_all(&o.vorgabe).unwrap();
+        std::fs::write(o.vorgabe.join("rc.xml"), vorgabe).unwrap();
+        std::fs::write(o.vorgabe.join("environment"), "XKB_DEFAULT_LAYOUT=de\n").unwrap();
+        if kopie {
+            std::fs::create_dir_all(o.benutzer.join(".vorgabe")).unwrap();
+            for d in [o.rc(), o.vorgabe_basis()] {
+                std::fs::write(d, vorgabe).unwrap();
+            }
+            std::fs::write(o.benutzer.join("environment"), "XKB_DEFAULT_LAYOUT=de\n").unwrap();
+            std::fs::write(o.benutzer.join("rc.xml.vorher-20261020-112812"), "Starter").unwrap();
+        }
+        o
+    }
+
+    /// Alle Dateien der Benutzerkopie mit Inhalt.
+    fn dateien(o: &Orte) -> BTreeMap<String, Vec<u8>> {
+        fn sammeln(d: &Path, wurzel: &Path, aus: &mut BTreeMap<String, Vec<u8>>) {
+            for e in std::fs::read_dir(d).into_iter().flatten().flatten() {
+                let p = e.path();
+                if p.is_dir() {
+                    sammeln(&p, wurzel, aus);
+                } else {
+                    let n = p.strip_prefix(wurzel).unwrap().display().to_string();
+                    aus.insert(n, std::fs::read(&p).unwrap());
+                }
+            }
+        }
+        let mut m = BTreeMap::new();
+        sammeln(&o.benutzer, &o.benutzer, &mut m);
+        m
+    }
+
+    fn uebernehmen<B: Bereich>(o: &Orte, zeit: &str, aendern: impl Fn(&mut B::Werte)) {
+        let st = lk::lesen(o);
+        let alt = B::lesen(&st);
+        let mut neu = alt.clone();
+        aendern(&mut neu);
+        assert_ne!(neu, alt, "{}: keine Änderung", B::PROTOKOLL);
+        dateien_schreiben::<B>(o, &st, &neu, &alt, zeit).unwrap();
+        assert_eq!(B::lesen(&lk::lesen(o)), neu, "{}", B::PROTOKOLL);
+    }
+
+    /// Der Ablauf der Werkstatt, 20:19–20:20: je Bereich ändern, übernehmen,
+    /// zurückstellen, übernehmen. `neuer_lauf`: das Programm zwischen den
+    /// Schritten schließen und wieder öffnen.
+    fn werkstatt_ablauf(o: &Orte, w: &Path, neuer_lauf: bool) {
+        let mut n = 0;
+        let mut zeit = || {
+            if neuer_lauf {
+                lk::lauf_vergessen(w);
+            }
+            n += 1;
+            format!("20261020-2019{n:02}")
+        };
+        uebernehmen::<Tastatur>(o, &zeit(), |v| v.verzoegerung = 610);
+        uebernehmen::<Tastatur>(o, &zeit(), |v| v.verzoegerung = 600);
+        uebernehmen::<Maus>(o, &zeit(), |v| v.beschleunigung = false);
+        uebernehmen::<Maus>(o, &zeit(), |v| v.beschleunigung = true);
+        uebernehmen::<Fensterdesign>(o, &zeit(), |v| v.eckenradius = 9);
+        uebernehmen::<Fensterdesign>(o, &zeit(), |v| v.eckenradius = 8);
+        uebernehmen::<Arbeitsflaechen>(o, &zeit(), |v| v.anzeige = !v.anzeige);
+        uebernehmen::<Arbeitsflaechen>(o, &zeit(), |v| v.anzeige = !v.anzeige);
+    }
+
+    fn eigene_sicherungen(o: &Orte) -> Vec<String> {
+        dateien(o)
+            .into_keys()
+            .filter(|n| n.contains(lk::SICHERUNG))
+            .collect()
+    }
+
+    #[test]
+    fn a176_ein_lauf_ohne_jeden_rest() {
+        for (i, vorgabe) in [VORGABE, VORGABE_BB90803].into_iter().enumerate() {
+            let w = ordner(&format!("lauf{i}"));
+            let o = orte(&w, vorgabe, true);
+            let vorher = dateien(&o);
+            werkstatt_ablauf(&o, &w, false);
+            // rc.xml byte-gleich mit der Basis: für den Starter unverändert
+            assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), vorgabe);
+            assert_eq!(std::fs::read_to_string(o.vorgabe_basis()).unwrap(), vorgabe);
+            // keine Sicherungen, keine Umgebungsdatei, nichts sonst
+            assert_eq!(dateien(&o), vorher);
+            std::fs::remove_dir_all(&w).unwrap();
+        }
+    }
+
+    #[test]
+    fn a176_neue_laeufe_hoechstens_fuenf_sicherungen() {
+        let w = ordner("laeufe");
+        let o = orte(&w, VORGABE, true);
+        werkstatt_ablauf(&o, &w, true);
+        assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), VORGABE);
+        let s = eigene_sicherungen(&o);
+        assert!(s.len() <= lk::SICHERUNGEN, "{s:?}");
+        // keine Sicherung gleicht der jetzigen Datei, die des Starters bleibt
+        for n in &s {
+            assert_ne!(
+                std::fs::read_to_string(o.benutzer.join(n)).unwrap(),
+                VORGABE
+            );
+        }
+        assert_eq!(
+            std::fs::read_to_string(o.benutzer.join("rc.xml.vorher-20261020-112812")).unwrap(),
+            "Starter"
+        );
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn a176_ohne_benutzerkopie() {
+        let w = ordner("ohne");
+        let o = orte(&w, VORGABE, false);
+        werkstatt_ablauf(&o, &w, false);
+        // das erste Übernehmen legt Kopie und .vorgabe an; zurückgestellt gleicht sie der Vorgabe
+        assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), VORGABE);
+        assert_eq!(std::fs::read_to_string(o.vorgabe_basis()).unwrap(), VORGABE);
+        assert!(eigene_sicherungen(&o).is_empty());
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn eigene_werte_bleiben_zurueckgestelltes_geht() {
+        let w = ordner("eigen");
+        let o = orte(&w, VORGABE, true);
+        uebernehmen::<Tastatur>(&o, "1", |v| v.rate = 40);
+        uebernehmen::<Fensterdesign>(&o, "2", |v| v.schatten = true);
+        let mit_eigenen = std::fs::read_to_string(o.rc()).unwrap();
+        werkstatt_ablauf(&o, &w, false);
+        assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), mit_eigenen);
+        // „Standard wiederherstellen“ + Übernehmen: wieder die Vorgabe
+        for _ in 0..2 {
+            let st = lk::lesen(&o);
+            let alt = Tastatur::lesen(&st);
+            dateien_schreiben::<Tastatur>(&o, &st, &standard::<Tastatur>(&st), &alt, "3").unwrap();
+            let st = lk::lesen(&o);
+            let alt = Fensterdesign::lesen(&st);
+            let neu = standard::<Fensterdesign>(&st);
+            if neu != alt {
+                dateien_schreiben::<Fensterdesign>(&o, &st, &neu, &alt, "4").unwrap();
+            }
+        }
+        assert_eq!(std::fs::read_to_string(o.rc()).unwrap(), VORGABE);
+        assert!(eigene_sicherungen(&o).is_empty());
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn belegung_zurueckgestellt_ohne_umgebungsdatei() {
+        let w = ordner("belegung");
+        let o = orte(&w, VORGABE, true);
+        let vorher = dateien(&o);
+        uebernehmen::<Tastatur>(&o, "1", |v| {
+            v.belegungen = vec![("us".into(), String::new())]
+        });
+        assert!(o.env_datei().is_file());
+        uebernehmen::<Tastatur>(&o, "2", |v| {
+            v.belegungen = vec![("de".into(), String::new())]
+        });
+        assert_eq!(dateien(&o), vorher);
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn labwc_standardwerte_wie_die_bereiche() {
+        // ausdrücklich eingetragene labwc-Standardwerte lesen die Bereiche
+        // genau wie fehlende: angleichen darf sie also weglassen
+        let leer = lk::lesen(&Orte {
+            benutzer: PathBuf::from("/nicht/da"),
+            vorgabe: PathBuf::from("/nicht/da"),
+        });
+        let mut voll = leer.clone();
+        voll.rc = lx::LEER.to_owned();
+        for (pfad, k, v) in lx::LABWC_STANDARD {
+            voll.rc = lx::setzen(&voll.rc, pfad, k, v).unwrap();
+        }
+        assert_eq!(Tastatur::lesen(&leer), Tastatur::lesen(&voll));
+        assert_eq!(Maus::lesen(&leer), Maus::lesen(&voll));
+        assert_eq!(Fensterdesign::lesen(&leer), Fensterdesign::lesen(&voll));
+        assert_eq!(Arbeitsflaechen::lesen(&leer), Arbeitsflaechen::lesen(&voll));
+        assert_eq!(
+            crate::schriften::ist_fett(lx::wert(&voll.rc, lx::SCHRIFT_AKTIV, "weight")),
+            crate::schriften::ist_fett(None)
         );
     }
 }

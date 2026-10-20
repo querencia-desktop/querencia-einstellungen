@@ -80,7 +80,7 @@ pub struct Schriften {
     titel: gtk4::FontDialogButton,
 }
 
-fn ist_fett(wert: Option<String>) -> bool {
+pub(crate) fn ist_fett(wert: Option<String>) -> bool {
     wert.is_some_and(|w| w.trim().eq_ignore_ascii_case("bold"))
 }
 
@@ -259,6 +259,7 @@ mod tests {
             rc: rc.into(),
             quelle: Quelle::Benutzer,
             rc_vorgabe: rc.into(),
+            rc_basis: rc.into(),
             env: BTreeMap::new(),
             env_ohne_eigene: BTreeMap::new(),
             vorgabe_neu: false,

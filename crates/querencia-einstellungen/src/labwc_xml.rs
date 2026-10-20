@@ -592,6 +592,283 @@ pub fn auf_neue_vorgabe(ours: &str, basis: &str, neue: &str) -> Result<String, F
     Ok(neu)
 }
 
+// ------------------------------------------------------------ Rückstellung (0.1.1)
+
+/// labwcs eingebaute Werte (0.9.8) für verwaltete Schlüssel, wie die
+/// Bereiche sie anzeigen, wenn rc.xml nichts angibt. Schlüssel ohne festen
+/// Wert (Themenname) fehlen: Für sie bleibt eine ausdrückliche Angabe stehen.
+pub(crate) const LABWC_STANDARD: &[(Pfad, &str, &str)] = &[
+    (TASTATUR, "repeatRate", "25"),
+    (TASTATUR, "repeatDelay", "600"),
+    (TASTATUR, "numlock", "off"),
+    (MAUS, "doubleClickTime", "500"),
+    (GERAET, "pointerSpeed", "0"),
+    (GERAET, "accelProfile", "adaptive"),
+    (GERAET, "leftHanded", "no"),
+    (GERAET, "naturalScroll", "no"),
+    (THEMA, "cornerRadius", "8"),
+    (THEMA, "dropShadows", "no"),
+    (TITELLEISTE, "layout", "icon:iconify,max,close"),
+    (SCHRIFT_AKTIV, "name", "sans"),
+    (SCHRIFT_AKTIV, "size", "10"),
+    (SCHRIFT_AKTIV, "weight", "normal"),
+    (SCHRIFT_INAKTIV, "name", "sans"),
+    (SCHRIFT_INAKTIV, "size", "10"),
+    (SCHRIFT_INAKTIV, "weight", "normal"),
+    (ARBEITSFLAECHEN, "number", "1"),
+    (ARBEITSFLAECHEN, "popupTime", "1000"),
+];
+
+/// Der Wert, mit dem labwc arbeitet: letzte Angabe, für Fensterschriften
+/// sonst `<font>` ohne `place`, sonst [`LABWC_STANDARD`].
+fn wirksam(text: &str, pfad: &[Schritt], schluessel: &str) -> Option<String> {
+    wert(text, pfad, schluessel)
+        .or_else(|| match pfad.last().map(|s| s.filter) {
+            Some(Filter::Ort(_)) => wert(text, SCHRIFT_ALLE, schluessel),
+            _ => None,
+        })
+        .or_else(|| {
+            LABWC_STANDARD
+                .iter()
+                .find(|(p, k, _)| *p == pfad && k.eq_ignore_ascii_case(schluessel))
+                .map(|(_, _, v)| (*v).to_owned())
+        })
+}
+
+/// Gleicher Wert für labwc: Zahlen numerisch, yes/true/on und no/false/off
+/// als Wahrheitswert, sonst ohne Rücksicht auf Groß-/Kleinschreibung.
+fn gleichwertig_wert(a: &str, b: &str) -> bool {
+    let wahr = |v: &str| match v.to_ascii_lowercase().as_str() {
+        "yes" | "true" | "on" => Some(true),
+        "no" | "false" | "off" => Some(false),
+        _ => None,
+    };
+    if let (Ok(x), Ok(y)) = (a.trim().parse::<f64>(), b.trim().parse::<f64>()) {
+        return x == y;
+    }
+    if let (Some(x), Some(y)) = (wahr(a.trim()), wahr(b.trim())) {
+        return x == y;
+    }
+    a.trim().eq_ignore_ascii_case(b.trim())
+}
+
+/// Rohtext eines Werts (Entitäten unaufgelöst) und ob er ein Attribut ist.
+fn roh(text: &str, fund: &Fund) -> (String, bool) {
+    match fund {
+        Fund::Attribut { wert, .. } => (text[wert.clone()].to_owned(), true),
+        Fund::Element(n) => {
+            let e = &text[n.range()];
+            if ist_leer_element(e) {
+                (String::new(), false)
+            } else {
+                let anfang = starttag_ende(e) + 1;
+                let schluss = e.rfind("</").unwrap_or(e.len());
+                (e[anfang..schluss].to_owned(), false)
+            }
+        }
+    }
+}
+
+/// Bereich eines Attributs samt Leerraum davor.
+fn attribut_bereich(text: &str, a: &roxmltree::Attribute) -> Range<usize> {
+    let r = a.range();
+    let mut anfang = r.start;
+    while anfang > 0 && text.as_bytes()[anfang - 1].is_ascii_whitespace() {
+        anfang -= 1;
+    }
+    anfang..r.end
+}
+
+/// Ein Behälter ohne Inhalt: nur Leerraum, höchstens das Filterattribut.
+fn leerer_behaelter(n: roxmltree::Node) -> bool {
+    n.attributes().all(|a| {
+        a.name().eq_ignore_ascii_case("category") || a.name().eq_ignore_ascii_case("place")
+    }) && n
+        .children()
+        .all(|c| c.is_text() && c.text().unwrap_or("").trim().is_empty())
+}
+
+/// Entfernt alle Angaben `schluessel` unter `pfad` und danach die Behälter,
+/// die dadurch leer werden, solange `text` mehr davon hat als `basis`
+/// (angelegt von [`setzen`]; Behälter der Basis bleiben).
+fn entfernen(
+    text: &str,
+    basis: &str,
+    pfad: &[Schritt],
+    schluessel: &str,
+) -> Result<String, Fehler> {
+    let basis_doc = parsen(basis)?;
+    let mut t = text.to_owned();
+    loop {
+        let (bereich, eltern) = {
+            let doc = parsen(&t)?;
+            let Some(fund) = funde(&doc, pfad, schluessel).pop() else {
+                break;
+            };
+            match fund {
+                Fund::Attribut { wert, .. } => {
+                    let halter = behaelter(&doc, pfad)
+                        .into_iter()
+                        .find(|b| b.range().start < wert.start && wert.end <= b.range().end)
+                        .expect("Attribut gehört zu einem Behälter");
+                    let a = halter
+                        .attributes()
+                        .find(|a| a.range_value() == wert)
+                        .expect("Attribut gefunden");
+                    (attribut_bereich(&t, &a), Some(halter.range().start))
+                }
+                Fund::Element(n) => (
+                    entfernen_bereich(&t, n.range()),
+                    n.parent_element().map(|p| p.range().start),
+                ),
+            }
+        };
+        t = pruefen(ersetzen(&t, bereich, ""))?;
+        // leere Behälter von innen nach außen
+        let mut anfang = eltern;
+        for k in (1..=pfad.len()).rev() {
+            let Some(a) = anfang else { break };
+            let (weg, naechster) = {
+                let doc = parsen(&t)?;
+                let liste = behaelter(&doc, &pfad[..k]);
+                let Some(b) = liste.iter().find(|b| b.range().start == a) else {
+                    break;
+                };
+                if !leerer_behaelter(*b) || liste.len() <= behaelter(&basis_doc, &pfad[..k]).len() {
+                    break;
+                }
+                (
+                    entfernen_bereich(&t, b.range()),
+                    b.parent_element().map(|p| p.range().start),
+                )
+            };
+            t = pruefen(ersetzen(&t, weg, ""))?;
+            anfang = naechster;
+        }
+    }
+    Ok(t)
+}
+
+/// Stellt `schluessel` so her, wie er in `basis` steht: deren Rohtext, wenn
+/// die Basis ihn angibt, sonst wird jede Angabe entfernt.
+fn zuruecksetzen(
+    text: &str,
+    basis: &str,
+    pfad: &[Schritt],
+    schluessel: &str,
+) -> Result<String, Fehler> {
+    let basis_doc = parsen(basis)?;
+    let Some(bf) = funde(&basis_doc, pfad, schluessel).pop() else {
+        return entfernen(text, basis, pfad, schluessel);
+    };
+    let (roh_basis, ist_attribut) = roh(basis, &bf);
+    let doc = parsen(text)?;
+    let neu = match funde(&doc, pfad, schluessel).pop() {
+        Some(Fund::Attribut {
+            wert, anfuehrung, ..
+        }) if ist_attribut && !roh_basis.as_bytes().contains(&anfuehrung) => {
+            ersetzen(text, wert, &roh_basis)
+        }
+        Some(Fund::Element(n)) if !ist_attribut && !roh_basis.is_empty() => {
+            inhalt_setzen(text, n, &roh_basis)
+        }
+        _ => {
+            let w = wert(basis, pfad, schluessel).unwrap_or_default();
+            return setzen(text, pfad, schluessel, &w);
+        }
+    };
+    pruefen(neu)
+}
+
+/// Vollständige Form zum Vergleich: alles außer Leerraum zwischen Elementen.
+fn voll(n: roxmltree::Node, aus: &mut String) {
+    match n.node_type() {
+        roxmltree::NodeType::Element => {
+            aus.push('<');
+            aus.push_str(n.tag_name().name());
+            for a in n.attributes() {
+                aus.push_str(&format!(" {}={:?}", a.name(), a.value()));
+            }
+            aus.push('>');
+            for c in n.children() {
+                voll(c, aus);
+            }
+            aus.push_str("</>");
+        }
+        roxmltree::NodeType::Text => {
+            let t = n.text().unwrap_or("").trim();
+            if !t.is_empty() {
+                aus.push_str(&format!("{t:?}"));
+            }
+        }
+        roxmltree::NodeType::Comment => {
+            aus.push_str(&format!("<!--{:?}-->", n.text().unwrap_or("")));
+        }
+        roxmltree::NodeType::PI => {
+            if let Some(pi) = n.pi() {
+                aus.push_str(&format!("<?{} {:?}?>", pi.target, pi.value));
+            }
+        }
+        roxmltree::NodeType::Root => {}
+    }
+}
+
+/// Unterscheiden sich zwei rc.xml höchstens im Leerraum zwischen Elementen?
+fn nur_leerraum_anders(a: &str, b: &str) -> bool {
+    let (Ok(da), Ok(db)) = (roxmltree::Document::parse(a), roxmltree::Document::parse(b)) else {
+        return false;
+    };
+    let form = |d: &roxmltree::Document| {
+        let mut s = String::new();
+        for c in d.root().children() {
+            voll(c, &mut s);
+        }
+        let wurzel = d.root_element().range();
+        let rand: String = format!(
+            "{}|{}",
+            &d.input_text()[..wurzel.start],
+            &d.input_text()[wurzel.end..]
+        )
+        .split_whitespace()
+        .collect();
+        (s, rand)
+    };
+    form(&da) == form(&db)
+}
+
+/// Rückstellung byte-gleich (0.1.1, Werkstatt QREL-06 A17.6): `neu` entstand
+/// aus `vorher` durch [`setzen`]/[`namen_setzen`]. Jeder dabei geänderte
+/// Wert, der jetzt dem Wert der Basis gleicht (Vorgabe, aus der die
+/// Benutzerkopie stammt; fehlt er dort, labwcs eingebauter Wert), wird so
+/// hergestellt, wie er in der Basis steht: deren Text, oder gar nicht, samt
+/// leer gewordener, selbst angelegter Behälter. Bleibt danach nur Leerraum
+/// anders als in der Basis, gilt die Basis byte-gleich – dann sieht der
+/// Sitzungsstarter die Datei wieder als unverändert an und zieht neue
+/// Vorgaben nach.
+pub fn angleichen(neu: &str, vorher: &str, basis: &str) -> Result<String, Fehler> {
+    let basis_text = if basis.trim().is_empty() { LEER } else { basis };
+    let mut t = neu.to_owned();
+    for (pfad, schluessel) in VERWALTET {
+        if wert(vorher, pfad, schluessel) == wert(&t, pfad, schluessel) {
+            continue;
+        }
+        let Some(ziel) = wirksam(&t, pfad, schluessel) else {
+            continue;
+        };
+        if !wirksam(basis_text, pfad, schluessel).is_some_and(|b| gleichwertig_wert(&b, &ziel)) {
+            continue;
+        }
+        let zurueck = zuruecksetzen(&t, basis_text, pfad, schluessel)?;
+        if wirksam(&zurueck, pfad, schluessel).is_some_and(|w| gleichwertig_wert(&w, &ziel)) {
+            t = zurueck;
+        }
+    }
+    if !basis.trim().is_empty() && t != basis && nur_leerraum_anders(&t, basis) {
+        return Ok(basis.to_owned());
+    }
+    Ok(t)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -829,5 +1106,117 @@ mod tests {
         // Kommentare zählen nicht
         let kommentar = ours.replace("<!-- Kopf -->", "<!-- anders -->");
         assert!(nur_verwaltete_unterschiede(&kommentar, VORGABE));
+    }
+
+    /// Ändern, übernehmen, zurückstellen, übernehmen – wie die Bereiche.
+    fn hin_und_zurueck(basis: &str, pfad: Pfad, k: &str, hin: &str, zurueck: &str) -> String {
+        let a = angleichen(&setzen(basis, pfad, k, hin).unwrap(), basis, basis).unwrap();
+        assert_eq!(wert(&a, pfad, k).as_deref(), Some(hin));
+        angleichen(&setzen(&a, pfad, k, zurueck).unwrap(), &a, basis).unwrap()
+    }
+
+    #[test]
+    fn angleichen_rueckstellung_byte_gleich() {
+        // angelegtes Kind, angelegter Behälter samt Filter, Attribut der Basis
+        assert_eq!(
+            hin_und_zurueck(VORGABE, TASTATUR, "repeatDelay", "610", "600"),
+            VORGABE
+        );
+        assert_eq!(
+            hin_und_zurueck(VORGABE, GERAET, "accelProfile", "flat", "adaptive"),
+            VORGABE
+        );
+        assert_eq!(
+            hin_und_zurueck(VORGABE, THEMA, "cornerRadius", "9", "8"),
+            VORGABE
+        );
+        assert_eq!(
+            hin_und_zurueck(VORGABE, ARBEITSFLAECHEN, "popupTime", "1000", "0"),
+            VORGABE
+        );
+        assert_eq!(
+            hin_und_zurueck(VORGABE, SCHRIFT_AKTIV, "size", "12", "10"),
+            VORGABE
+        );
+        // Zahl anders geschrieben, Wahrheitswert anders geschrieben
+        assert_eq!(
+            hin_und_zurueck(VORGABE, GERAET, "pointerSpeed", "0.50", "0.00"),
+            VORGABE
+        );
+        assert_eq!(
+            hin_und_zurueck(VORGABE, TASTATUR, "numlock", "on", "off"),
+            VORGABE
+        );
+        // Element der Basis: deren Rohtext zurück, auch mit Leerraum
+        let b = VORGABE.replace(
+            "<name>Querencia-Klassisch</name>",
+            "<name> Querencia-Klassisch </name>",
+        );
+        assert_eq!(
+            hin_und_zurueck(&b, THEMA, "name", "Anders", "Querencia-Klassisch"),
+            b
+        );
+        // leerer Behälter der Basis wird aufgeklappt und wieder zu <mouse/>
+        let m = "<labwc_config>\n  <mouse/>\n</labwc_config>\n";
+        assert_eq!(hin_und_zurueck(m, MAUS, "doubleClickTime", "400", "500"), m);
+    }
+
+    #[test]
+    fn angleichen_laesst_eigenes_stehen() {
+        // ein anderer Wert als die Vorgabe bleibt ausdrücklich
+        let a = angleichen(
+            &setzen(VORGABE, TASTATUR, "repeatDelay", "610").unwrap(),
+            VORGABE,
+            VORGABE,
+        )
+        .unwrap();
+        assert!(a.contains("<repeatDelay>610</repeatDelay>"));
+        // eigene Werte und Handkommentare überstehen die Rückstellung eines anderen Werts
+        let eigen = setzen(VORGABE, TASTATUR, "repeatRate", "40")
+            .unwrap()
+            .replace("<default />", "<default /><!-- von Hand -->");
+        assert_eq!(
+            hin_und_zurueck(&eigen, TASTATUR, "repeatDelay", "700", "600").len(),
+            eigen.len()
+        );
+        let r = angleichen(
+            &setzen(
+                &setzen(&eigen, TASTATUR, "repeatDelay", "700").unwrap(),
+                TASTATUR,
+                "repeatDelay",
+                "600",
+            )
+            .unwrap(),
+            &eigen,
+            VORGABE,
+        )
+        .unwrap();
+        assert_eq!(r, eigen);
+        // Schrift ohne place in der Basis: deren Größe ist der Vorgabewert, nicht labwcs 10
+        let f = VORGABE.replace(
+            "<font place=\"OnScreenDisplay\">",
+            "<font><size>12</size></font>\n    <font place=\"OnScreenDisplay\">",
+        );
+        let a = angleichen(&setzen(&f, SCHRIFT_AKTIV, "size", "10").unwrap(), &f, &f).unwrap();
+        assert_eq!(wert(&a, SCHRIFT_AKTIV, "size").as_deref(), Some("10"));
+        assert_eq!(hin_und_zurueck(&f, SCHRIFT_AKTIV, "size", "10", "12"), f);
+        // Behälter, den der Benutzer selbst angelegt hat und der noch etwas enthält, bleibt
+        let g = setzen(VORGABE, GERAET, "leftHanded", "yes").unwrap();
+        let r = hin_und_zurueck(&g, GERAET, "accelProfile", "flat", "adaptive");
+        assert_eq!(r, g);
+    }
+
+    #[test]
+    fn angleichen_ohne_basis_und_mehrfachangaben() {
+        // keine Vorgabe: labwcs Werte gelten, das Gerüst bleibt
+        let a = angleichen(&setzen("", TASTATUR, "repeatDelay", "610").unwrap(), "", "").unwrap();
+        let z = angleichen(&setzen(&a, TASTATUR, "repeatDelay", "600").unwrap(), &a, "").unwrap();
+        assert_eq!(wert(&z, TASTATUR, "repeatDelay"), None);
+        assert!(gueltig(&z).is_ok());
+        // Attribut und Element von Hand: beide gehen, wenn der Vorgabewert gewählt wird
+        let t = "<labwc_config>\n  <keyboard repeatDelay=\"300\">\n    <repeatDelay>400</repeatDelay>\n  </keyboard>\n</labwc_config>\n";
+        let z = angleichen(&setzen(t, TASTATUR, "repeatDelay", "600").unwrap(), t, LEER).unwrap();
+        // der leer gewordene Behälter fehlt in der Basis und geht mit
+        assert_eq!(z, "<labwc_config>\n</labwc_config>\n");
     }
 }

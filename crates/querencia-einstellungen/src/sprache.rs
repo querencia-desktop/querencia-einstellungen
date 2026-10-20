@@ -621,6 +621,7 @@ mod tests {
             rc: String::new(),
             quelle: Quelle::Benutzer,
             rc_vorgabe: String::new(),
+            rc_basis: String::new(),
             env: e,
             env_ohne_eigene: env(vorgabe),
             vorgabe_neu: false,

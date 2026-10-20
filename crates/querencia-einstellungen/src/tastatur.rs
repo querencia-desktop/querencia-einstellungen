@@ -551,6 +551,7 @@ mod tests {
             rc: rc.into(),
             quelle: Quelle::Benutzer,
             rc_vorgabe: rc.into(),
+            rc_basis: rc.into(),
             env: m(env),
             env_ohne_eigene: m(vorgabe_env),
             vorgabe_neu: false,

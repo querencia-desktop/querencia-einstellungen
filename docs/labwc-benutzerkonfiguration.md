@@ -16,7 +16,8 @@ Sitzungsstarter (`session/querencia-session`) und Querencia Einstellungen
 | `…/labwc/.vorgabe/<datei>` | Starter (Einstellungen nur beim Anlegen) | die Vorgabe, aus der `<datei>` zuletzt übernommen wurde (volle Kopie) |
 | `…/labwc/.vorgabe/stand` | Starter | Zeit, Quelle (Commit), SHA256 je Datei in `.vorgabe/` – zum Lesen für Menschen |
 | `…/labwc/<datei>.vorgabe-neu` | Starter | neuere Vorgabe, die wegen eigener Änderungen **nicht** übernommen wurde |
-| `…/labwc/<datei>.vorher-<JJJJMMTT-HHMMSS>` | Starter, Einstellungen | Sicherung vor jedem Ersetzen |
+| `…/labwc/<datei>.vorher-<JJJJMMTT-HHMMSS>` | Starter (Einstellungen bis 0.1.0) | Sicherung vor jedem Ersetzen; Einstellungen ab 0.1.1 löschen sie nie |
+| `…/labwc/<datei>.einstellungen-vorher-<JJJJMMTT-HHMMSS>` | Einstellungen ab 0.1.1 | Sicherung vor dem ersten Schreiben je Programmlauf, höchstens fünf je Datei (§6) |
 | `…/labwc/environment.d/zz-querencia-einstellungen.env` | Einstellungen | eigene Umgebungswerte (Tastaturbelegung, Zeiger); labwc liest sie **nach** `environment`, sie haben Vorrang |
 | `~/.config/querencia/labwc-alter-weg` | Benutzer | erzwingt den alten Weg (§4) |
 | `~/.local/state/querencia/labwc-konfig.log` | Starter | was der Abgleich beim letzten Start getan hat, und welcher Ordner galt |
@@ -91,3 +92,34 @@ nächsten Anmeldung.
   (z. B. Benachrichtigungen), ändern jetzt die Vorgabe: Sie kommt beim
   nächsten Start in die Benutzerkopie, solange der Benutzer `autostart` nicht
   geändert hat.
+
+## 6. Rückstellung und Sicherungen der Einstellungen (ab 0.1.1, QD-080)
+
+Anlass: Werkstatt QREL-06 A17.6 (20.10.) – Ändern und Zurückstellen ließ
+ausdrückliche Standardwerte in `rc.xml` stehen (dann ist die Datei für den
+Abgleich „geändert“, neue Vorgaben kommen nur noch als `.vorgabe-neu`), und
+jedes „Übernehmen“ legte eine `rc.xml.vorher-<Zeit>` an; 0.1.0 räumte dabei
+auch Sicherungen des Starters weg.
+
+- **Rückstellung byte-gleich.** Ein Wert, den „Übernehmen“ ändert und der
+  danach dem Wert der Basis gleicht, wird so geschrieben, wie die Basis ihn
+  hat: deren Text, oder gar nicht, wenn die Basis ihn nicht angibt (dann gilt
+  labwcs eingebauter Wert, wie ihn die Bereiche anzeigen). Basis ist
+  `.vorgabe/rc.xml`, sonst die aktuelle Vorgabe – genau die Datei, mit der der
+  Starter vergleicht. Behälter, die Einstellungen dafür angelegt hatten
+  (`<libinput><device category="default">`, `<font place="…">`), gehen mit,
+  wenn sie leer werden und die Basis sie nicht hat. Bleibt danach nur
+  Leerraum anders als in der Basis, wird die Basis byte-gleich geschrieben.
+  Eigene Werte, fremde Blöcke und Kommentare bleiben unberührt.
+- **Umgebung.** `environment.d/zz-querencia-einstellungen.env` verschwindet
+  wieder, wenn nur noch ihr eigener Kopf übrig ist; Zeilen, die nicht von
+  Einstellungen stammen, halten sie.
+- **Sicherungen.** Eigenes Muster `<datei>.einstellungen-vorher-<Zeit>`
+  (bei gleicher Sekunde `-2`, `-3` …). Eine Sicherung je Datei und
+  Programmlauf: der Stand vor dem ersten Schreiben; eine weitere nur, wenn
+  ein anderer die Datei inzwischen geändert hat. Gleicht eine eigene
+  Sicherung danach der Datei, ist sie überflüssig und wird entfernt (Ändern
+  und Zurückstellen hinterlässt keine). Höchstens fünf je Datei, die ältesten
+  gehen. `<datei>.vorher-*` (Starter und Einstellungen bis 0.1.0, nicht zu
+  unterscheiden) löschen Einstellungen nie.
+

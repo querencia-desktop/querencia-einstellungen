@@ -10,8 +10,12 @@
 //! - fehlt die Benutzerkopie, wird die Vorgabe gelesen; das erste Schreiben
 //!   legt die Benutzerkopie an und notiert die Vorgabe in `.vorgabe/rc.xml`,
 //!   damit der Starter sie als Ausgangspunkt kennt;
-//! - vor jedem Ersetzen eine Sicherung `<datei>.vorher-<Zeit>` (die zehn
-//!   jüngsten bleiben), Schreiben atomar über eine temporäre Datei;
+//! - Sicherungen mit eigenem Muster `<datei>.einstellungen-vorher-<Zeit>`
+//!   (0.1.1, [`sichern`]): eine je Datei und Programmlauf, höchstens
+//!   [`SICHERUNGEN`]; `<datei>.vorher-<Zeit>` gehört dem Sitzungsstarter
+//!   und wird nie gelöscht. Schreiben atomar über eine temporäre Datei;
+//! - eine Rückstellung auf den Vorgabewert hinterlässt rc.xml so, wie die
+//!   Vorgabe sie hat ([`labwc_xml::angleichen`] gegen [`Stand::rc_basis`]);
 //! - wirksam wird es mit `labwc --reconfigure`, aber nur, wenn der laufende
 //!   labwc (`LABWC_PID`) wirklich die Benutzerkopie liest; sonst ab der
 //!   nächsten Anmeldung.
@@ -29,8 +33,13 @@ pub const VORGABE_STANDARD: &str =
 /// „zz-“ hält die Wahl des Benutzers hinter den Vorgaben anderer
 /// Querencia-Teile (z. B. `querencia-erscheinungsbild.env`, Thema-3).
 pub const ENV_DATEI: &str = "zz-querencia-einstellungen.env";
-/// So viele Sicherungen je Datei bleiben liegen.
-const SICHERUNGEN: usize = 10;
+/// Namensteil der eigenen Sicherungen: `<datei>.einstellungen-vorher-<Zeit>`.
+/// Bis 0.1.0 hießen sie wie die des Sitzungsstarters `<datei>.vorher-<Zeit>`
+/// (`session/querencia-session`, `konfig_abgleichen`); die lassen sich
+/// nicht unterscheiden und bleiben deshalb unberührt liegen.
+pub const SICHERUNG: &str = ".einstellungen-vorher-";
+/// So viele eigene Sicherungen je Datei bleiben liegen.
+pub const SICHERUNGEN: usize = 5;
 
 #[derive(Clone, Debug)]
 pub struct Orte {
@@ -81,6 +90,10 @@ pub struct Stand {
     pub quelle: Quelle,
     /// rc.xml der Vorgabe (für „Standard wiederherstellen“)
     pub rc_vorgabe: String,
+    /// die Vorgabe, aus der die Benutzerkopie stammt: `.vorgabe/rc.xml`,
+    /// sonst die aktuelle Vorgabe. Gleicht rc.xml ihr byte-gleich, gilt sie
+    /// dem Sitzungsstarter als unverändert (Dreiwegevergleich).
+    pub rc_basis: String,
     /// wirksame Umgebung: environment (Benutzer, sonst Vorgabe), dann
     /// environment.d/*.env nach Bytes sortiert (labwc sortiert mit strcoll;
     /// für Namen aus Kleinbuchstaben, Ziffern und Bindestrich gleich)
@@ -120,6 +133,8 @@ fn lesen_oder_leer(p: &Path) -> String {
 
 pub fn lesen(o: &Orte) -> Stand {
     let rc_vorgabe = lesen_oder_leer(&o.vorgabe.join("rc.xml"));
+    let rc_basis =
+        std::fs::read_to_string(o.vorgabe_basis()).unwrap_or_else(|_| rc_vorgabe.clone());
     let mut fehler = None;
     let (rc, quelle) = match std::fs::read_to_string(o.rc()) {
         Ok(t) => (t, Quelle::Benutzer),
@@ -164,6 +179,7 @@ pub fn lesen(o: &Orte) -> Stand {
         rc,
         quelle,
         rc_vorgabe,
+        rc_basis,
         env,
         env_ohne_eigene,
         vorgabe_neu: o.vorgabe_neu().is_file(),
@@ -188,39 +204,115 @@ fn atomar(pfad: &Path, inhalt: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-/// Sichert eine vorhandene Datei als `<name>.vorher-<zeit>` und räumt ältere
-/// Sicherungen über die zehn jüngsten hinaus weg (nur dieses Muster).
+/// Was dieser Programmlauf je Datei zuletzt geschrieben hat (`None` =
+/// entfernt), und seine Sicherung des Stands davor (`None` = die Datei gab
+/// es vor dem ersten Schreiben nicht).
+type Lauf = std::collections::HashMap<PathBuf, (Option<Vec<u8>>, Option<PathBuf>)>;
+static LAUF: std::sync::Mutex<Option<Lauf>> = std::sync::Mutex::new(None);
+
+fn lauf<T>(f: impl FnOnce(&mut Lauf) -> T) -> T {
+    let mut g = LAUF.lock().unwrap_or_else(|e| e.into_inner());
+    f(g.get_or_insert_with(Lauf::new))
+}
+
+/// Die eigenen Sicherungen einer Datei, älteste zuerst (der Zeitstempel im
+/// Namen sortiert so).
+pub fn sicherungen(pfad: &Path) -> Vec<PathBuf> {
+    let (Some(ordner), Some(name)) = (pfad.parent(), pfad.file_name()) else {
+        return Vec::new();
+    };
+    let praefix = format!("{}{SICHERUNG}", name.to_string_lossy());
+    let mut liste: Vec<PathBuf> = std::fs::read_dir(ordner)
+        .map(|e| {
+            e.flatten()
+                .map(|d| d.path())
+                .filter(|p| {
+                    p.is_file()
+                        && p.file_name()
+                            .is_some_and(|n| n.to_string_lossy().starts_with(&praefix))
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    liste.sort();
+    liste
+}
+
+/// Sichert den Stand einer vorhandenen Datei vor dem Schreiben als
+/// `<name>.einstellungen-vorher-<zeit>` – einmal je Programmlauf: Hat dieser
+/// Lauf die Datei schon gesichert und seither als Letzter geschrieben, reicht
+/// diese Sicherung (Werkstatt QREL-06: acht Sicherungen aus einem Ändern und
+/// Zurückstellen). Hat jemand anders sie inzwischen geändert, gibt es eine
+/// neue.
 fn sichern(pfad: &Path, zeit: &str) -> std::io::Result<Option<PathBuf>> {
     if !pfad.is_file() {
+        return Ok(None);
+    }
+    let jetzt = std::fs::read(pfad)?;
+    let schon = lauf(|l| {
+        l.get(pfad).is_some_and(|(zuletzt, s)| {
+            zuletzt.as_deref() == Some(&jetzt[..]) && s.as_ref().is_none_or(|s| s.is_file())
+        })
+    });
+    if schon {
         return Ok(None);
     }
     let name = pfad
         .file_name()
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_default();
-    let ziel = pfad.with_file_name(format!("{name}.vorher-{zeit}"));
+    let mut ziel = pfad.with_file_name(format!("{name}{SICHERUNG}{zeit}"));
+    let mut n = 2;
+    // gleiche Sekunde: gleicher Inhalt wird wiederverwendet, sonst „-2“, „-3“ …
+    while ziel.exists() && std::fs::read(&ziel).ok().as_deref() != Some(&jetzt[..]) {
+        ziel = pfad.with_file_name(format!("{name}{SICHERUNG}{zeit}-{n}"));
+        n += 1;
+    }
     if !ziel.exists() {
         std::fs::copy(pfad, &ziel)?;
     }
-    if let Some(ordner) = pfad.parent()
-        && let Ok(e) = std::fs::read_dir(ordner)
-    {
-        let praefix = format!("{name}.vorher-");
-        let mut alte: Vec<PathBuf> = e
-            .flatten()
-            .map(|d| d.path())
-            .filter(|p| {
-                p.file_name()
-                    .is_some_and(|n| n.to_string_lossy().starts_with(&praefix))
-            })
-            .collect();
-        alte.sort();
-        let zuviel = alte.len().saturating_sub(SICHERUNGEN);
-        for p in alte.into_iter().take(zuviel) {
-            let _ = std::fs::remove_file(p);
-        }
-    }
+    lauf(|l| l.insert(pfad.to_owned(), (None, Some(ziel.clone()))));
     Ok(Some(ziel))
+}
+
+/// Nach dem Schreiben (`inhalt`, `None` = Datei entfernt): merken, eigene
+/// Sicherungen mit genau diesem Inhalt entfernen (der Stand liegt ja als
+/// Datei vor – Ändern und Zurückstellen hinterlässt so keine), dann nur die
+/// [`SICHERUNGEN`] jüngsten behalten. Fremde Dateien bleiben.
+fn nachher(pfad: &Path, inhalt: Option<&[u8]>) {
+    lauf(|l| l.entry(pfad.to_owned()).or_insert((None, None)).0 = inhalt.map(<[u8]>::to_vec));
+    let mut liste = sicherungen(pfad);
+    if let Some(i) = inhalt {
+        liste.retain(|s| {
+            let gleich = std::fs::read(s).ok().as_deref() == Some(i);
+            if gleich {
+                let _ = std::fs::remove_file(s);
+            }
+            !gleich
+        });
+    }
+    let zuviel = liste.len().saturating_sub(SICHERUNGEN);
+    for s in liste.into_iter().take(zuviel) {
+        let _ = std::fs::remove_file(s);
+    }
+}
+
+/// Für Prüfungen: einen neuen Programmlauf nachstellen (Dateien unter `ordner`).
+#[cfg(test)]
+pub fn lauf_vergessen(ordner: &Path) {
+    lauf(|l| l.retain(|p, _| !p.starts_with(ordner)));
+}
+
+/// Sichern, atomar schreiben, aufräumen.
+fn ersetzen_mit_sicherung(
+    pfad: &Path,
+    inhalt: &str,
+    zeit: &str,
+) -> std::io::Result<Option<PathBuf>> {
+    let sicherung = sichern(pfad, zeit)?;
+    atomar(pfad, inhalt)?;
+    nachher(pfad, Some(inhalt.as_bytes()));
+    Ok(sicherung.filter(|s| s.is_file()))
 }
 
 /// Schreibt eine neue rc.xml in die Benutzerkopie (nur gültiges XML).
@@ -242,21 +334,22 @@ pub fn rc_schreiben(
     if stand.quelle == Quelle::Vorgabe && !o.vorgabe_basis().exists() {
         atomar(&o.vorgabe_basis(), &stand.rc_vorgabe).map_err(io)?;
     }
-    let sicherung = sichern(&o.rc(), zeit).map_err(io)?;
-    atomar(&o.rc(), neu).map_err(io)?;
-    Ok(sicherung)
+    ersetzen_mit_sicherung(&o.rc(), neu, zeit).map_err(io)
 }
 
 /// Ändert die eigene Umgebungsdatei: `Some(wert)` setzt, `None` entfernt.
 /// Andere Zeilen bleiben; ein Schlüssel steht danach höchstens einmal da.
+/// Kopf einer neu angelegten eigenen Umgebungsdatei.
+const ENV_KOPF: &[&str] = &[
+    "# Querencia Einstellungen (Tastatur, Maus, Sprache und Region). labwc liest",
+    "# diese Datei nach ../environment; Werte hier haben Vorrang. Wirksam mit",
+    "# labwc --reconfigure, für schon laufende Programme und Sprache/Formate",
+    "# ab der nächsten Anmeldung.",
+];
+
 pub fn env_text(alt: &str, aenderungen: &[(&str, Option<String>)]) -> String {
     let mut zeilen: Vec<String> = if alt.is_empty() {
-        vec![
-            "# Querencia Einstellungen (Tastatur, Maus, Sprache und Region). labwc liest".into(),
-            "# diese Datei nach ../environment; Werte hier haben Vorrang. Wirksam mit".into(),
-            "# labwc --reconfigure, für schon laufende Programme und Sprache/Formate".into(),
-            "# ab der nächsten Anmeldung.".into(),
-        ]
+        ENV_KOPF.iter().map(|z| (*z).to_owned()).collect()
     } else {
         alt.lines().map(str::to_owned).collect()
     };
@@ -301,9 +394,15 @@ pub fn env_schreiben(
         return Ok(None);
     }
     let io = |e: std::io::Error| e.to_string();
-    let sicherung = sichern(&pfad, zeit).map_err(io)?;
-    atomar(&pfad, &neu).map_err(io)?;
-    Ok(sicherung)
+    if neu == env_text("", &[]) {
+        // nur noch der eigene Kopf: Die Datei verschwindet wieder, wie vor
+        // dem ersten Übernehmen (Rückstellung ohne Rest, 0.1.1)
+        let sicherung = sichern(&pfad, zeit).map_err(io)?;
+        std::fs::remove_file(&pfad).map_err(io)?;
+        nachher(&pfad, None);
+        return Ok(sicherung.filter(|s| s.is_file()));
+    }
+    ersetzen_mit_sicherung(&pfad, &neu, zeit).map_err(io)
 }
 
 /// Wann eine geschriebene Änderung gilt.
@@ -405,8 +504,7 @@ pub fn vorgabe_uebernehmen(o: &Orte, zeit: &str) -> Result<Option<PathBuf>, Stri
     let zusammen = labwc_xml::auf_neue_vorgabe(&ours, &basis, &neue).map_err(|e| e.to_string())?;
     labwc_xml::gueltig(&zusammen).map_err(|e| e.to_string())?;
     let io = |e: std::io::Error| e.to_string();
-    let sicherung = sichern(&o.rc(), zeit).map_err(io)?;
-    atomar(&o.rc(), &zusammen).map_err(io)?;
+    let sicherung = ersetzen_mit_sicherung(&o.rc(), &zusammen, zeit).map_err(io)?;
     atomar(&o.vorgabe_basis(), &neue).map_err(io)?;
     std::fs::remove_file(o.vorgabe_neu()).map_err(io)?;
     Ok(sicherung)
@@ -539,11 +637,12 @@ mod tests {
         );
         let st2 = lesen(&o);
         assert_eq!(st2.quelle, Quelle::Benutzer);
-        // Sicherung beim zweiten Schreiben
+        // Sicherung beim Schreiben im nächsten Programmlauf
+        lauf_vergessen(&w);
         let neu2 = labwc_xml::setzen(&st2.rc, labwc_xml::ARBEITSFLAECHEN, "number", "2").unwrap();
         let s = rc_schreiben(&o, &neu2, &st2, "2").unwrap().unwrap();
         assert_eq!(std::fs::read_to_string(&s).unwrap(), neu);
-        assert_eq!(s.file_name().unwrap(), "rc.xml.vorher-2");
+        assert_eq!(s.file_name().unwrap(), "rc.xml.einstellungen-vorher-2");
         // keine temporären Dateien
         let reste: Vec<_> = std::fs::read_dir(&o.benutzer)
             .unwrap()
@@ -564,28 +663,139 @@ mod tests {
         std::fs::remove_dir_all(&w).unwrap();
     }
 
-    #[test]
-    fn sicherungen_hoechstens_zehn() {
-        let w = ordner("zehn");
-        let o = orte(&w);
-        for i in 0..15 {
-            let st = lesen(&o);
-            let neu =
-                labwc_xml::setzen(&st.rc, labwc_xml::ARBEITSFLAECHEN, "number", &i.to_string())
-                    .unwrap();
-            rc_schreiben(&o, &neu, &st, &format!("{i:02}")).unwrap();
-        }
+    fn namen_im(o: &Orte, praefix: &str) -> Vec<String> {
         let mut s: Vec<String> = std::fs::read_dir(&o.benutzer)
             .unwrap()
             .flatten()
             .map(|e| e.file_name().to_string_lossy().into_owned())
-            .filter(|n| n.starts_with("rc.xml.vorher-"))
+            .filter(|n| n.starts_with(praefix))
             .collect();
         s.sort();
-        // das erste Schreiben legt die Datei an (keine Sicherung): 14 Sicherungen, die zehn jüngsten bleiben
-        assert_eq!(s.len(), 10);
-        assert_eq!(s[0], "rc.xml.vorher-05");
-        assert_eq!(s[9], "rc.xml.vorher-14");
+        s
+    }
+
+    fn anzahl_setzen(o: &Orte, n: &str, zeit: &str) -> Option<PathBuf> {
+        let st = lesen(o);
+        let neu = labwc_xml::setzen(&st.rc, labwc_xml::ARBEITSFLAECHEN, "number", n).unwrap();
+        rc_schreiben(o, &neu, &st, zeit).unwrap()
+    }
+
+    #[test]
+    fn sicherungen_hoechstens_fuenf_fremde_bleiben() {
+        let w = ordner("fuenf");
+        let o = orte(&w);
+        // Sicherungen des Sitzungsstarters (und der Fassungen bis 0.1.0)
+        std::fs::create_dir_all(&o.benutzer).unwrap();
+        for n in [
+            "rc.xml.vorher-20261020-112812",
+            "rc.xml.vorher-20261020-201950",
+        ] {
+            std::fs::write(o.benutzer.join(n), "fremd").unwrap();
+        }
+        // 15 Programmläufe mit je einem Übernehmen
+        for i in 0..15 {
+            lauf_vergessen(&w);
+            anzahl_setzen(&o, &(i + 1).to_string(), &format!("{i:02}"));
+        }
+        let s = namen_im(&o, "rc.xml.einstellungen-vorher-");
+        // das erste Schreiben legt die Datei an (keine Sicherung): 14 Sicherungen, die fünf jüngsten bleiben
+        assert_eq!(
+            s,
+            ["10", "11", "12", "13", "14"].map(|z| format!("rc.xml.einstellungen-vorher-{z}"))
+        );
+        assert_eq!(
+            namen_im(&o, "rc.xml.vorher-"),
+            [
+                "rc.xml.vorher-20261020-112812",
+                "rc.xml.vorher-20261020-201950"
+            ]
+        );
+        for n in namen_im(&o, "rc.xml.vorher-") {
+            assert_eq!(
+                std::fs::read_to_string(o.benutzer.join(n)).unwrap(),
+                "fremd"
+            );
+        }
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn eine_sicherung_je_lauf_und_keine_nach_zurueckstellen() {
+        let w = ordner("lauf");
+        let o = orte(&w);
+        anzahl_setzen(&o, "4", "00");
+        let ausgang = std::fs::read(o.rc()).unwrap();
+        lauf_vergessen(&w);
+        // ein Lauf: achtmal Übernehmen, eine Sicherung (der Stand vor dem Lauf)
+        let erste = anzahl_setzen(&o, "5", "01").unwrap();
+        assert_eq!(std::fs::read(&erste).unwrap(), ausgang);
+        for (i, n) in ["6", "7", "3", "2", "8", "9"].iter().enumerate() {
+            assert_eq!(anzahl_setzen(&o, n, &format!("1{i}")), None);
+        }
+        assert_eq!(namen_im(&o, "rc.xml.einstellungen-vorher-").len(), 1);
+        // zurück auf den Ausgang: die Sicherung ist überflüssig und geht
+        anzahl_setzen(&o, "4", "20");
+        assert_eq!(std::fs::read(o.rc()).unwrap(), ausgang);
+        assert!(namen_im(&o, "rc.xml.einstellungen-vorher-").is_empty());
+        // danach ändert jemand anders die Datei: neue Sicherung im selben Lauf
+        anzahl_setzen(&o, "5", "21").unwrap();
+        let fremd = std::fs::read_to_string(o.rc())
+            .unwrap()
+            .replace("number=\"5\"", "number=\"6\"");
+        std::fs::write(o.rc(), &fremd).unwrap();
+        let s = anzahl_setzen(&o, "7", "22").unwrap();
+        assert_eq!(std::fs::read_to_string(s).unwrap(), fremd);
+        assert_eq!(namen_im(&o, "rc.xml.einstellungen-vorher-").len(), 2);
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn gleiche_sekunde_ueberschreibt_keine_sicherung() {
+        let w = ordner("sekunde");
+        let o = orte(&w);
+        anzahl_setzen(&o, "4", "00");
+        lauf_vergessen(&w);
+        let a = anzahl_setzen(&o, "5", "x").unwrap();
+        lauf_vergessen(&w);
+        let b = anzahl_setzen(&o, "6", "x").unwrap();
+        assert_ne!(a, b);
+        assert_eq!(b.file_name().unwrap(), "rc.xml.einstellungen-vorher-x-2");
+        assert!(
+            std::fs::read_to_string(&a)
+                .unwrap()
+                .contains("number=\"4\"")
+        );
+        assert!(
+            std::fs::read_to_string(&b)
+                .unwrap()
+                .contains("number=\"5\"")
+        );
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    #[test]
+    fn umgebung_zurueckgestellt_ohne_rest() {
+        let w = ordner("env-zurueck");
+        let o = orte(&w);
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", Some("us".into()))], "1").unwrap();
+        assert!(o.env_datei().is_file());
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "2").unwrap();
+        assert!(!o.env_datei().exists());
+        let reste: Vec<_> = std::fs::read_dir(o.env_datei().parent().unwrap())
+            .unwrap()
+            .flatten()
+            .collect();
+        assert!(reste.is_empty(), "{reste:?}");
+        // fremde Zeilen halten die Datei
+        std::fs::write(o.env_datei(), "# eigen\nA=1\n").unwrap();
+        lauf_vergessen(&w);
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", Some("us".into()))], "3").unwrap();
+        env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "4").unwrap();
+        assert_eq!(
+            std::fs::read_to_string(o.env_datei()).unwrap(),
+            "# eigen\nA=1\n"
+        );
+        assert!(sicherungen(&o.env_datei()).is_empty());
         std::fs::remove_dir_all(&w).unwrap();
     }
 
@@ -614,7 +824,8 @@ mod tests {
             Some("de")
         );
         assert_eq!(st.env.get("LANG").map(String::as_str), Some("en_US.UTF-8"));
-        // entfernen → Vorgabe gilt wieder; Sicherung angelegt
+        // entfernen → Vorgabe gilt wieder; Sicherung im nächsten Programmlauf
+        lauf_vergessen(&w);
         let s = env_schreiben(&o, &[("XKB_DEFAULT_LAYOUT", None)], "2").unwrap();
         assert!(s.is_some_and(|p| !p.to_string_lossy().ends_with(".env")));
         let st = lesen(&o);

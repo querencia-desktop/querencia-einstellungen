@@ -339,6 +339,11 @@ impl Bereich for Erscheinungsbild {
             "The same pointer is in the “Mouse” section; both sections write the same values.",
         )));
         inhalt.append(&f);
+        // KOEX-1 K4: bis die Querencia-Sitzung eine eigene dconf-Datenbank
+        // hat (QD-068 „Session dconf“), teilt sie diese Werte mit GNOME
+        inhalt.append(&ls::grau(&gettext(
+            "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer.",
+        )));
 
         let e = Erscheinungsbild {
             symbole_kasten,
@@ -508,6 +513,7 @@ mod tests {
             rc: String::new(),
             quelle: Quelle::Benutzer,
             rc_vorgabe: String::new(),
+            rc_basis: String::new(),
             env: m(env),
             env_ohne_eigene: m(env),
             vorgabe_neu: false,

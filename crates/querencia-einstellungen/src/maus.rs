@@ -373,6 +373,7 @@ mod tests {
             rc: rc.into(),
             quelle: Quelle::Benutzer,
             rc_vorgabe: rc.into(),
+            rc_basis: rc.into(),
             env: BTreeMap::new(),
             env_ohne_eigene: BTreeMap::new(),
             vorgabe_neu: false,
