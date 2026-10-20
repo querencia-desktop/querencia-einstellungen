@@ -11,3 +11,5 @@
 # H005 Lizenzdatei, README.md, Arbeitsregeln fehlen: Altbestand; Lizenz entscheidet
 #      der Besitzer (ENTSCHEIDUNGEN), README/Arbeitsregeln eigener Auftrag (G2-Z).
 # H001 Logs unter nachweis/: Prüfbelege, auf die sich die Freigaben stützen.
+# S005 werkzeug/g2aj-gui-lauf.sh: Fachwörter (GTK, gsettings, Desktop, Panel,
+#      Release) in deutschen Kommentaren, keine englischen Sätze (G2-AJ).
