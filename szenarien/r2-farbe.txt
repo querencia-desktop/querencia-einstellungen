@@ -4,36 +4,57 @@ shot 01-desktop-nach-neustart.png
 run $QE_APP --hintergrund
 wait 2500
 shot 02-dialog-geladen.png
-move 960 700
-scroll 10
-wait 800
-move 792 306
+move 792 557
 click
 wait 700
 shot 03-farbe-standard.png
+move 960 700
+scroll 10
+wait 800
 move 756 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 04-tango.png
+move 960 700
+scroll 10
+wait 800
 move 806 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 05-anthrazit.png
+move 960 700
+scroll 10
+wait 800
 move 856 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 06-orange.png
+move 960 700
+scroll 10
+wait 800
 move 780 806
 click
 combo ctrl+a
 type #12zz
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 07-hex-ungueltig.png
 combo ctrl+a
 type #204A87
 wait 500
 shot 08-hex-gueltig.png
-move 630 306
+move 630 557
 click
 wait 700
 shot 09-zurueck-zum-bild.png

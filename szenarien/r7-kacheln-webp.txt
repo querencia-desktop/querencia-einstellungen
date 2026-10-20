@@ -18,7 +18,13 @@ wait 700
 move 770 845
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 01-kacheln.png
+move 960 700
+scroll 10
+wait 800
 move 1054 620
 click
 wait 2500
@@ -33,6 +39,9 @@ wait 700
 move 770 709
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 02-webp-ausfuellen.png
 move 1244 906
 click

@@ -13,28 +13,52 @@ wait 300
 type ~/projects/querencia-einstellungen/nachweis/testbilder/muster-4zu3.png
 key Return
 wait 1500
+move 960 700
+scroll -10
+wait 800
 shot 02-bild-ausfuellen.png
+move 960 700
+scroll 10
+wait 800
 move 810 660
 click
 wait 700
 move 770 742
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 03-einpassen.png
+move 960 700
+scroll 10
+wait 800
 move 810 660
 click
 wait 700
 move 770 777
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 04-zentrieren.png
+move 960 700
+scroll 10
+wait 800
 move 810 660
 click
 wait 700
 move 770 811
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 05-strecken.png
+move 960 700
+scroll 10
+wait 800
 move 810 660
 click
 wait 700
@@ -44,4 +68,7 @@ wait 700
 move 1244 906
 click
 wait 2000
+move 960 700
+scroll -10
+wait 800
 shot 06-uebernommen.png

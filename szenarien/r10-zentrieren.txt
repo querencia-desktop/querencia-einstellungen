@@ -18,6 +18,9 @@ wait 700
 move 770 777
 click
 wait 700
+move 960 700
+scroll -10
+wait 800
 shot 01-dialog.png
 move 1244 906
 click
