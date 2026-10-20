@@ -204,6 +204,27 @@ pub fn gtk_thema_mit_dunkel(name: &str) -> bool {
             .is_some_and(|d| d.join("gtk-dark.css").is_file())
 }
 
+/// Zeigt GTK gerade die dunkle Fassung? Farbschema „dunkel“ (Wert 2 von
+/// `gtk-interface-color-scheme`, GTK ≥ 4.20) und ein Thema mit dunkler
+/// Fassung ([`gtk_thema_mit_dunkel`]). Für Farben, die nicht aus dem Thema
+/// kommen (Pango-Markup); Folgen: `gtk-interface-color-scheme` und
+/// `gtk-theme-name` melden jeden Wechsel.
+pub fn dunkel_aktiv() -> bool {
+    let Some(s) = gtk4::Settings::default() else {
+        return false;
+    };
+    if s.find_property("gtk-interface-color-scheme").is_none() {
+        return false;
+    }
+    let dunkel = s
+        .property_value("gtk-interface-color-scheme")
+        .transform::<i32>()
+        .ok()
+        .and_then(|v| v.get::<i32>().ok())
+        == Some(2);
+    dunkel && gtk_thema_mit_dunkel(s.gtk_theme_name().as_deref().unwrap_or(GTK_EINGEBAUT))
+}
+
 /// Hinweis unter „Dunkle Darstellung bevorzugen“ für das gewählte GTK-Thema.
 fn dunkel_hinweis(mit_dunkel: bool) -> String {
     if mit_dunkel {

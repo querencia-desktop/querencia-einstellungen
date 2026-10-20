@@ -32,6 +32,9 @@ zusammengefasst.
   (GTK 4.22 lud beim Start nur die helle Fassung des Themas, QD-081).
 - Die Anordnungsfläche auf der Seite „Bildschirm“ ist bei dunklem Thema dunkel
   statt hellgrau; hell unverändert.
+- Dunkle Fassung: Das Kürzel der Tastaturbelegung („(de)“) ist lesbar
+  (75 % statt 60 % Deckkraft, AA), der Rand der Hintergrund-Vorschau hebt sich
+  vom Fenstergrund ab; hell unverändert.
 
 ## [0.1.1] – 2026-10-21
 

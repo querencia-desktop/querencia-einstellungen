@@ -12,7 +12,11 @@ Exit 1, wenn ein Pflichtpaar verfehlt oder eine Farbe fehlt.
 import sys
 from pathlib import Path
 
-QUELLE = (Path(__file__).resolve().parent.parent / "crates/querencia-einstellungen/src/bildschirm.rs").read_text()
+SRC = Path(__file__).resolve().parent.parent / "crates/querencia-einstellungen/src"
+QUELLE = (SRC / "bildschirm.rs").read_text()
+TASTATUR = (SRC / "tastatur.rs").read_text()
+# Thema 0.2 dunkel (gtk-dark.css): Fensterschrift und Fenstergrund
+THEMA_FG, THEMA_BG = "dfdbd2", "3c3b37"
 
 DUNKEL = {"flaeche": "2b2a27", "leer": "b3afa6", "gewaehlt": "1f5fae", "ausgabe": "5b5955",
           "rand": "bfbbb2", "leiste": "141414", "text_gewaehlt": "ffffff", "text": "f2f0eb"}
@@ -36,6 +40,11 @@ def lum(h):
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
+def mischen(fg, bg, alpha):
+    """Schrift mit Deckkraft alpha über dem Grund (wie Pango alpha="…%")."""
+    return "".join(f"{round(alpha * int(fg[i:i + 2], 16) + (1 - alpha) * int(bg[i:i + 2], 16)):02x}" for i in (0, 2, 4))
+
+
 def kontrast(a, b):
     x, y = sorted((lum(a), lum(b)), reverse=True)
     return (x + 0.05) / (y + 0.05)
@@ -56,6 +65,26 @@ def main():
             print(f"| {name} | #{DUNKEL[v]} | #{DUNKEL[g]} | {k:.2f}:1 | {mind}:1 | {'PASS' if ok else 'FAIL'} |")
         else:
             print(f"{'PASS' if ok else 'FAIL'} {k:5.2f}:1 (≥ {mind}) {name}")
+    # Kürzel der Tastaturbelegung (Pango-Markup, tastatur.rs): dunkel 75 %
+    kuerzel = mischen(THEMA_FG, THEMA_BG, 0.75)
+    k = kontrast(kuerzel, THEMA_BG)
+    ok = k >= 4.5 and '"75%"' in TASTATUR
+    schlecht += not ok
+    name = "Kürzel der Tastaturbelegung (Markup alpha 75 %) auf Fenstergrund"
+    if md:
+        print(f"| {name} | #{kuerzel} | #{THEMA_BG} | {k:.2f}:1 | 4.5:1 | {'PASS' if ok else 'FAIL'} |")
+    else:
+        print(f"{'PASS' if ok else 'FAIL'} {k:5.2f}:1 (≥ 4.5) {name}")
+    # Rand der Hintergrund-Vorschau (vorschau.rs) auf dem Fenstergrund, Grafik 3:1
+    vorschau = (SRC / "vorschau.rs").read_text()
+    k = kontrast("bfbbb2", THEMA_BG)
+    ok = k >= 3.0 and "0xbf as f32" in vorschau
+    schlecht += not ok
+    name = "Rand der Hintergrund-Vorschau auf Fenstergrund"
+    if md:
+        print(f"| {name} | #bfbbb2 | #{THEMA_BG} | {k:.2f}:1 | 3.0:1 | {'PASS' if ok else 'FAIL'} |")
+    else:
+        print(f"{'PASS' if ok else 'FAIL'} {k:5.2f}:1 (≥ 3.0) {name}")
     for n in fehlt:
         print(f"FAIL Farbe {n} #{DUNKEL[n]} nicht in bildschirm.rs")
     return 1 if schlecht or fehlt else 0

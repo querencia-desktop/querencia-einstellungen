@@ -73,4 +73,6 @@ scroll 15
 wait 800
 shot 14-erscheinungsbild-unten.png
 scroll -15
-wait 800
+wait 500
+move 200 700
+wait 2000

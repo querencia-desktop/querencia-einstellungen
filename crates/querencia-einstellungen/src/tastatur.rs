@@ -65,10 +65,17 @@ pub fn ja(v: Option<String>) -> bool {
     v.is_some_and(|v| matches!(v.to_ascii_lowercase().as_str(), "yes" | "on" | "true" | "1"))
 }
 
-/// Name der Belegung mit XKB-Kürzel als Pango-Markup.
+/// Name der Belegung mit XKB-Kürzel als Pango-Markup. Das Kürzel ist mit
+/// 60 % Deckkraft gedimmt, in der dunklen Fassung mit 75 % (wie `dim-label`
+/// in Querencia-Klassisch 0.2: 60 % ergäben dort nur 4,0:1, unter AA).
 fn markup(liste: &[xkb::Belegung], l: &str, v: &str) -> String {
+    let alpha = if crate::erscheinungsbild::dunkel_aktiv() {
+        "75%"
+    } else {
+        "60%"
+    };
     format!(
-        "<b>{}</b>  <span alpha=\"60%\">({}{})</span>",
+        "<b>{}</b>  <span alpha=\"{alpha}\">({}{})</span>",
         gtk4::glib::markup_escape_text(&xkb::anzeigename(liste, l, v)),
         gtk4::glib::markup_escape_text(if l.is_empty() { "us" } else { l }),
         if v.is_empty() {
@@ -88,6 +95,9 @@ struct Belegungen {
     name: gtk4::Label,
     /// Zeilen der weiteren Belegungen
     weitere: gtk4::Box,
+    /// Beschriftungen mit Markup (Label, Präfix, Belegung, Variante), neu
+    /// gesetzt beim Wechsel zwischen heller und dunkler Fassung
+    beschriftet: RefCell<Vec<(gtk4::Label, String, String, String)>>,
     umschalten_raster: gtk4::Grid,
     umschalten: RefCell<Vec<(String, gtk4::CheckButton)>>,
     liste: Rc<Vec<xkb::Belegung>>,
@@ -109,6 +119,7 @@ impl Belegungen {
         let b = self.werte.borrow().clone();
         let (l, v) = b.first().cloned().unwrap_or_default();
         self.name.set_markup(&markup(&self.liste, &l, &v));
+        let mut beschriftet = vec![(self.name.clone(), String::new(), l, v)];
         while let Some(c) = self.weitere.first_child() {
             self.weitere.remove(&c);
         }
@@ -120,6 +131,7 @@ impl Belegungen {
             let zeile = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
             let name = gtk4::Label::new(None);
             name.set_markup(&format!("{}. {}", i + 1, markup(&self.liste, l, v)));
+            beschriftet.push((name.clone(), format!("{}. ", i + 1), l.clone(), v.clone()));
             name.set_xalign(0.0);
             name.set_hexpand(true);
             name.set_wrap(true);
@@ -135,7 +147,15 @@ impl Belegungen {
             }
             self.weitere.append(&zeile);
         }
+        *self.beschriftet.borrow_mut() = beschriftet;
         self.umschalten_zeigen(umschalten);
+    }
+
+    /// Markup neu setzen (helle/dunkle Fassung gewechselt).
+    fn beschriften(&self) {
+        for (label, praefix, l, v) in self.beschriftet.borrow().iter() {
+            label.set_markup(&format!("{praefix}{}", markup(&self.liste, l, v)));
+        }
     }
 
     fn umschalten_zeigen(&self, aktuell: &str) {
@@ -362,11 +382,22 @@ impl Bereich for Tastatur {
             optionen: RefCell::new(Vec::new()),
             name,
             weitere,
+            beschriftet: RefCell::new(Vec::new()),
             umschalten_raster,
             umschalten: RefCell::new(Vec::new()),
             liste,
             geaendert: geaendert.clone(),
         });
+        if let Some(s) = gtk4::Settings::default() {
+            for eigenschaft in ["gtk-interface-color-scheme", "gtk-theme-name"] {
+                let bl = Rc::downgrade(&belegungen);
+                s.connect_notify_local(Some(eigenschaft), move |_, _| {
+                    if let Some(bl) = bl.upgrade() {
+                        bl.beschriften();
+                    }
+                });
+            }
+        }
         {
             let bl = belegungen.clone();
             aendern.connect_clicked(move |k| {

@@ -54,7 +54,20 @@ mod imp {
                 sw as f32 + 2.0,
                 sh as f32 + 2.0,
             );
-            snapshot.append_color(&gdk::RGBA::new(0.25, 0.25, 0.25, 1.0), &rahmen);
+            // Dunkel (helle Schrift im Thema): Rand wie die Anordnungsfläche
+            // auf der Seite Bildschirm, sonst verschwände er im Fenstergrund.
+            let c = widget.color();
+            let rand = if 0.2126 * c.red() + 0.7152 * c.green() + 0.0722 * c.blue() > 0.5 {
+                gdk::RGBA::new(
+                    0xbf as f32 / 255.0,
+                    0xbb as f32 / 255.0,
+                    0xb2 as f32 / 255.0,
+                    1.0,
+                )
+            } else {
+                gdk::RGBA::new(0.25, 0.25, 0.25, 1.0)
+            };
+            snapshot.append_color(&rand, &rahmen);
 
             snapshot.save();
             snapshot.translate(&graphene::Point::new(ox as f32, oy as f32));

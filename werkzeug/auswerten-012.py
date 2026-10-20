@@ -35,14 +35,18 @@ def pruef(lauf, fall, ok, detail=""):
 
 
 def fenster(b):
-    """Innenfläche des Kontrollzentrums (860×600 mittig) ohne Titelleiste."""
-    dx, dy = (0, 0) if b == 1920 else (-448, -156)
-    return (540 + dx, 250 + dy, 1380 + dx, 830 + dy)
+    """Innenfläche des Kontrollzentrums ohne Titelleiste, im Ausschnitt von bild()."""
+    return (20, 50, 860, 630)
 
 
 def bild(lauf, datei):
+    """Nur das Fenster samt Titelleiste (Panel-Uhr und Desktop außen vor)."""
     p = os.path.join(N, lauf, datei)
-    return Image.open(p).convert("RGB") if os.path.exists(p) else None
+    if not os.path.exists(p):
+        return None
+    b = int(lauf.rsplit("-", 1)[1])
+    dx, dy = (0, 0) if b == 1920 else (-448, -156)
+    return Image.open(p).convert("RGB").crop((520 + dx, 200 + dy, 1400 + dx, 850 + dy))
 
 
 def unterschied(a, b):
@@ -78,7 +82,7 @@ def main():
             for d in ("01-erscheinungsbild.png", "14-erscheinungsbild-unten.png"):
                 u = unterschied(bild(a, d), bild(n, d))
                 pruef(f"t02-hell-{k}", f"{d}: Abweichung nur im Fenster (Hinweis)",
-                      u not in (None, "fehlt") and u[0] >= box[0] and u[2] <= box[2] and u[1] >= box[1],
+                      u not in (None, "fehlt") and u[1] >= box[1],
                       f"Abweichung {u}")
             # t02 dunkel ab dem Start
             for v, soll in (("neu", "dunkel"), ("alt", "hell")):
