@@ -30,6 +30,7 @@ mod bildschirm_modell;
 mod faehigkeiten;
 mod fensterdesign;
 mod hintergrund;
+mod hintergrund_katalog;
 mod ini;
 mod labwc_konfig;
 mod labwc_seite;

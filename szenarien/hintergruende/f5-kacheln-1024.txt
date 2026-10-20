@@ -1,0 +1,24 @@
+extent 1024 768
+wait 4000
+move 512 610
+click
+wait 1200
+move 512 500
+scroll 10
+wait 800
+move 362 442
+click
+wait 800
+shot 01-liste.png
+move 322 627
+click
+wait 1000
+shot 02-gewaehlt.png
+move 796 688
+click
+wait 2000
+shot 03-uebernommen.png
+move 668 688
+click
+wait 2500
+shot 04-desktop.png

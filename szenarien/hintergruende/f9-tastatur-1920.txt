@@ -1,0 +1,20 @@
+extent 1920 1080
+wait 4000
+move 685 676
+click
+wait 800
+key Right
+wait 300
+key Right
+wait 300
+key Return
+wait 1200
+shot 02-tastatur.png
+move 1244 906
+click
+wait 2000
+shot 03-uebernommen.png
+move 1116 906
+click
+wait 2500
+shot 04-desktop.png

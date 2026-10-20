@@ -8,23 +8,47 @@ move 792 557
 click
 wait 700
 shot 03-farbe-standard.png
-move 756 781
+move 960 700
+scroll 10
+wait 800
+move 756 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 04-tango.png
-move 806 781
+move 960 700
+scroll 10
+wait 800
+move 806 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 05-anthrazit.png
-move 856 781
+move 960 700
+scroll 10
+wait 800
+move 856 766
 click
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 06-orange.png
-move 780 821
+move 960 700
+scroll 10
+wait 800
+move 780 806
 click
 combo ctrl+a
 type #12zz
 wait 500
+move 960 700
+scroll -10
+wait 800
 shot 07-hex-ungueltig.png
 combo ctrl+a
 type #204A87

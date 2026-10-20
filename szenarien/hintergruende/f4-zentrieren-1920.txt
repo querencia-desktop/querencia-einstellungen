@@ -1,0 +1,23 @@
+extent 1920 1080
+wait 4000
+move 1096 676
+click
+wait 1200
+move 960 700
+scroll 10
+wait 800
+move 810 660
+click
+wait 800
+move 770 777
+click
+wait 1000
+shot 02-gewaehlt.png
+move 1244 906
+click
+wait 2000
+shot 03-uebernommen.png
+move 1116 906
+click
+wait 2500
+shot 04-desktop.png

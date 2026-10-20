@@ -4,9 +4,15 @@ wait 3500
 move 792 557
 click
 wait 500
-move 856 781
+move 960 700
+scroll 10
+wait 800
+move 856 766
 click
 wait 600
+move 960 700
+scroll -10
+wait 800
 shot 01-dialog-farbe.png
 move 1244 906
 click
