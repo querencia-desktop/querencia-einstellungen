@@ -1,2 +1,2 @@
 # Kopie der Runtime-Vorgabe session/querencia/labwc (main bb90803, 20.10.2026) – feste Grundlage der G2-AG-GUI-Läufe (QE_LABWC_VORGABE_QUELLE)
-# 21.10.2026 (Einstellungen 0.1.2, G1a): Pfade und Rechnername in rc.xml neutralisiert (/home/anna/, „Entwicklungs-VM“); sonst byte-gleich mit der Vorgabe. Keine geprüfte Stelle hängt von diesen Werten ab.
+# 21.10.2026 (Einstellungen 0.1.2, G1a): Pfade und Rechnername in rc.xml neutralisiert (/home/anna/, „Entwicklungs-VM“). Im Veröffentlichungsklon sind zusätzlich Kommentare über die Entstehung neutralisiert; inhaltlich gleich der Vorgabe. Keine geprüfte Stelle hängt von diesen Werten ab.
