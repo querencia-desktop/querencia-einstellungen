@@ -14,3 +14,8 @@ the file LICENSE for more details.
 Dateien mit eigenem Lizenzvermerk behalten diesen (README.md, Abschnitt
 „Lizenz“): werkzeug/virtual-keyboard-unstable-v1.xml steht
 unter MIT (Vermerk im Dateikopf).
+
+Das Querencia-Logo ist ein Kennzeichen des Projekts und von der Lizenz
+ausgenommen; es gilt MARKE.md. The Querencia logo is a mark of the project
+and is not covered by this licence; see MARKE.md.
+Dateien/files: crates/querencia-einstellungen/data/logo/querencia-logo*
