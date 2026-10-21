@@ -49,7 +49,7 @@ Die Symbole von Dateien und Ordnern in `~/Schreibtisch` sind keine festen Symbol
 | `Network` | `true` | Netzlaufwerke (eingehängte Freigaben: SMB, SFTP, FTP, WebDAV, NFS, AFP) |
 | `Internal` | `false` | Eingebaute Laufwerke (interne Festplatten und Partitionen, die der Benutzer eingehängt hat) |
 
-> **Standardwerte entschieden am 19.10.2026** (Status-Session, vom Besitzer übertragen), wie GNOME 2:
+> **Standardwerte entschieden am 19.10.2026**, wie GNOME 2:
 > Wechseldatenträger, optische Medien und Netzlaufwerke an, eingebaute Laufwerke aus; Rechner, Persönlicher
 > Ordner und Papierkorb an; Größe 48 (Stufen 32/48/72/96).
 > Sie stehen an genau einer Stelle je Programm: `Arbeitsflaeche::default()` in

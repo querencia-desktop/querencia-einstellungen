@@ -743,8 +743,8 @@ mod tests {
         std::fs::remove_dir_all(&w).unwrap();
     }
 
-    /// Status-Session 21.10.: fremde Sicherungen in der Benutzerkopie (Rückfallpfad
-    /// aus 00, Starter-Abgleich 21:35, autostart/environment des Starters) bleiben
+    /// Prüfung 21.10.: fremde Sicherungen in der Benutzerkopie (Rückfallpfad,
+    /// Starter-Abgleich 21:35, autostart/environment des Starters) bleiben
     /// nach 20 Übernahmen in 20 Programmläufen byte-gleich; eigene höchstens 5.
     #[test]
     fn fremde_vorher_dateien_bleiben_nach_20_uebernahmen() {

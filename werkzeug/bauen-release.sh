@@ -1,5 +1,5 @@
 #!/bin/bash
-# Release-Bau von Einstellungen ab 0.1.2 (G1a, ENTSCHEIDUNGEN Nr. 23): wie
+# Release-Bau von Einstellungen ab 0.1.2: wie
 # bisher über den Bau-Platz, dazu --remap-path-prefix, damit keine Pfade des
 # Bau-Benutzers (Cargo-Registry, Worktree) im Binary stehen – Prüfung:
 # strings target/release/querencia-einstellungen | grep -c /home/ → 0.

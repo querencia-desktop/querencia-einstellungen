@@ -1,5 +1,5 @@
 #!/bin/bash
-# cargo test isoliert (Regel der Status-Session vom 20.10.2026, 13 §5): eigenes
+# cargo test isoliert (Projektregel vom 20.10.2026): eigenes
 # HOME, XDG_CONFIG_HOME/DATA_HOME/CACHE_HOME/RUNTIME_DIR in einem Wegwerfordner,
 # eigener Session-Bus (dbus-run-session), ohne WAYLAND_DISPLAY und DISPLAY –
 # kein Test erreicht die Live-Sitzung, dconf oder den Papierkorb. Cargo und

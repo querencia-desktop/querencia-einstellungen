@@ -1,6 +1,6 @@
 #!/bin/bash
 # Versionszeile eines Einstellungen-Binarys, ohne es in der Live-Umgebung
-# aufzurufen (Regel der Status-Session vom 21.10.2026, 13 §5): leere
+# aufzurufen (Projektregel vom 21.10.2026): leere
 # Umgebung, Wegwerf-HOME und -XDG_RUNTIME_DIR, kein WAYLAND_DISPLAY/DISPLAY,
 # kein Sitzungsbus. `--version` endet vor jedem GTK-Start (main.rs).
 #   bash werkzeug/version-isoliert.sh <binary>

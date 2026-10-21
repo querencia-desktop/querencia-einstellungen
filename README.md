@@ -2,8 +2,10 @@
 
 Kontrollzentrum im Stil von GNOME 2 für alle, die Querencia Desktop
 benutzen. Teil von
-[Querencia Desktop](https://github.com/querencia-desktop/querencia) – einer
+[Querencia Desktop](https://querencialinux.org) – einer
 klassischen Desktopumgebung im GNOME-2-Stil für Wayland (labwc, Rust, GTK 4).
+Installiert wird es zusammen mit Querencia Desktop aus der APT-Quelle;
+Anleitung auf <https://querencialinux.org>.
 
 *English summary:* A GNOME-2-style control centre for Querencia Desktop
 (appearance, background, desktop icons, window design, fonts, keyboard,

@@ -16,7 +16,7 @@ zusammengefasst.
 
 ### Hinzugefügt
 - Die Galerie „Eingebaute Bilder“ kennt die 16 Hintergründe von
-  Hintergründe 0.2 (QD-093): Tiefblau, Blaugrün, Blauschein, Glut, Hügel,
+  Hintergründe 0.2: Tiefblau, Blaugrün, Blauschein, Glut, Hügel,
   Küste, Dünen, See, Wüste, Berge, Strand, Glas, Tiefblau mit Logo, mit
   Wortmarke und mit Wasserzeichen, Bernstein mit Logo. Reihenfolge: Tiefblau
   zuerst, dann die übrigen neuen Bilder, danach die Bilder von 0.1. Die
@@ -36,7 +36,7 @@ zusammengefasst.
 ## [0.1.3] – 2026-10-21
 
 ### Geändert
-- Helle Darstellung, Kontrast nach WCAG AA (QD-089): Das Kürzel hinter dem
+- Helle Darstellung, Kontrast nach WCAG AA: Das Kürzel hinter dem
   Namen der Tastaturbelegung ist mit 75 % statt 60 % Deckkraft gedimmt wie in
   der dunklen Darstellung (4,8:1 statt 3,3:1). Die gewählte Ausgabe im
   Bereich „Bildschirm“ ist dunkler blau (`#2a6cc4` statt `#3685e3`), die
@@ -55,7 +55,7 @@ zusammengefasst.
   eine dunkle Fassung, steht dort, dass auch die Querencia-Programme dunkel
   werden (außer Querencia Files); sonst wie bisher.
 - Standardanwendungen: Der Rückgriff auf die alte Terminal-ID
-  `org.example.Querencia.Terminal.desktop` entfällt (QD-066 abgeschlossen);
+  `org.example.Querencia.Terminal.desktop` entfällt;
   angezeigt wird `org.querencia.Terminal.desktop`.
 - Werkzeuge ohne feste Pfade der Entwicklungsumgebung (`$HOME`, `XDG_*`,
   Parameter); Integrationsskripte früherer Fassungen liegen unter
@@ -63,7 +63,7 @@ zusammengefasst.
 
 ### Behoben
 - Unter „Dunkle Darstellung bevorzugen“ startet das Fenster gleich dunkel
-  (GTK 4.22 lud beim Start nur die helle Fassung des Themas, QD-081).
+  (GTK 4.22 lud beim Start nur die helle Fassung des Themas).
 - Die Anordnungsfläche auf der Seite „Bildschirm“ ist bei dunklem Thema dunkel
   statt hellgrau; hell unverändert.
 - Dunkle Fassung: Das Kürzel der Tastaturbelegung („(de)“) ist lesbar

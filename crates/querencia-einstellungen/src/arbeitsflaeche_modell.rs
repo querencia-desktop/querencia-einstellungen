@@ -76,8 +76,7 @@ impl Default for Arbeitsflaeche {
     /// Standard ohne `desktop.ini` – **an genau dieser Stelle** (und im Desktop,
     /// siehe Spezifikation §3). Wie GNOME 2: Wechsel-, optische und
     /// Netzlaufwerke an, eingebaute aus; feste Symbole an, 48 Pixel.
-    /// Entschieden am 19.10.2026 (Status-Session, vom Besitzer übertragen):
-    /// genau diese Werte.
+    /// Entschieden am 19.10.2026: genau diese Werte.
     fn default() -> Self {
         Self {
             rechner: true,
