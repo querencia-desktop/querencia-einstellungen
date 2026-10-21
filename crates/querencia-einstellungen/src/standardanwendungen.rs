@@ -92,9 +92,9 @@ fn anwendung(desktop_id: &str) -> Option<gio::AppInfo> {
         .find(|a| id(a) == desktop_id)
 }
 
-/// Starter des Terminals (neue ID, sonst die Brücke älterer Installationen).
+/// Starter des Terminals.
 fn terminal() -> &'static str {
-    sm::terminal_id(|i| anwendung(i).is_some())
+    sm::TERMINAL_ID
 }
 
 /// `--standardanwendungen-zeigen`: Ist-Stand als Text (Prüfung), schreibt nichts.

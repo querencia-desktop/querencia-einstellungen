@@ -23,6 +23,9 @@ zusammengefasst.
 - Hinweis unter „Dunkle Darstellung bevorzugen“: Hat das gewählte GTK-Thema
   eine dunkle Fassung, steht dort, dass auch die Querencia-Programme dunkel
   werden (außer Querencia Files); sonst wie bisher.
+- Standardanwendungen: Der Rückgriff auf die alte Terminal-ID
+  `org.example.Querencia.Terminal.desktop` entfällt (QD-066 abgeschlossen);
+  angezeigt wird `org.querencia.Terminal.desktop`.
 - Werkzeuge ohne feste Pfade der Entwicklungsumgebung (`$HOME`, `XDG_*`,
   Parameter); Integrationsskripte früherer Fassungen liegen unter
   `integration/werkzeug/`.

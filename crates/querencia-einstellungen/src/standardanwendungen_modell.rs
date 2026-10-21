@@ -32,21 +32,11 @@ pub struct Kategorie {
     pub vorschlag: Option<&'static str>,
 }
 
-/// Querencia Terminal: Starter seit 20.10.2026 (QD-066).
+/// Querencia Terminal: Starter seit 20.10.2026 (QD-066). Die Brücke auf die
+/// alte ID älterer Installationen ist seit 0.1.2 entfernt (überall ist der
+/// neue Starter installiert; fehlt er, zeigt die Seite ihn als nicht
+/// installiert).
 pub const TERMINAL_ID: &str = "org.querencia.Terminal.desktop";
-/// Alte ID, auf älteren Installationen der einzige Starter; heute nur noch
-/// eine Brücke (NoDisplay), die dasselbe Terminal startet.
-pub const TERMINAL_BRUECKE: &str = "org.example.Querencia.Terminal.desktop";
-
-/// Der Starter des Terminals: der neue, sonst die Brücke, falls nur sie
-/// installiert ist; fehlen beide, der neue (wird als nicht installiert gezeigt).
-pub fn terminal_id(installiert: impl Fn(&str) -> bool) -> &'static str {
-    if !installiert(TERMINAL_ID) && installiert(TERMINAL_BRUECKE) {
-        TERMINAL_BRUECKE
-    } else {
-        TERMINAL_ID
-    }
-}
 
 pub const KATEGORIEN: &[Kategorie] = &[
     Kategorie {
@@ -303,14 +293,5 @@ mod tests {
         assert_eq!(gruppe_lesen(text, "Added Associations").len(), 1);
         assert!(gruppe_lesen(text, "Fehlt").is_empty());
         assert!(gruppe_lesen("", "Default Applications").is_empty());
-    }
-
-    #[test]
-    fn terminal_neu_vor_bruecke() {
-        let beide = |i: &str| i == TERMINAL_ID || i == TERMINAL_BRUECKE;
-        assert_eq!(terminal_id(beide), TERMINAL_ID);
-        assert_eq!(terminal_id(|i| i == TERMINAL_BRUECKE), TERMINAL_BRUECKE);
-        assert_eq!(terminal_id(|i| i == TERMINAL_ID), TERMINAL_ID);
-        assert_eq!(terminal_id(|_| false), TERMINAL_ID);
     }
 }

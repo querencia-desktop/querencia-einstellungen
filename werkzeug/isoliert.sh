@@ -93,7 +93,9 @@ mkdir -p "$HOME/.cache/qe01"; RT=$(mktemp -d "$HOME/.cache/qe01/hmp05-runtime-XX
 # Files unter „Geräte“. $XDG_RUNTIME_DIR/dbus-1/services hat beim Sitzungsbus
 # Vorrang (verlangt Modus 0700); XDG_DATA_HOME bleibt so wie bisher ungesetzt.
 mkdir -m 0700 "$RT/dbus-1" "$RT/dbus-1/services"
-for n in org.freedesktop.portal.Documents org.freedesktop.portal.Desktop org.freedesktop.impl.portal.PermissionStore; do
+# 0.1.2 (QD-085, 13 §5): auch gvfsd maskieren – ein Dateidialog im Wegwerf-Bus
+# startet sonst gvfsd und darüber wsdd (Netzwerksuche, läuft nach dem Lauf weiter).
+for n in org.freedesktop.portal.Documents org.freedesktop.portal.Desktop org.freedesktop.impl.portal.PermissionStore org.gtk.vfs.Daemon; do
     printf '[D-BUS Service]\nName=%s\nExec=/bin/false\n' "$n" > "$RT/dbus-1/services/$n.service"
 done
 cp "$PROFIL/config/querencia/desktop.ini" "$N/desktop.ini.vorher" 2>/dev/null || true
@@ -222,7 +224,7 @@ fi
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
   if [ "${QE_PORTAL:-}" = settings ]; then export GTK_USE_PORTAL=0; else export GDK_DEBUG=no-portals GTK_USE_PORTAL=0; fi
   export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_GSETTINGS="${QE_GSETTINGS:+$(readlink -f "$QE_GSETTINGS")}" QE_PORTAL="${QE_PORTAL:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
-  export QE_LABWC_VORGABE="$PROFIL/vorgabe" HOME="$HEIM"
+  export QE_LABWC_VORGABE="$PROFIL/vorgabe" HOME="$HEIM" GIO_USE_VFS=local
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
   if [ -n "${QE_DATA_HOME:-}" ]; then export XDG_DATA_HOME="$PROFIL/share"; fi
   mkdir -p "$PROFIL/state/querencia" "$PROFIL/cache"
