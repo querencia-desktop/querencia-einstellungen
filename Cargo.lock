@@ -598,7 +598,7 @@ dependencies = [
 
 [[package]]
 name = "querencia-einstellungen"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "gettext-rs",
  "gtk4",

@@ -51,7 +51,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.1.3 (Tag `einstellungen/0.1.3`) |
+| Version | 0.1.4 (Tag `einstellungen/0.1.4`) |
 | Letzte Prüfung | 21.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel (beim Start und beim Wechsel); Regression gegen 0.1.1 (Zahlen im Bericht der Entwicklungs-VM) |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |

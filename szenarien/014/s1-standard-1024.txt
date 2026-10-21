@@ -1,0 +1,13 @@
+extent 1024 768
+wait 4000
+shot 01-dialog.png
+move 263 690
+click
+wait 1500
+mark standard
+shot 02-standard.png
+move 805 690
+click
+wait 2500
+mark uebernommen
+shot 03-uebernommen.png

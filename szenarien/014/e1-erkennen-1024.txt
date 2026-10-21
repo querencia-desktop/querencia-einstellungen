@@ -1,0 +1,11 @@
+extent 1024 768
+wait 3500
+move 152 188
+click
+wait 2000
+mark seite hintergrundbild
+shot 01-hintergrundbild.png
+move 600 500
+scroll 3
+wait 800
+shot 02-galerie-glas.png

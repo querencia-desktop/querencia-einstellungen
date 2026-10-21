@@ -20,8 +20,12 @@
 use crate::i18n::{gettext, gettext_f, gettext_noop};
 use std::path::PathBuf;
 
-/// Das eingebaute Bild „Querencia Blau“ (Name wie im Desktop).
-pub const EINGEBAUT: &str = "querencia-blau.png";
+/// Das eingebaute Bild bei leerem `File=` (Name wie im Desktop): seit 0.1.4
+/// „Querencia Tiefblau“ wie `BUILT_IN` ab Desktop 0.2.1.
+pub const EINGEBAUT: &str = "querencia-tiefblau.png";
+/// Das eingebaute Bild bis Desktop 0.2.0 („Querencia Blau“); gilt, solange
+/// Tiefblau nicht installiert ist.
+pub const EINGEBAUT_0_1: &str = "querencia-blau.png";
 /// Standardfarbe: das Blau am unteren Rand von „Querencia Blau“ (wie im Desktop).
 pub const STANDARD_FARBE: Farbe = Farbe {
     r: 0x1c,

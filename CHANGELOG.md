@@ -12,6 +12,27 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.4] – 2026-10-21
+
+### Hinzugefügt
+- Die Galerie „Eingebaute Bilder“ kennt die 16 Hintergründe von
+  Hintergründe 0.2 (QD-093): Tiefblau, Blaugrün, Blauschein, Glut, Hügel,
+  Küste, Dünen, See, Wüste, Berge, Strand, Glas, Tiefblau mit Logo, mit
+  Wortmarke und mit Wasserzeichen, Bernstein mit Logo. Reihenfolge: Tiefblau
+  zuerst, dann die übrigen neuen Bilder, danach die Bilder von 0.1. Die
+  4:3-Fassung wird wie bisher nach dem Seitenverhältnis des Bildschirms
+  gewählt. Lange Namen stehen in zwei Zeilen.
+
+### Geändert
+- Standardbild ist „Querencia Tiefblau“ (erste Kachel). Es bleibt beim
+  leeren `File=` in `desktop.ini` („Standard wiederherstellen“, „Eingebautes
+  Bild“): das zeigt ab Desktop 0.2.1 Tiefblau. Ist Tiefblau nicht
+  installiert, gilt das leere `File=` wie bisher als „Querencia Blau“.
+  „Querencia Blau“ wird bei installiertem Tiefblau mit vollem Pfad
+  geschrieben.
+- Nicht installierte Bilder erscheinen weiterhin nicht in der Galerie; ohne
+  das Datenpaket von Hintergründe 0.2 sieht sie aus wie in 0.1.3.
+
 ## [0.1.3] – 2026-10-21
 
 ### Geändert

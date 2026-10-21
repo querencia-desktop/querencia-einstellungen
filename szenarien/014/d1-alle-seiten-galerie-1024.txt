@@ -1,0 +1,89 @@
+extent 1024 768
+wait 3500
+move 152 160
+click
+wait 1200
+mark seite erscheinungsbild
+shot 01-erscheinungsbild.png
+move 152 188
+click
+wait 1200
+mark seite hintergrundbild
+shot 02-hintergrundbild.png
+move 152 216
+click
+wait 1200
+mark seite symbole
+shot 03-symbole.png
+move 152 244
+click
+wait 1200
+mark seite fensterdesign
+shot 04-fensterdesign.png
+move 152 272
+click
+wait 1200
+mark seite schriften
+shot 05-schriften.png
+move 152 300
+click
+wait 1200
+mark seite panels
+shot 06-panels.png
+move 152 328
+click
+wait 1200
+mark seite tastatur
+shot 07-tastatur.png
+move 152 356
+click
+wait 1200
+mark seite maus
+shot 08-maus.png
+move 152 384
+click
+wait 1200
+mark seite bildschirm
+shot 09-bildschirm.png
+move 152 412
+click
+wait 1200
+mark seite arbeitsflaechen
+shot 10-arbeitsflaechen.png
+move 152 440
+click
+wait 1200
+mark seite standardanwendungen
+shot 11-standardanwendungen.png
+move 152 468
+click
+wait 1200
+mark seite sprache
+shot 12-sprache.png
+move 152 496
+click
+wait 1200
+mark seite informationen
+shot 13-informationen.png
+move 152 160
+click
+wait 1200
+move 652 404
+scroll 15
+wait 800
+shot 14-erscheinungsbild-unten.png
+scroll -15
+wait 500
+move 152 644
+wait 2000
+move 152 188
+click
+wait 1500
+mark galerie
+move 600 500
+scroll 5
+wait 800
+shot 15-galerie-mitte.png
+scroll 10
+wait 800
+shot 16-galerie-ende.png

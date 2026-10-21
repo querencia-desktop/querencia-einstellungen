@@ -18,7 +18,7 @@ use crate::hintergrund::{self as hg, GRUPPE};
 use crate::hintergrund_katalog::{Format, Wahl};
 use crate::i18n::{gettext, gettext_f};
 use crate::ini;
-use crate::modell::{self, Faehigkeiten, Hintergrund, Typ};
+use crate::modell::{Faehigkeiten, Hintergrund, Typ};
 use crate::vorschau::Vorschau;
 
 struct Seite {
@@ -46,13 +46,14 @@ fn beschreibung(h: &Hintergrund) -> String {
     if h.typ == Typ::Farbe {
         return gettext_f("Solid color {color}", &[("color", &h.farbe.hex())]);
     }
-    match (&h.datei, hg::erkannt(h.datei.as_deref())) {
-        (_, Some(w)) => gettext_f("Built-in image “{name}”", &[("name", &w.name())]),
-        (Some(p), None) => p.display().to_string(),
-        (None, None) => gettext_f(
-            "Built-in image “Querencia Blue” ({file})",
-            &[("file", modell::EINGEBAUT)],
-        ),
+    // leeres `File=` ist immer eine Kachel (das eingebaute Bild)
+    match hg::erkannt(h.datei.as_deref()) {
+        Some(w) => gettext_f("Built-in image “{name}”", &[("name", &w.name())]),
+        None => h
+            .datei
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default(),
     }
 }
 
@@ -370,7 +371,8 @@ mod tests {
     #[test]
     fn beschreibung_farbe_und_standard() {
         let mut h = Hintergrund::default();
-        assert!(beschreibung(&h).contains("Querencia Blue"));
+        // leeres `File=`: das eingebaute Bild (Tiefblau, sonst Blau)
+        assert!(beschreibung(&h).contains(&hg::eingebaut_wahl().name()));
         h.typ = Typ::Farbe;
         assert_eq!(beschreibung(&h), format!("Solid color {}", h.farbe.hex()));
     }

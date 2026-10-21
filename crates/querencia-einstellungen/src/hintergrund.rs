@@ -7,6 +7,9 @@
 //! G2-AF: Galerie der eingebauten Bilder (`hintergrund_katalog.rs`); gewählt
 //! wird die 4:3- oder 16:9-Fassung passend zum Bildschirm, die Vorschau zeigt
 //! die Fassung für die gewählte Vorschaugröße.
+//! 0.1.4: Galerie mit den Motiven von Hintergründe 0.2; leeres `File=` (auch
+//! „Standard wiederherstellen“ und „Eingebautes Bild“) ist „Querencia
+//! Tiefblau“, sobald es installiert ist, sonst wie bis 0.1.3 „Querencia Blau“.
 use std::cell::{Cell, RefCell};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -43,27 +46,48 @@ pub fn eingebaute_ordner() -> Vec<PathBuf> {
         .collect()
 }
 
-/// Das eingebaute Bild „Querencia Blau“ (der Standard).
-pub fn eingebautes_bild() -> Option<PathBuf> {
-    eingebaute_ordner()
-        .into_iter()
-        .map(|o| o.join(modell::EINGEBAUT))
-        .find(|p| p.is_file())
+/// 0.1.4: das eingebaute Bild bei leerem `File=` mit seiner Kachel:
+/// „Querencia Tiefblau“, sobald es installiert ist (Hintergründe 0.2, Desktop
+/// ab 0.2.1), sonst „Querencia Blau“ wie bis 0.1.3.
+fn eingebaut() -> Option<(Wahl, PathBuf)> {
+    let ordner = eingebaute_ordner();
+    [
+        (Wahl::STANDARD, modell::EINGEBAUT),
+        (Wahl::BLAU, modell::EINGEBAUT_0_1),
+    ]
+    .into_iter()
+    .find_map(|(wahl, name)| {
+        ordner
+            .iter()
+            .map(|o| o.join(name))
+            .find(|p| p.is_file())
+            .map(|p| (wahl, p))
+    })
 }
 
-/// G2-AF: Datei einer Galerie-Kachel für ein Format; „Querencia Blau“ ist
-/// `None` (leeres `File=`, wie bisher der Standard).
+/// Das eingebaute Bild (Tiefblau, sonst Blau).
+pub fn eingebautes_bild() -> Option<PathBuf> {
+    eingebaut().map(|(_, p)| p)
+}
+
+/// Kachel des leeren `File=`; ohne installiertes Bild der Standard Tiefblau.
+pub(crate) fn eingebaut_wahl() -> Wahl {
+    eingebaut().map_or(Wahl::STANDARD, |(w, _)| w)
+}
+
+/// G2-AF: Datei einer Galerie-Kachel für ein Format; die Kachel des
+/// eingebauten Bilds ist `None` (leeres `File=`).
 pub(crate) fn eingebaut_datei(wahl: Wahl, format: Format) -> Option<PathBuf> {
-    if wahl == Wahl::STANDARD {
+    if wahl == eingebaut_wahl() {
         return None;
     }
     wahl.finden(format, &eingebaute_ordner(), Path::is_file)
 }
 
-/// Kachel zur Einstellung: leeres `File=` ist „Querencia Blau“.
+/// Kachel zur Einstellung: leeres `File=` ist das eingebaute Bild.
 pub(crate) fn erkannt(datei: Option<&Path>) -> Option<Wahl> {
     match datei {
-        None => Some(Wahl::STANDARD),
+        None => Some(eingebaut_wahl()),
         Some(p) => katalog::erkennen(p),
     }
 }
@@ -551,28 +575,54 @@ pub(crate) fn galerie_bauen(
     galerie.set_column_spacing(4);
     galerie.set_row_spacing(4);
     let mut kacheln = Vec::new();
-    for wahl in katalog::kacheln() {
-        let Some(bild) = wahl.finden(Format::Breit, &eingebaute_ordner(), Path::is_file) else {
-            continue;
-        };
+    // 0.1.4: nicht installierte Motive (etwa vor dem Datenpaket von
+    // Hintergründe 0.2) erscheinen nicht.
+    let verfuegbar = katalog::verfuegbar(&eingebaute_ordner(), Path::is_file);
+    // Gibt es zweizeilige Namen, sind alle Namensfelder zwei Zeilen hoch: Die
+    // FlowBox setzt niedrigere Kacheln sonst mittig in die Reihe, und die
+    // Vorschaubilder einer Reihe stünden nicht auf einer Höhe.
+    let namenshoehe = verfuegbar
+        .iter()
+        .any(|(w, _)| w.kachelname().contains('\n'))
+        .then(|| {
+            gtk4::Label::new(Some("X\nX"))
+                .measure(gtk4::Orientation::Vertical, -1)
+                .1
+        });
+    for (wahl, bild) in verfuegbar {
         let feld = gtk4::Box::new(gtk4::Orientation::Vertical, 2);
         let vorschau = gtk4::Picture::new();
         vorschau.set_size_request(KACHEL.0, KACHEL.1);
         vorschau.set_halign(gtk4::Align::Center);
         vorschau.set_valign(gtk4::Align::Center);
         vorschau.set_content_fit(gtk4::ContentFit::Cover);
-        // Kurzname in einer Zeile, damit alle Kacheln gleich hoch sind; der
-        // volle Name steht im Tooltip.
-        let name = gtk4::Label::new(Some(&wahl.kurzname()));
-        name.set_ellipsize(gtk4::pango::EllipsizeMode::End);
-        name.set_max_width_chars(16);
+        // Kurzname in einer Zeile wie bis 0.1.3; lange Namen von
+        // Hintergründe 0.2 („Tiefblau mit Wasserzeichen“) mit festem
+        // Zeilenumbruch (`kachelname`). Kein automatischer Umbruch: den misst
+        // die FlowBox einzeilig, und er verschiebt auch einzeilige Namen um
+        // ein Pixel. Der volle Name steht im Tooltip.
+        let kachelname = wahl.kachelname();
+        let name = gtk4::Label::new(Some(&kachelname));
+        if kachelname.contains('\n') {
+            name.set_justify(gtk4::Justification::Center);
+        } else {
+            name.set_ellipsize(gtk4::pango::EllipsizeMode::End);
+            name.set_max_width_chars(katalog::KACHEL_ZEICHEN as i32);
+        }
+        if let Some(h) = namenshoehe {
+            name.set_size_request(-1, h);
+            name.set_yalign(0.0);
+        }
         feld.append(&vorschau);
         feld.append(&name);
         let kind = gtk4::FlowBoxChild::new();
         kind.set_child(Some(&feld));
         let datei = eingebaut_datei(wahl, bildschirm)
-            .and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
-            .unwrap_or_else(|| modell::EINGEBAUT.to_string());
+            .as_deref()
+            .unwrap_or(&bild)
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
         kind.set_tooltip_text(Some(&format!("{} – {datei}", wahl.name())));
         galerie.insert(&kind, -1);
         kacheln.push((wahl, kind));
@@ -776,8 +826,18 @@ impl Oberflaeche {
                     ),
                     (Some(p), None) => p.display().to_string(),
                     (None, _) => gettext_f(
-                        "Built-in image “Querencia Blue” ({file})",
-                        &[("file", modell::EINGEBAUT)],
+                        "Built-in image “{name}” ({file})",
+                        &[
+                            ("name", &eingebaut_wahl().name()),
+                            (
+                                "file",
+                                &eingebautes_bild()
+                                    .and_then(|p| {
+                                        p.file_name().map(|n| n.to_string_lossy().into_owned())
+                                    })
+                                    .unwrap_or_else(|| modell::EINGEBAUT.to_string()),
+                            ),
+                        ],
                     ),
                 });
             // G2-AF: Kachel der Einstellung markieren (fremdes Bild: keine)

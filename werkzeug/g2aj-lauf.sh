@@ -6,7 +6,7 @@
 # Desktop G2-AD 0.2 (7f6744b5). Alles andere über die QE_*-Variablen von
 # isoliert.sh (z. B. QE_WLR_RENDERER, QE_GSK_RENDERER, QE_LABWC_DATEIEN).
 #
-#   QE_APP_BIN=<binary> bash werkzeug/g2aj-lauf.sh <lauf> <BREITExHÖHE> <szenario>
+#   QE_APP_BIN=<binary> bash werkzeug/g2aj-lauf.sh <lauf> <BREITExHÖHE> <szenario> [desktop.ini-Vorlage]
 set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
@@ -20,5 +20,5 @@ export QE_GSETTINGS=${QE_GSETTINGS:-$P/szenarien/g2aj/gsettings-live.txt}
 export QE_LABWC=${QE_LABWC:-benutzer}
 export QE_APP_ARGS=${QE_APP_ARGS:--}
 export QE_ZEIT=${QE_ZEIT:-120}
-bash werkzeug/isoliert.sh "$1" "$2" "$3" >/dev/null 2>&1
+bash werkzeug/isoliert.sh "$1" "$2" "$3" ${4:+"$4"} >/dev/null 2>&1
 echo "Lauf $1: $(tail -1 "nachweis/$1/logs/eingabe.log")"

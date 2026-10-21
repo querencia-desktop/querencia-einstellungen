@@ -196,6 +196,18 @@ for d in icons themes querencia; do
     [ -d "$HOME_REAL/.local/share/$d" ] && cp -rs "$HOME_REAL/.local/share/$d" "$HEIM/.local/share/$d"
 done
 [ -d "$HOME_REAL/.local/share/applications" ] && cp -a "$HOME_REAL/.local/share/applications" "$HEIM/.local/share/"
+# 0.1.4: QE_HINTERGRUENDE=<ordner>[:<ordner>…] ersetzt die eingebauten Bilder
+# im Profil durch Verweise auf die querencia-*.png dieser Ordner (unabhängig
+# davon, was live in ~/.local/share/querencia/hintergruende liegt).
+if [ -n "${QE_HINTERGRUENDE:-}" ]; then
+    rm -rf "${HEIM:?}/.local/share/querencia/hintergruende"
+    mkdir -p "$HEIM/.local/share/querencia/hintergruende"
+    IFS=: read -ra hg_ordner <<<"$QE_HINTERGRUENDE"
+    for o in "${hg_ordner[@]}"; do
+        for f in "$o"/querencia-*.png; do ln -s "$(readlink -f "$f")" "$HEIM/.local/share/querencia/hintergruende/"; done
+    done
+    ls "$HEIM/.local/share/querencia/hintergruende" > "$N/hintergruende.txt"
+fi
 if [ -n "${QE_THEMA_ORDNER:-}" ]; then
     rm -rf "${HEIM:?}/.local/share/themes/Querencia-Klassisch"
     mkdir -p "$HEIM/.local/share/themes"

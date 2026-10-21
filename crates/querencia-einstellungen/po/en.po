@@ -112,7 +112,7 @@ msgid ""
 msgstr ""
 "Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
 
-#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:258 src/labwc_seite.rs:274
+#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:282 src/labwc_seite.rs:274
 msgid "Restore Defaults"
 msgstr "Restore Defaults"
 
@@ -120,7 +120,7 @@ msgstr "Restore Defaults"
 msgid "Reload"
 msgstr "Reload"
 
-#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:259 src/hintergrund_seite.rs:135 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
+#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
 msgid "Apply"
 msgstr "Apply"
 
@@ -184,17 +184,17 @@ msgid ""
 msgstr ""
 "The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 
-#: src/arbeitsflaeche.rs:404 src/hintergrund.rs:899
+#: src/arbeitsflaeche.rs:404 src/hintergrund.rs:959
 #, no-c-format
 msgid "Applied at {time}. Previous setting saved as {name}."
 msgstr "Applied at {time}. Previous setting saved as {name}."
 
-#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:911 src/labwc_seite.rs:466
+#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:971 src/labwc_seite.rs:466
 #, no-c-format
 msgid "Applied at {time}."
 msgstr "Applied at {time}."
 
-#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:914 src/hintergrund_seite.rs:358 src/labwc_seite.rs:541
+#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:541
 #, no-c-format
 msgid "Not saved: {error}"
 msgstr "Not saved: {error}"
@@ -297,7 +297,7 @@ msgstr "the outputs have changed in the meantime; please try again"
 msgid "Appearance"
 msgstr "Appearance"
 
-#: src/bereiche.rs:32 src/hintergrund_seite.rs:60
+#: src/bereiche.rs:32 src/hintergrund_seite.rs:61
 msgid "Background Image"
 msgstr "Background Image"
 
@@ -313,7 +313,7 @@ msgstr "Fonts"
 msgid "Panels"
 msgstr "Panels"
 
-#: src/bereiche.rs:57 src/tastatur.rs:230
+#: src/bereiche.rs:57 src/tastatur.rs:233
 msgid "Keyboard"
 msgstr "Keyboard"
 
@@ -431,84 +431,84 @@ msgstr[0] ""
 msgstr[1] ""
 "{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
 
-#: src/bildschirm.rs:381
+#: src/bildschirm.rs:382
 #, no-c-format
 msgid "{name} – primary monitor"
 msgstr "{name} – primary monitor"
 
-#: src/bildschirm.rs:384
+#: src/bildschirm.rs:385
 #, no-c-format
 msgid "{name} (off)"
 msgstr "{name} (off)"
 
-#: src/bildschirm.rs:437
+#: src/bildschirm.rs:438
 #, no-c-format
 msgid "{size} (preferred)"
 msgstr "{size} (preferred)"
 
-#: src/bildschirm.rs:488
+#: src/bildschirm.rs:489
 #, no-c-format
 msgid ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 msgstr ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 
-#: src/bildschirm.rs:511
+#: src/bildschirm.rs:512
 msgid "no list (free sizes, e.g. virtual output)"
 msgstr "no list (free sizes, e.g. virtual output)"
 
-#: src/bildschirm.rs:525
+#: src/bildschirm.rs:526
 #, no-c-format
 msgid " · serial number {serial}"
 msgstr " · serial number {serial}"
 
-#: src/bildschirm.rs:576
+#: src/bildschirm.rs:577
 msgid ""
 "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
 msgstr ""
 "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
 
-#: src/bildschirm.rs:611 src/bildschirm.rs:742
+#: src/bildschirm.rs:612 src/bildschirm.rs:743
 msgid "no connection"
 msgstr "no connection"
 
-#: src/bildschirm.rs:631
+#: src/bildschirm.rs:632
 msgid "No change compared to the current state."
 msgstr "No change compared to the current state."
 
-#: src/bildschirm.rs:638
+#: src/bildschirm.rs:639
 msgid "no connection to the compositor"
 msgstr "no connection to the compositor"
 
-#: src/bildschirm.rs:648
+#: src/bildschirm.rs:649
 #, no-c-format
 msgid "Not applied – {error}"
 msgstr "Not applied – {error}"
 
-#: src/bildschirm.rs:662
+#: src/bildschirm.rs:663
 #, no-c-format
 msgid ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 msgstr ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 
-#: src/bildschirm.rs:679
+#: src/bildschirm.rs:680
 msgid "Keep Screen Settings?"
 msgstr "Keep Screen Settings?"
 
-#: src/bildschirm.rs:692
+#: src/bildschirm.rs:693
 msgid "The new screen settings are active. Do you want to keep them?"
 msgstr "The new screen settings are active. Do you want to keep them?"
 
-#: src/bildschirm.rs:702
+#: src/bildschirm.rs:703
 msgid "Restore Previous Settings"
 msgstr "Restore Previous Settings"
 
-#: src/bildschirm.rs:703
+#: src/bildschirm.rs:704
 msgid "Keep Settings"
 msgstr "Keep Settings"
 
-#: src/bildschirm.rs:714 src/i18n.rs:175
+#: src/bildschirm.rs:715 src/i18n.rs:175
 #, no-c-format
 msgid "Without confirmation the previous settings are restored in {n} second."
 msgid_plural ""
@@ -517,36 +517,36 @@ msgstr[0] "Without confirmation the previous settings are restored in {n} second
 msgstr[1] ""
 "Without confirmation the previous settings are restored in {n} seconds."
 
-#: src/bildschirm.rs:753
+#: src/bildschirm.rs:754
 msgid "Previous screen settings restored; nothing saved."
 msgstr "Previous screen settings restored; nothing saved."
 
-#: src/bildschirm.rs:757
+#: src/bildschirm.rs:758
 #, no-c-format
 msgid "Restoring failed – {error}. The new state remains, nothing saved."
 msgstr "Restoring failed – {error}. The new state remains, nothing saved."
 
-#: src/bildschirm.rs:831
+#: src/bildschirm.rs:832
 #, no-c-format
 msgid ""
 "Screen settings kept and saved in {file}. They are applied again at session start."
 msgstr ""
 "Screen settings kept and saved in {file}. They are applied again at session start."
 
-#: src/bildschirm.rs:836
+#: src/bildschirm.rs:837
 #, no-c-format
 msgid "Settings active, but not saved: {error}"
 msgstr "Settings active, but not saved: {error}"
 
-#: src/bildschirm.rs:896
+#: src/bildschirm.rs:897
 msgid "No output switched on"
 msgstr "No output switched on"
 
-#: src/bildschirm.rs:1105
+#: src/bildschirm.rs:1106
 msgid "Reset to the current state of the compositor."
 msgstr "Reset to the current state of the compositor."
 
-#: src/bildschirm.rs:1109
+#: src/bildschirm.rs:1110
 #, no-c-format
 msgid "Reading failed – {error}"
 msgstr "Reading failed – {error}"
@@ -633,7 +633,7 @@ msgstr ""
 msgid "Icons"
 msgstr "Icons"
 
-#: src/erscheinungsbild.rs:334 src/hintergrund.rs:245
+#: src/erscheinungsbild.rs:334 src/hintergrund.rs:269
 msgid "Preview:"
 msgstr "Preview:"
 
@@ -754,172 +754,231 @@ msgstr "Schema {schema} is missing"
 msgid "{key}: “{value}” is not a number"
 msgstr "{key}: “{value}” is not a number"
 
-#: src/hintergrund.rs:26
+#: src/hintergrund.rs:29
 msgid "Querencia – Background"
 msgstr "Querencia – Background"
 
-#: src/hintergrund.rs:143
+#: src/hintergrund.rs:167
 msgid "Preview"
 msgstr "Preview"
 
-#: src/hintergrund.rs:151
+#: src/hintergrund.rs:175
 msgid "Preview for:"
 msgstr "Preview for:"
 
-#: src/hintergrund.rs:164
+#: src/hintergrund.rs:188
 msgid "Background Type"
 msgstr "Background Type"
 
-#: src/hintergrund.rs:167 src/hintergrund.rs:175
+#: src/hintergrund.rs:191 src/hintergrund.rs:199
 msgid "Background image"
 msgstr "Background image"
 
-#: src/hintergrund.rs:168
+#: src/hintergrund.rs:192
 msgid "Solid background color"
 msgstr "Solid background color"
 
-#: src/hintergrund.rs:180
+#: src/hintergrund.rs:204
 msgid "Built-in images:"
 msgstr "Built-in images:"
 
-#: src/hintergrund.rs:184
+#: src/hintergrund.rs:208
 #, no-c-format
 msgid "The {format} version is used for this screen."
 msgstr "The {format} version is used for this screen."
 
-#: src/hintergrund.rs:196
+#: src/hintergrund.rs:220
 msgid "Choose Image …"
 msgstr "Choose Image …"
 
-#: src/hintergrund.rs:197
+#: src/hintergrund.rs:221
 msgid "Built-in Image"
 msgstr "Built-in Image"
 
-#: src/hintergrund.rs:203
+#: src/hintergrund.rs:227
 msgid "Style:"
 msgstr "Style:"
 
-#: src/hintergrund.rs:221
+#: src/hintergrund.rs:245
 msgid "Background Color"
 msgstr "Background Color"
 
-#: src/hintergrund.rs:237
+#: src/hintergrund.rs:261
 msgid "Palette:"
 msgstr "Palette:"
 
-#: src/hintergrund.rs:241
+#: src/hintergrund.rs:265
 msgid "Color value:"
 msgstr "Color value:"
 
-#: src/hintergrund.rs:243
+#: src/hintergrund.rs:267
 msgid "Custom:"
 msgstr "Custom:"
 
-#: src/hintergrund.rs:257 src/standardanwendungen.rs:407 src/tastatur.rs:475
+#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/hintergrund.rs:470
+#: src/hintergrund.rs:494
 msgid "Invalid color value – expected #rrggbb, for example #204a87."
 msgstr "Invalid color value – expected #rrggbb, for example #204a87."
 
-#: src/hintergrund.rs:510
+#: src/hintergrund.rs:534
 msgid "Default restored in the preview – takes effect only after “Apply”."
 msgstr "Default restored in the preview – takes effect only after “Apply”."
 
-#: src/hintergrund.rs:520
+#: src/hintergrund.rs:544
 #, no-c-format
 msgid "Note: {n} entry in desktop.ini was ignored (see the log)."
 msgid_plural "Note: {n} entries in desktop.ini were ignored (see the log)."
 msgstr[0] "Note: {n} entry in desktop.ini was ignored (see the log)."
 msgstr[1] "Note: {n} entries in desktop.ini were ignored (see the log)."
 
-#: src/hintergrund.rs:641
+#: src/hintergrund.rs:691
 #, no-c-format
 msgid "Current screen ({width}×{height})"
 msgstr "Current screen ({width}×{height})"
 
-#: src/hintergrund.rs:680
+#: src/hintergrund.rs:730
 #, no-c-format
 msgid ""
 "Image “{file}” not readable ({error}). The desktop then shows the built-in image."
 msgstr ""
 "Image “{file}” not readable ({error}). The desktop then shows the built-in image."
 
-#: src/hintergrund.rs:693
+#: src/hintergrund.rs:743
 msgid "Built-in image not found – color only."
 msgstr "Built-in image not found – color only."
 
-#: src/hintergrund.rs:724
+#: src/hintergrund.rs:774
 msgid "Images (PNG, JPEG, WebP, …)"
 msgstr "Images (PNG, JPEG, WebP, …)"
 
-#: src/hintergrund.rs:729
+#: src/hintergrund.rs:779
 msgid "Choose Background Image"
 msgstr "Choose Background Image"
 
-#: src/hintergrund.rs:765
+#: src/hintergrund.rs:815 src/hintergrund.rs:828
 #, no-c-format
 msgid "Built-in image “{name}” ({file})"
 msgstr "Built-in image “{name}” ({file})"
 
-#: src/hintergrund.rs:778 src/hintergrund_seite.rs:52
-#, no-c-format
-msgid "Built-in image “Querencia Blue” ({file})"
-msgstr "Built-in image “Querencia Blue” ({file})"
-
-#: src/hintergrund.rs:835
+#: src/hintergrund.rs:895
 msgid "Writes desktop.ini; the desktop applies it immediately."
 msgstr "Writes desktop.ini; the desktop applies it immediately."
 
-#: src/hintergrund.rs:840
+#: src/hintergrund.rs:900
 msgid "No change compared to the saved setting."
 msgstr "No change compared to the saved setting."
 
-#: src/hintergrund.rs:842
+#: src/hintergrund.rs:902
 msgid "Changed – not applied yet."
 msgstr "Changed – not applied yet."
 
-#: src/hintergrund.rs:848
+#: src/hintergrund.rs:908
 msgid "Determining the desktop’s capabilities …"
 msgstr "Determining the desktop’s capabilities …"
 
-#: src/hintergrund.rs:849 src/hintergrund_seite.rs:297
+#: src/hintergrund.rs:909 src/hintergrund_seite.rs:298
 msgid "Determining the capabilities of the running desktop …"
 msgstr "Determining the capabilities of the running desktop …"
 
-#: src/hintergrund.rs:856 src/hintergrund_seite.rs:303
+#: src/hintergrund.rs:916 src/hintergrund_seite.rs:304
 #, no-c-format
 msgid "The running desktop cannot display this: {reason}"
 msgstr "The running desktop cannot display this: {reason}"
 
-#: src/hintergrund.rs:881
+#: src/hintergrund.rs:941
 msgid ""
 "desktop.ini has been changed elsewhere in the meantime – not overwritten. Please close the dialog and open it again."
 msgstr ""
 "desktop.ini has been changed elsewhere in the meantime – not overwritten. Please close the dialog and open it again."
 
-#: src/hintergrund_katalog.rs:33 src/modell.rs:34
+#: src/hintergrund_katalog.rs:41
+msgid "Querencia Deep Blue"
+msgstr "Querencia Deep Blue"
+
+#: src/hintergrund_katalog.rs:47
+msgid "Querencia Blue Green"
+msgstr "Querencia Blue Green"
+
+#: src/hintergrund_katalog.rs:53
+msgid "Querencia Blue Glow"
+msgstr "Querencia Blue Glow"
+
+#: src/hintergrund_katalog.rs:59
+msgid "Querencia Ember"
+msgstr "Querencia Ember"
+
+#: src/hintergrund_katalog.rs:65
+msgid "Querencia Hills"
+msgstr "Querencia Hills"
+
+#: src/hintergrund_katalog.rs:71
+msgid "Querencia Coast"
+msgstr "Querencia Coast"
+
+#: src/hintergrund_katalog.rs:77
+msgid "Querencia Dunes"
+msgstr "Querencia Dunes"
+
+#: src/hintergrund_katalog.rs:83
+msgid "Querencia Lake"
+msgstr "Querencia Lake"
+
+#: src/hintergrund_katalog.rs:89
+msgid "Querencia Desert"
+msgstr "Querencia Desert"
+
+#: src/hintergrund_katalog.rs:95
+msgid "Querencia Mountains"
+msgstr "Querencia Mountains"
+
+#: src/hintergrund_katalog.rs:101
+msgid "Querencia Beach"
+msgstr "Querencia Beach"
+
+#: src/hintergrund_katalog.rs:107
+msgid "Querencia Glass"
+msgstr "Querencia Glass"
+
+#: src/hintergrund_katalog.rs:113
+msgid "Querencia Deep Blue with logo"
+msgstr "Querencia Deep Blue with logo"
+
+#: src/hintergrund_katalog.rs:119
+msgid "Querencia Deep Blue with wordmark"
+msgstr "Querencia Deep Blue with wordmark"
+
+#: src/hintergrund_katalog.rs:125
+msgid "Querencia Deep Blue with watermark"
+msgstr "Querencia Deep Blue with watermark"
+
+#: src/hintergrund_katalog.rs:131
+msgid "Querencia Amber with logo"
+msgstr "Querencia Amber with logo"
+
+#: src/hintergrund_katalog.rs:138 src/modell.rs:38
 msgid "Querencia Blue"
 msgstr "Querencia Blue"
 
-#: src/hintergrund_katalog.rs:39
+#: src/hintergrund_katalog.rs:144
 msgid "Querencia Evening"
 msgstr "Querencia Evening"
 
-#: src/hintergrund_katalog.rs:45
+#: src/hintergrund_katalog.rs:150
 msgid "Querencia Blue 2"
 msgstr "Querencia Blue 2"
 
-#: src/hintergrund_katalog.rs:51
+#: src/hintergrund_katalog.rs:156
 msgid "Querencia Earth"
 msgstr "Querencia Earth"
 
-#: src/hintergrund_katalog.rs:57
+#: src/hintergrund_katalog.rs:162
 msgid "Querencia Night"
 msgstr "Querencia Night"
 
-#: src/hintergrund_katalog.rs:114
+#: src/hintergrund_katalog.rs:271
 #, no-c-format
 msgid "{name} with logo"
 msgstr "{name} with logo"
@@ -929,76 +988,76 @@ msgstr "{name} with logo"
 msgid "Solid color {color}"
 msgstr "Solid color {color}"
 
-#: src/hintergrund_seite.rs:50
+#: src/hintergrund_seite.rs:51
 #, no-c-format
 msgid "Built-in image “{name}”"
 msgstr "Built-in image “{name}”"
 
-#: src/hintergrund_seite.rs:74
+#: src/hintergrund_seite.rs:75
 msgid "Current background:"
 msgstr "Current background:"
 
-#: src/hintergrund_seite.rs:87
+#: src/hintergrund_seite.rs:88
 msgid "Background …"
 msgstr "Background …"
 
-#: src/hintergrund_seite.rs:90
+#: src/hintergrund_seite.rs:91
 msgid "Own image, solid-color background and style"
 msgstr "Own image, solid-color background and style"
 
-#: src/hintergrund_seite.rs:98
+#: src/hintergrund_seite.rs:99
 msgid "Own image, color and style"
 msgstr "Own image, color and style"
 
-#: src/hintergrund_seite.rs:105
+#: src/hintergrund_seite.rs:106
 msgid "Built-in Images"
 msgstr "Built-in Images"
 
-#: src/hintergrund_seite.rs:114
+#: src/hintergrund_seite.rs:115
 #, no-c-format
 msgid ""
 "A click selects the image for the preview, “Apply” sets it as the background. The {format} version is used for this screen."
 msgstr ""
 "A click selects the image for the preview, “Apply” sets it as the background. The {format} version is used for this screen."
 
-#: src/hintergrund_seite.rs:125
+#: src/hintergrund_seite.rs:126
 msgid ""
 "~/.config/querencia/desktop.ini [Background]; Querencia Desktop draws the background and reloads the file immediately when it changes."
 msgstr ""
 "~/.config/querencia/desktop.ini [Background]; Querencia Desktop draws the background and reloads the file immediately when it changes."
 
-#: src/hintergrund_seite.rs:134
+#: src/hintergrund_seite.rs:135
 msgid "Discard Selection"
 msgstr "Discard Selection"
 
-#: src/hintergrund_seite.rs:245
+#: src/hintergrund_seite.rs:246
 #, no-c-format
 msgid "Style: {style}"
 msgstr "Style: {style}"
 
-#: src/hintergrund_seite.rs:280
+#: src/hintergrund_seite.rs:281
 msgid "Choose an image from the gallery and “Apply”."
 msgstr "Choose an image from the gallery and “Apply”."
 
-#: src/hintergrund_seite.rs:290
+#: src/hintergrund_seite.rs:291
 #, no-c-format
 msgid "Selected: {name} – not applied yet."
 msgstr "Selected: {name} – not applied yet."
 
-#: src/hintergrund_seite.rs:324
+#: src/hintergrund_seite.rs:325
 msgid ""
 "desktop.ini has been changed elsewhere in the meantime – not overwritten. “Discard Selection” shows the current state."
 msgstr ""
 "desktop.ini has been changed elsewhere in the meantime – not overwritten. “Discard Selection” shows the current state."
 
-#: src/hintergrund_seite.rs:340
+#: src/hintergrund_seite.rs:341
 #, no-c-format
 msgid ""
 "Applied at {time}; the desktop shows the image immediately. Previous setting saved as {name}."
 msgstr ""
 "Applied at {time}; the desktop shows the image immediately. Previous setting saved as {name}."
 
-#: src/hintergrund_seite.rs:352
+#: src/hintergrund_seite.rs:353
 #, no-c-format
 msgid "Applied at {time}; the desktop shows the image immediately."
 msgstr "Applied at {time}; the desktop shows the image immediately."
@@ -1209,69 +1268,69 @@ msgstr ""
 msgid "Default"
 msgstr "Default"
 
-#: src/modell.rs:35
+#: src/modell.rs:39
 msgid "Tango Blue"
 msgstr "Tango Blue"
 
-#: src/modell.rs:36
+#: src/modell.rs:40
 msgid "Anthracite"
 msgstr "Anthracite"
 
-#: src/modell.rs:38
+#: src/modell.rs:42
 msgid "Querencia Orange"
 msgstr "Querencia Orange"
 
-#: src/modell.rs:41
+#: src/modell.rs:45
 msgid "Slate"
 msgstr "Slate"
 
-#: src/modell.rs:42
+#: src/modell.rs:46
 msgid "Moss"
 msgstr "Moss"
 
-#: src/modell.rs:43
+#: src/modell.rs:47
 msgid "Wine"
 msgstr "Wine"
 
-#: src/modell.rs:44
+#: src/modell.rs:48
 msgid "Sand"
 msgstr "Sand"
 
-#: src/modell.rs:45
+#: src/modell.rs:49
 msgid "Fog"
 msgstr "Fog"
 
-#: src/modell.rs:46
+#: src/modell.rs:50
 msgid "Black"
 msgstr "Black"
 
-#: src/modell.rs:114
+#: src/modell.rs:118
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/modell.rs:115
+#: src/modell.rs:119
 msgid "Scaled"
 msgstr "Scaled"
 
-#: src/modell.rs:116
+#: src/modell.rs:120
 msgid "Centered"
 msgstr "Centered"
 
-#: src/modell.rs:117
+#: src/modell.rs:121
 msgid "Stretched"
 msgstr "Stretched"
 
-#: src/modell.rs:118
+#: src/modell.rs:122
 msgid "Tiled"
 msgstr "Tiled"
 
-#: src/modell.rs:300
+#: src/modell.rs:304
 msgid ""
 "A plain solid-color background needs the desktop extension (Type=color); the running desktop shows the built-in image instead."
 msgstr ""
 "A plain solid-color background needs the desktop extension (Type=color); the running desktop shows the built-in image instead."
 
-#: src/modell.rs:306
+#: src/modell.rs:310
 #, no-c-format
 msgid ""
 "“{style}” needs the desktop extension; the running desktop shows “{zoom}” instead."
@@ -1571,7 +1630,7 @@ msgid ""
 msgstr ""
 "Which application opens files and addresses – in Querencia Files, on the desktop and in all programs that open via GIO. A change takes effect immediately."
 
-#: src/standardanwendungen.rs:261 src/tastatur.rs:304
+#: src/standardanwendungen.rs:261 src/tastatur.rs:307
 msgid "Change …"
 msgstr "Change …"
 
@@ -1641,139 +1700,139 @@ msgstr "(none)"
 msgid "{category}: not saved – {error}"
 msgstr "{category}: not saved – {error}"
 
-#: src/standardanwendungen_modell.rs:54
+#: src/standardanwendungen_modell.rs:44
 msgid "Web Browser"
 msgstr "Web Browser"
 
-#: src/standardanwendungen_modell.rs:66
+#: src/standardanwendungen_modell.rs:56
 msgid "Email"
 msgstr "Email"
 
-#: src/standardanwendungen_modell.rs:73
+#: src/standardanwendungen_modell.rs:63
 msgid "Text Editor"
 msgstr "Text Editor"
 
-#: src/standardanwendungen_modell.rs:80
+#: src/standardanwendungen_modell.rs:70
 msgid "Terminal"
 msgstr "Terminal"
 
-#: src/standardanwendungen_modell.rs:87
+#: src/standardanwendungen_modell.rs:77
 msgid "Images"
 msgstr "Images"
 
-#: src/standardanwendungen_modell.rs:102
+#: src/standardanwendungen_modell.rs:92
 msgid "Music"
 msgstr "Music"
 
-#: src/standardanwendungen_modell.rs:116
+#: src/standardanwendungen_modell.rs:106
 msgid "Video"
 msgstr "Video"
 
-#: src/standardanwendungen_modell.rs:129
+#: src/standardanwendungen_modell.rs:119
 msgid "File Manager"
 msgstr "File Manager"
 
-#: src/standardanwendungen_modell.rs:136
+#: src/standardanwendungen_modell.rs:126
 msgid "PDF Documents"
 msgstr "PDF Documents"
 
-#: src/standardanwendungen_modell.rs:143
+#: src/standardanwendungen_modell.rs:133
 msgid "Archives"
 msgstr "Archives"
 
-#: src/tastatur.rs:117
+#: src/tastatur.rs:120
 msgid "No additional layouts."
 msgstr "No additional layouts."
 
-#: src/tastatur.rs:127
+#: src/tastatur.rs:130
 msgid "Move Up"
 msgstr "Move Up"
 
-#: src/tastatur.rs:128
+#: src/tastatur.rs:131
 msgid "Move Down"
 msgstr "Move Down"
 
-#: src/tastatur.rs:130
+#: src/tastatur.rs:133
 msgid "Remove"
 msgstr "Remove"
 
-#: src/tastatur.rs:142
+#: src/tastatur.rs:145
 msgid "None"
 msgstr "None"
 
-#: src/tastatur.rs:232
+#: src/tastatur.rs:235
 msgid ""
 "~/.config/querencia/labwc: rc.xml <keyboard> (repeat, Num Lock), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT, XKB_DEFAULT_OPTIONS; default in environment)."
 msgstr ""
 "~/.config/querencia/labwc: rc.xml <keyboard> (repeat, Num Lock), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT, XKB_DEFAULT_OPTIONS; default in environment)."
 
-#: src/tastatur.rs:298
+#: src/tastatur.rs:301
 msgid "Keyboard Layout"
 msgstr "Keyboard Layout"
 
-#: src/tastatur.rs:308
+#: src/tastatur.rs:311
 msgid ""
 "Applies to all programs. labwc applies the layout immediately with “Apply” as soon as the session reads the user copy."
 msgstr ""
 "Applies to all programs. labwc applies the layout immediately with “Apply” as soon as the session reads the user copy."
 
-#: src/tastatur.rs:313
+#: src/tastatur.rs:316
 msgid "Key Repeat"
 msgstr "Key Repeat"
 
-#: src/tastatur.rs:316
+#: src/tastatur.rs:319
 msgid "Delay before repeating (milliseconds):"
 msgstr "Delay before repeating (milliseconds):"
 
-#: src/tastatur.rs:321
+#: src/tastatur.rs:324
 msgid "Speed (characters per second):"
 msgstr "Speed (characters per second):"
 
-#: src/tastatur.rs:325
+#: src/tastatur.rs:328
 msgid "Try it here (after “Apply”)"
 msgstr "Try it here (after “Apply”)"
 
-#: src/tastatur.rs:330
+#: src/tastatur.rs:333
 msgid "Turn on Num Lock at login"
 msgstr "Turn on Num Lock at login"
 
-#: src/tastatur.rs:332
+#: src/tastatur.rs:335
 msgid "labwc sets Num Lock when a keyboard is detected (login, plugging in)."
 msgstr "labwc sets Num Lock when a keyboard is detected (login, plugging in)."
 
-#: src/tastatur.rs:338
+#: src/tastatur.rs:341
 msgid "Additional Layouts and Switching"
 msgstr "Additional Layouts and Switching"
 
-#: src/tastatur.rs:339
+#: src/tastatur.rs:342
 msgid ""
 "With several layouts the switch key changes to the next one in turn; after login the first one applies."
 msgstr ""
 "With several layouts the switch key changes to the next one in turn; after login the first one applies."
 
-#: src/tastatur.rs:344
+#: src/tastatur.rs:347
 msgid "Add Layout …"
 msgstr "Add Layout …"
 
-#: src/tastatur.rs:347
+#: src/tastatur.rs:350
 msgid "Switch layouts with:"
 msgstr "Switch layouts with:"
 
-#: src/tastatur.rs:355
+#: src/tastatur.rs:358
 msgid ""
 "The panel does not show the active layout yet; a layout indicator follows with a later version of the panel."
 msgstr ""
 "The panel does not show the active layout yet; a layout indicator follows with a later version of the panel."
 
-#: src/tastatur.rs:438
+#: src/tastatur.rs:441
 msgid "Choose Keyboard Layout"
 msgstr "Choose Keyboard Layout"
 
-#: src/tastatur.rs:450
+#: src/tastatur.rs:453
 msgid "Search, e.g. German, Switzerland, Dvorak"
 msgstr "Search, e.g. German, Switzerland, Dvorak"
 
-#: src/tastatur.rs:476
+#: src/tastatur.rs:479
 msgid "Select"
 msgstr "Select"
 
