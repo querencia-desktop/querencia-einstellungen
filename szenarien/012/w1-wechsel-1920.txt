@@ -10,7 +10,7 @@ wait 800
 shot 1-hell-erscheinungsbild-unten.png
 scroll -15
 wait 500
-move 200 700
+move 600 800
 wait 2000
 move 600 540
 click
@@ -33,7 +33,7 @@ wait 800
 shot 2-dunkel-erscheinungsbild-unten.png
 scroll -15
 wait 500
-move 200 700
+move 600 800
 wait 2000
 move 600 540
 click
@@ -56,7 +56,7 @@ wait 800
 shot 3-hell-erscheinungsbild-unten.png
 scroll -15
 wait 500
-move 200 700
+move 600 800
 wait 2000
 move 600 540
 click

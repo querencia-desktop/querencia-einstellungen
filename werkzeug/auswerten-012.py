@@ -56,14 +56,43 @@ def unterschied(a, b):
     return ImageChops.difference(a, b).getbbox()
 
 
+ROLLBALKEN_X = 850  # ab hier im Fensterausschnitt: Rollbalken der Seite
+
+
+def ohne_rollbalken(u):
+    """Abweichung nur in der Rollbalken-Spalte? GTK zeigt den Rollbalken nach
+    dem ersten Rollen breit, beim frischen Start nicht (Prüfablauf, kein
+    Unterschied des Programms)."""
+    return u is None or (u != "fehlt" and u[0] >= ROLLBALKEN_X)
+
+
+def rest(a, b):
+    """Abweichung links der Rollbalken-Spalte."""
+    if a is None or b is None:
+        return "fehlt"
+    return ImageChops.difference(a.crop((0, 0, ROLLBALKEN_X, a.height)), b.crop((0, 0, ROLLBALKEN_X, b.height))).getbbox()
+
+
 def helligkeit(im, box):
     return ImageStat.Stat(im.crop(box).convert("L")).mean[0]
+
+
+# Erwartete Unterschiede 0.1.1 ↔ 0.1.2, unabhängig vom Thema: Zeilenband
+# (oben, unten) im Fensterausschnitt von bild(), Grund
+ERLAUBT = {
+    "13-informationen.png": ((150, 180), "nur die Versionsnummer"),
+    "12-sprache.png": ((470, 506), "nur die Uhrzeit im Formatbeispiel (jetzt)"),
+}
 
 
 def gleich_alle(a, b, name, ausser=()):
     for d in BILDER:
         u = unterschied(bild(a, d), bild(b, d))
         if d in ausser:
+            continue
+        if d in ERLAUBT and u not in (None, "fehlt"):
+            (oben, unten), grund = ERLAUBT[d]
+            pruef(name, f"{d} pixelgleich {a} ↔ {b} bis auf {grund}", oben <= u[1] and u[3] <= unten, u)
             continue
         pruef(name, f"{d} pixelgleich {a} ↔ {b}", u is None, u)
 
@@ -106,19 +135,29 @@ def main():
             teile = ["erscheinungsbild", "erscheinungsbild-unten", "bildschirm", "hintergrundbild"]
             for t in teile:
                 h1, d2, h3 = (bild(w, f"{i}-{wort}-{t}.png") for i, wort in ((1, "hell"), (2, "dunkel"), (3, "hell")))
-                pruef(w, f"{t}: hell nach dem Rückwechsel pixelgleich mit vorher", unterschied(h1, h3) is None, unterschied(h1, h3))
+                u = unterschied(h1, h3)
+                pruef(w, f"{t}: hell nach dem Rückwechsel pixelgleich mit vorher (Rollbalken-Spalte ausgenommen)", ohne_rollbalken(u), u)
                 hd = helligkeit(d2, box) if d2 else -1
                 hh = helligkeit(h1, box) if h1 else -1
                 pruef(w, f"{t}: dunkel nach dem Wechsel", d2 is not None and hd < 90 and hh > 180, f"hell {hh:.1f}, dunkel {hd:.1f}")
             start = {"erscheinungsbild": "01-erscheinungsbild.png", "erscheinungsbild-unten": "14-erscheinungsbild-unten.png",
                      "bildschirm": "09-bildschirm.png", "hintergrundbild": "02-hintergrundbild.png"}
             for t, d in start.items():
-                u = unterschied(bild(w, f"2-dunkel-{t}.png"), bild(f"012-t02-dunkel-neu-{k}", d))
-                pruef(w, f"{t}: Wechsel ins Dunkle = Start unter dunkel", u is None, u)
+                a_, b_ = bild(w, f"2-dunkel-{t}.png"), bild(f"012-t02-dunkel-neu-{k}", d)
+                if t.startswith("erscheinungsbild"):
+                    # Ausnahme: das Häkchen „Dunkle Darstellung bevorzugen“ zeigt
+                    # den beim Start gelesenen Wert (default), der Start unter
+                    # dunkel den Wert prefer-dark
+                    u = rest(a_, b_)
+                    ok = u is None or (u != "fehlt" and u[2] - u[0] <= 18 and u[3] - u[1] <= 18)
+                    pruef(w, f"{t}: Wechsel ins Dunkle = Start unter dunkel (bis auf Rollbalken und das beim Start gelesene Häkchen)", ok, u)
+                else:
+                    u = unterschied(a_, b_)
+                    pruef(w, f"{t}: Wechsel ins Dunkle = Start unter dunkel", u is None, u)
             # das Hell im Wechsellauf gleicht dem hellen Start
             for t, d in start.items():
                 u = unterschied(bild(w, f"1-hell-{t}.png"), bild(f"012-t02-hell-neu-{k}", d))
-                pruef(w, f"{t}: hell im Wechsellauf = Start unter hell", u is None, u)
+                pruef(w, f"{t}: hell im Wechsellauf = Start unter hell (Rollbalken-Spalte ausgenommen)", ohne_rollbalken(u), u)
     # 0.1.1 im Wechsel (Vergleich, nur 1920 de): folgt dem Wechsel im Lauf schon
     w = "012-t02-wechsel-alt-de-1920"
     d2, h1 = bild(w, "2-dunkel-erscheinungsbild.png"), bild(w, "1-hell-erscheinungsbild.png")

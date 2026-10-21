@@ -27,9 +27,9 @@ def ende(s, datei):
     wieder nach oben rollen (der Stapel behält die Rollposition je Seite)."""
     s.roh(f"move {1100 + s.dx} {560 + s.dy}", "scroll 15", "wait 800")
     s.bild(datei)
-    # Zeiger aus dem Fenster, bis der Rollbalken wieder schmal ist (sonst
-    # bleibt er im nächsten Bild der Seite breit stehen)
-    s.roh("scroll -15", "wait 500", f"move {200 + s.dx} {700 + s.dy}", "wait 2000")
+    # Zeiger von der Seite auf die Seitenleiste, bis der Rollbalken wieder
+    # schmal ist (sonst bleibt er im nächsten Bild der Seite breit stehen)
+    s.roh("scroll -15", "wait 500", f"move {600 + s.dx} {800 + s.dy}", "wait 2000")
 
 
 def alle_seiten(breite):

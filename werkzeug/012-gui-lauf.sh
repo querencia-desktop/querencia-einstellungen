@@ -37,7 +37,7 @@ lauf() {  # lauf <name> <bin> <thema|-> <hell|dunkel> <sprache> <aufl> <szenario
     local name=$1 bin=$2 thema=$3 art=$4 sp=$5 aufl=$6 sz=$7
     [ -z "$MUSTER" ] || [[ $name == *$MUSTER* ]] || return 0
     local en=; [ "$sp" = en ] && en=$EN
-    QE_APP_BIN=$bin QE_PORTAL=settings QE_GSETTINGS=$NW/gsettings-$art.txt \
+    QE_PROFIL_STABIL=$HOME/.cache/qe01/einstellungen-012-profil QE_APP_BIN=$bin QE_PORTAL=settings QE_GSETTINGS=$NW/gsettings-$art.txt \
         QE_THEMA_ORDNER=$([ "$thema" = - ] || echo "$thema") QE_LABWC_DATEIEN=$en \
         bash werkzeug/g2aj-lauf.sh "$name" "$aufl" "$sz"
 }

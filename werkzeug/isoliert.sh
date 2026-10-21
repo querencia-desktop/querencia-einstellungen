@@ -200,7 +200,19 @@ if [ -n "${QE_THEMA_ORDNER:-}" ]; then
     ln -s "$(readlink -f "$QE_THEMA_ORDNER")" "$HEIM/.local/share/themes/Querencia-Klassisch"
 fi
 echo "HOME=$HEIM Thema=$(readlink -f "$HEIM/.local/share/themes/Querencia-Klassisch")" > "$N/heim.txt"
+# 0.1.2: QE_PROFIL_STABIL=<verweis> – die Sitzung sieht das Profil unter einem
+# festen Verweis statt unter nachweis/<lauf>/profil, damit angezeigte Pfade
+# (z. B. „Quelle: …/panel.ini“) in Bildvergleichen zweier Läufe gleich sind.
+# Nur für nacheinander laufende Läufe (der Verweis zeigt auf den letzten).
+if [ -n "${QE_PROFIL_STABIL:-}" ]; then
+    mkdir -p "$(dirname "$QE_PROFIL_STABIL")"
+    ln -sfn "$PROFIL" "$QE_PROFIL_STABIL"
+    echo "Profil sichtbar als $QE_PROFIL_STABIL" >> "$N/heim.txt"
+fi
 (
+  if [ -n "${QE_PROFIL_STABIL:-}" ]; then
+      LABWC_DIR=$QE_PROFIL_STABIL${LABWC_DIR#"$PROFIL"}; PROFIL=$QE_PROFIL_STABIL; HEIM=$PROFIL/heim
+  fi
   export XDG_RUNTIME_DIR="$RT" XDG_CONFIG_HOME="$PROFIL/config" XDG_STATE_HOME="$PROFIL/state" XDG_CACHE_HOME="$PROFIL/cache"
   # G2-AJ: QE_WLR_RENDERER=gles2 lässt den headless labwc auf der Grafikkarte
   # zeichnen (Render-Node, dmabuf) wie die echte Sitzung; Standard bleibt pixman.
