@@ -212,7 +212,7 @@ def main():
             for d in BILDER:
                 name = f"{art}-{k}-{d}" if art == "hell" and d in ("07-tastatur.png", "09-bildschirm.png") else None
                 vergleichen(a, n, d, art, f"d1-{art}-{k}", name)
-    # Wechsel im Lauf, de 1024
+    # Wechsel im Lauf nur in de 1024 (gekürzte Matrix); die Bildschirm-Seite zeigt die Auswahl
     wa, wn = "013-wechsel-alt-de-1024", "013-wechsel-neu-de-1024"
     teile = ["erscheinungsbild", "erscheinungsbild-unten", "bildschirm", "hintergrundbild"]
     for i, wort in ((1, "hell"), (2, "dunkel"), (3, "hell")):
