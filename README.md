@@ -44,7 +44,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 | `crates/querencia-einstellungen/po/` | Übersetzungen: Vorlage `querencia-einstellungen.pot`, `de.po`, `en.po`, `LINGUAS` |
 | `crates/querencia-einstellungen/data/` | Programm- und Fenstersymbol (SVG), Querencia-Logo, eingebettete Ressource, Desktop-Datei (`.desktop.in` englisch, `.desktop` mit `[de]`) |
 | `szenarien/` | Eingabeszenarien und Testdaten der isolierten GUI-Läufe |
-| `werkzeug/` | isolierte GUI-Prüfung (`isoliert.sh`, `qe-eingabe.c`), GUI-Läufe und Auswertungen je Meilenstein, `i18n.py` (po-Pflege), Integrationsskripte der Entwicklungs-VM |
+| `werkzeug/` | isolierte GUI-Prüfung (`isoliert.sh`, `qe-eingabe.c`), GUI-Läufe und Auswertungen je Meilenstein, `i18n.py` (po-Pflege), `bauen-release.sh` |
 | `docs/` | Schnittstellen und Verhalten je Bereich (Doc-Map in Arbeitsregeln) |
 
 ## Stand
