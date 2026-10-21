@@ -36,7 +36,7 @@ Alpha software; the user interface is available in English and German
   Desktopumgebungen.
 
 Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
-`querencia-einstellungen` · Debian-Paket: noch keins
+`querencia-einstellungen` · Debian-Paket: `querencia-einstellungen`
 
 | Ort | Inhalt |
 |---|---|
@@ -45,14 +45,14 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 | `crates/querencia-einstellungen/data/` | Programm- und Fenstersymbol (SVG), Querencia-Logo, eingebettete Ressource, Desktop-Datei (`.desktop.in` englisch, `.desktop` mit `[de]`) |
 | `szenarien/` | Eingabeszenarien und Testdaten der isolierten GUI-Läufe |
 | `werkzeug/` | isolierte GUI-Prüfung (`isoliert.sh`, `qe-eingabe.c`), GUI-Läufe und Auswertungen je Meilenstein, `i18n.py` (po-Pflege), `bauen-release.sh` |
-| `docs/` | Schnittstellen und Verhalten je Bereich (Doc-Map in Arbeitsregeln) |
+| `docs/` | Schnittstellen und Verhalten je Bereich |
 
 ## Stand
 
 | | |
 |---|---|
 | Version | 0.1.4 (Tag `einstellungen/0.1.4`) |
-| Letzte Prüfung | 21.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel (beim Start und beim Wechsel); Regression gegen 0.1.1 (Zahlen im Bericht der Entwicklungs-VM) |
+| Letzte Prüfung | 21.10.2026: Unit-Tests, fmt, Clippy; isolierte GUI-Läufe Deutsch und Englisch bei 1920×1080 und 1024×768, hell und dunkel (beim Start und beim Wechsel); Regression gegen 0.1.1 |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
 | Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
@@ -119,5 +119,10 @@ Programm: GPL-3.0-or-later, siehe [LICENSE](LICENSE). Copyright 2026
 Querencia Desktop contributors; Urheberhinweis in
 [COPYRIGHT](COPYRIGHT). Das Querencia-Logo in
 `crates/querencia-einstellungen/data/logo/` ist unverändert übernommen.
-Name und Logo „Querencia“ sind keine freien Inhalte.
+Name und Logo „Querencia“ sind keine freien Inhalte: [MARKE.md](MARKE.md).
 
+## Fehler melden
+
+Fehler, Wünsche und Fragen zu Querencia gehen an die gemeinsame Meldestelle:
+<https://github.com/querencia-desktop/querencia/issues/new/choose>.
+Sicherheitslücken bitte nicht öffentlich melden, siehe [SECURITY.md](SECURITY.md).

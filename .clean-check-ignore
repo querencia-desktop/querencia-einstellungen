@@ -22,3 +22,14 @@
 #      ist das ini-Beispiel der Moduldoku, kein auskommentierter Code.
 # S005 werkzeug/auswerten-010.py: Fachwörter (PASS, FAIL, TSV, maps) in
 #      deutschen Kommentaren, keine englischen Sätze (0.1.0).
+#
+# Veröffentlichungsklon (ENTSCHEIDUNGEN Nr. 17, Vorlagen-Commit): GitHub erwartet
+# diese Dateien im Root bzw. unter .github/ – die einzigen Pfadeinträge, begründete
+# Ausnahmen von „keine Pfadeinträge“ (reine Vorlagen).
+MARKE.md
+CONTRIBUTING.md
+SECURITY.md
+CHANGELOG.md
+.github/pull_request_template.md
+.github/ISSUE_TEMPLATE/*.md
+werkzeug/virtual-keyboard-unstable-v1.xml

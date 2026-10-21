@@ -76,3 +76,6 @@ __pycache__/
 /nachweis/014/**/*.png
 /nachweis/014/**/querencia-einstellungen
 /nachweis/014/**/*.mo
+# Ausgaben der isolierten Prüfung (nicht einchecken)
+/target
+/nachweis/
