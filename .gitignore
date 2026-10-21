@@ -64,3 +64,9 @@ __pycache__/
 /nachweis/012/**/*.png
 /nachweis/012/**/querencia-einstellungen
 /nachweis/012/**/*.mo
+# Einstellungen 0.1.3: wie 0.1.2 – Textnachweise unter nachweis/013/ ins Repo,
+# Binaries, Kataloge, Bilder und Läufe nicht
+!/nachweis/013/
+/nachweis/013/**/*.png
+/nachweis/013/**/querencia-einstellungen
+/nachweis/013/**/*.mo

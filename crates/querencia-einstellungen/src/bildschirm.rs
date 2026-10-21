@@ -314,9 +314,11 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     (aussen, fuss)
 }
 
-/// Farben der Anordnungsfläche (RGB 0…1). Hell wie bis 0.1.1; dunkel
-/// (CSS-Welle dunkel), wenn das Thema helle Schrift hat, angelehnt an
-/// Querencia-Klassisch 0.2 dunkel (Grund #2b2a27 wie theme_base_color).
+/// Farben der Anordnungsfläche (RGB 0…1). Hell wie bis 0.1.1 bis auf die
+/// gewählte Ausgabe (0.1.3: #2a6cc4 statt #3685e3, gleicher Farbton, weiße
+/// Schrift 5,2:1 statt 3,7:1); dunkel (CSS-Welle dunkel), wenn das Thema
+/// helle Schrift hat, angelehnt an Querencia-Klassisch 0.2 dunkel (Grund
+/// #2b2a27 wie theme_base_color).
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Farben {
     flaeche: (f64, f64, f64),
@@ -332,7 +334,7 @@ struct Farben {
 const HELL: Farben = Farben {
     flaeche: (0.97, 0.97, 0.97),
     leer: (0.4, 0.4, 0.4),
-    gewaehlt: (0.21, 0.52, 0.89),
+    gewaehlt: rgb(0x2a, 0x6c, 0xc4),
     ausgabe: (0.72, 0.74, 0.78),
     rand: (0.25, 0.25, 0.25),
     leiste: (0.15, 0.15, 0.15),
@@ -427,7 +429,7 @@ impl Oberflaeche {
         if !groessen.contains(&(w.modus.breite, w.modus.hoehe)) {
             groessen.push((w.modus.breite, w.modus.hoehe));
         }
-        groessen.sort_by(|x, y| (y.0 * y.1, y.0).cmp(&(x.0 * x.1, x.0)));
+        groessen.sort_by_key(|x| std::cmp::Reverse((x.0 * x.1, x.0)));
         let groessen_text: Vec<String> = groessen
             .iter()
             .map(|(b, h)| {
@@ -1043,7 +1045,7 @@ fn verdrahten(o: &Rc<Oberflaeche>) {
                     .iter()
                     .filter(|m| (m.breite, m.hoehe) == (b, h))
                     .collect();
-                raten.sort_by(|x, y| (y.bevorzugt, y.mhz).cmp(&(x.bevorzugt, x.mhz)));
+                raten.sort_by_key(|x| std::cmp::Reverse((x.bevorzugt, x.mhz)));
                 w.modus = raten.first().map(|m| **m).unwrap_or(Modus::neu(b, h, 0));
             });
         });

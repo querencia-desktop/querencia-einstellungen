@@ -12,6 +12,16 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.3] – 2026-10-21
+
+### Geändert
+- Helle Darstellung, Kontrast nach WCAG AA (QD-089): Das Kürzel hinter dem
+  Namen der Tastaturbelegung ist mit 75 % statt 60 % Deckkraft gedimmt wie in
+  der dunklen Darstellung (4,8:1 statt 3,3:1). Die gewählte Ausgabe im
+  Bereich „Bildschirm“ ist dunkler blau (`#2a6cc4` statt `#3685e3`), die
+  weiße Schrift darauf hat 5,2:1 statt 3,7:1. Alles andere bleibt, wie es
+  war; die dunkle Darstellung ist unverändert.
+
 ## [0.1.2] – 2026-10-21
 
 ### Geändert
@@ -108,7 +118,8 @@ zusammengefasst.
 Erster Stand in Git: Hintergrund (Bild, Farbe, Darstellung) und Bildschirm
 (Auflösung und Anordnung über `wlr-output-management`).
 
-[Unveröffentlicht]: https://github.com/querencia-desktop/querencia-einstellungen/compare/einstellungen/0.1.2...HEAD
+[Unveröffentlicht]: https://github.com/querencia-desktop/querencia-einstellungen/compare/einstellungen/0.1.3...HEAD
+[0.1.3]: https://github.com/querencia-desktop/querencia-einstellungen/releases/tag/einstellungen/0.1.3
 [0.1.2]: https://github.com/querencia-desktop/querencia-einstellungen/releases/tag/einstellungen/0.1.2
 [0.1.1]: https://github.com/querencia-desktop/querencia-einstellungen/releases/tag/einstellungen/0.1.1
 [0.1.0]: https://github.com/querencia-desktop/querencia-einstellungen/releases/tag/einstellungen/0.1.0
