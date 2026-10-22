@@ -13,7 +13,8 @@
              wie auswerten-015.py: gleich bis auf die Seite „Bildschirm“
              (Markierung, INFO); Ausnahmen wie 0.1.5: Uhrzeit im
              Formatbeispiel, Spalte des Overlay-Rollbalkens, „Erscheinungsbild
-             unten“ (höchstens 0,1 % der Fläche, 16 Stufen)
+             unten“ (höchstens 0,1 % der Fläche, 16 Stufen); dazu auf
+             „Informationen“ die Programmversion (eine Ziffer)
   alle       kein „panicked“ in den Protokollen der App
 
   . ~/projects/querencia-boot-splash/werkzeug/pil-umgebung.sh  # Pillow (PYTHONPATH)
@@ -35,6 +36,7 @@ SEITEN = ["erscheinungsbild", "hintergrundbild", "symbole", "fensterdesign", "sc
           "sprache", "informationen"]
 INHALT_X = 244
 UHRZEIT = (470, 506)
+VERSION = (180, 198)  # Zeile „Querencia Einstellungen <version>“ auf „Informationen“
 ROLLBALKEN = (850, 875)
 zeilen = []
 
@@ -224,6 +226,14 @@ def d1():
                     continue
                 if s == "sprache":
                     d.paste((0, 0, 0), (INHALT_X, UHRZEIT[0], w, UHRZEIT[1]))
+                if s == "informationen":
+                    # benannte Ausnahme: die Programmversion „0.1.5“ → „0.1.6“
+                    # in der Zeile „Querencia Einstellungen …“ (höchstens eine
+                    # Ziffer breit, im Zeilenband VERSION)
+                    vb = d.crop((INHALT_X, VERSION[0], w, VERSION[1])).getbbox()
+                    pruef(g, f"{fall}: Versionszeile weicht höchstens um eine Ziffer ab",
+                          vb is None or (vb[2] - vb[0] <= 12), vb)
+                    d.paste((0, 0, 0), (INHALT_X, VERSION[0], w, VERSION[1]))
                 d.paste((0, 0, 0), (ROLLBALKEN[0], 0, ROLLBALKEN[1], h))
                 bb = d.getbbox()
                 if s == "erscheinungsbild-unten" and bb is not None:
