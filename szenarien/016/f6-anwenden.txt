@@ -1,0 +1,3 @@
+extent 2624 900
+wait 3500
+shot 01-angewendet.png

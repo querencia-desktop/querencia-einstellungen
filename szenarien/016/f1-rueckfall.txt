@@ -1,0 +1,19 @@
+extent 3200 1080
+wait 4000
+shot 01-start.png
+move 518 217
+click
+wait 900
+move 448 313
+click
+wait 900
+shot 02-gewaehlt.png
+move 956 655
+click
+wait 2500
+extent 2880 900
+shot 03-dialog.png
+wait 16000
+extent 3200 1080
+shot 04-nach-countdown.png
+wait 500

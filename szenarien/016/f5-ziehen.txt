@@ -1,0 +1,19 @@
+extent 3200 1080
+wait 4000
+move 700 510
+wait 200
+down
+glide 584 575 600
+up
+wait 900
+shot 01-gezogen.png
+move 956 655
+click
+wait 2500
+extent 1920 1800
+shot 02-dialog.png
+move 887 413
+click
+wait 1500
+shot 03-beibehalten.png
+wait 500

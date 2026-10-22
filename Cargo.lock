@@ -598,12 +598,13 @@ dependencies = [
 
 [[package]]
 name = "querencia-einstellungen"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "gettext-rs",
  "gtk4",
  "memchr",
  "roxmltree",
+ "toml",
  "wayland-client",
  "wayland-protocols-wlr",
 ]

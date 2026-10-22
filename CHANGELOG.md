@@ -12,6 +12,47 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.6] – 2026-10-22
+
+### Hinzugefügt
+- Bildschirm: Die Einstellungen werden in `~/.config/querencia/bildschirm.toml`
+  gespeichert, je Monitor mit Name, Hersteller, Modell und Seriennummer.
+  Eine `bildschirm.ini` älterer Fassungen wird weiter gelesen, bis das erste
+  „Beibehalten“ die neue Datei anlegt; sie bleibt unverändert liegen.
+- Bildschirm: Meldet ein Monitor keine Daten (EDID), erklärt ein Hinweis,
+  warum nur Grundauflösungen wie 1024 × 768 zur Wahl stehen und dass Kabel
+  ab- und wieder anstecken meist hilft.
+- Bildschirm: Fußzeile „Quelle“ wie auf den anderen Seiten (Compositor,
+  Datei, Befehl für die Anmeldung); der Knopf „Als Hauptmonitor verwenden“
+  erklärt im Tooltip, was das unter labwc bedeutet.
+- labwc-Seiten: Gibt es keine Querencia-Vorgabe für labwc, sagen die Seiten
+  das und zeigen labwcs eingebaute Werte.
+
+### Geändert
+- Die Rückfrage nach „Anwenden“ heißt „Einstellungen beibehalten?“, der Knopf
+  „Beibehalten“.
+- Die Vorgabe der labwc-Konfiguration wird jetzt auch neben dem Programm
+  (`share/querencia/labwc` der Ablage bzw. unter dem Installationspräfix),
+  unter `/etc/querencia/labwc` und unter `/usr/share/querencia/labwc`
+  gesucht (vorher nur Checkout, Starter-Stand und `/etc`).
+- Bildschirm: Statuszeile und Skalierungshinweis ohne Fachbegriffe der
+  Entwicklung.
+
+### Behoben
+- Ändern und Zurückstellen der Namen der Arbeitsflächen ließ `rc.xml` nicht
+  byte-gleich zurück, wenn die Datei an anderer Stelle eigene Werte hatte
+  (`<desktops … />` blieb aufgeklappt). Jetzt bekommt jeder veränderte
+  Behälter, der danach der Vorgabe gleicht, deren Form zurück.
+- Bildschirm: Wurde ein Monitor verschoben, legte labwc einen nie
+  verschobenen Monitor manchmal an eine andere Stelle als gewählt (z. B.
+  beim Untereinanderlegen). Die Einstellungen setzen die Anordnung dann ein
+  zweites Mal; danach liegt jeder Monitor wie gewählt.
+
+### Bekannte Einschränkungen
+- Gespeicherte Bildschirmeinstellungen gelten nach der Anmeldung erst, wenn
+  der Autostart der Sitzung `querencia-einstellungen --bildschirm-anwenden`
+  aufruft (folgt in einer eigenen Änderung der Sitzung).
+
 ## [0.1.5] – 2026-10-22
 
 ### Hinzugefügt

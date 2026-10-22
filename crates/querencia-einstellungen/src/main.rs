@@ -11,7 +11,9 @@
 //!   querencia-einstellungen --bildschirm    nur „Querencia – Bildschirm“ (G2-G)
 //!   querencia-einstellungen --bildschirm-anwenden   gespeicherte Bildschirm-
 //!                                           einstellungen setzen (Sitzungsstart,
-//!                                           ohne Fenster)
+//!                                           ohne Fenster; ~/.config/querencia/
+//!                                           bildschirm.toml, sonst die alte
+//!                                           bildschirm.ini)
 //!   querencia-einstellungen --bildschirm-zeigen     Ausgaben als Text (Prüfung)
 //!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Symbole der Arbeitsfläche“
 //!                                           (G2-X: Symbole und Laufwerke)

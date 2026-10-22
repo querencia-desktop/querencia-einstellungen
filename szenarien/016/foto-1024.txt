@@ -1,0 +1,13 @@
+wait 3000
+extent 2944 1080
+run querencia-einstellungen --seite bildschirm
+wait 5000
+shot 01-bildschirm.png
+move 400 400
+wait 300
+scroll 10
+wait 800
+shot 02-bildschirm-unten.png
+run querencia-einstellungen --bildschirm
+wait 3500
+shot 03-eigenes-fenster.png

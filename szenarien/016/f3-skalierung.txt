@@ -1,0 +1,19 @@
+extent 3200 1080
+wait 4000
+move 518 320
+click
+wait 900
+move 416 372
+click
+wait 900
+shot 01-skalierung.png
+move 956 655
+click
+wait 2500
+extent 2816 864
+shot 02-dialog.png
+move 887 413
+click
+wait 1500
+shot 03-beibehalten.png
+wait 500

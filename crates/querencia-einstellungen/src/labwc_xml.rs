@@ -836,6 +836,94 @@ fn nur_leerraum_anders(a: &str, b: &str) -> bool {
     form(&da) == form(&db)
 }
 
+/// Die Behälter der verwalteten Werte, äußere vor inneren.
+const BEHAELTER: &[Pfad] = &[
+    ARBEITSFLAECHEN,
+    TASTATUR,
+    MAUS,
+    &[s("libinput")],
+    GERAET,
+    THEMA,
+    TITELLEISTE,
+    SCHRIFT_AKTIV,
+    SCHRIFT_INAKTIV,
+];
+
+/// Form der Behälter wiederherstellen (0.1.6, QD-080). [`setzen`] klappt ein
+/// leeres Element `<x … />` auf und legt neue Kinder in eigenen Zeilen an;
+/// [`namen_setzen`] schreibt `<names>` in fester Form neu. Nach dem
+/// Zurückstellen blieb deshalb z. B. `<desktops …>` mit leerer Zeile und
+/// `</desktops>` stehen, wo vorher `<desktops … />` stand. Solange die übrige
+/// Datei der Basis glich, verdeckte das die Regel „nur Leerraum anders → die
+/// Basis“; mit eigenen Werten an anderer Stelle blieb die Datei verändert.
+///
+/// Für jeden Behälter, den dieses Übernehmen verändert hat (Text anders als
+/// in `vorher`) und der in `basis` an derselben Stelle steht:
+/// 1. gleicht er dem Behälter der Basis bis auf Leerraum zwischen Elementen,
+///    bekommt er deren Text (Form, Einrückung, Anführungszeichen);
+/// 2. ist er leer (nur Leerraum), in der Basis aber ein leeres Element
+///    `<x … />`, wird er wieder zu `<x … />` mit den eigenen Attributen und
+///    dem Abstand vor `/>` wie in der Basis.
+///
+/// Unveränderte Behälter bleiben, wie der Benutzer sie geschrieben hat.
+fn form_angleichen(t: &str, vorher: &str, basis: &str) -> Result<String, Fehler> {
+    let mut text = t.to_owned();
+    let Ok(doc_v) = roxmltree::Document::parse(if vorher.trim().is_empty() {
+        LEER
+    } else {
+        vorher
+    }) else {
+        return Ok(text);
+    };
+    let doc_b = parsen(basis)?;
+    for pfad in BEHAELTER {
+        let ersetzungen: Vec<(Range<usize>, String)> = {
+            let doc_t = parsen(&text)?;
+            let lt = behaelter(&doc_t, pfad);
+            let lb = behaelter(&doc_b, pfad);
+            let lv = behaelter(&doc_v, pfad);
+            if lt.len() != lb.len() {
+                continue;
+            }
+            let mut liste = Vec::new();
+            for (i, (et, eb)) in lt.iter().zip(&lb).enumerate() {
+                let rt = &text[et.range()];
+                let rb = &basis[eb.range()];
+                let geaendert = lv.len() != lt.len() || &vorher[lv[i].range()] != rt;
+                if rt == rb || !geaendert {
+                    continue;
+                }
+                let (mut ft, mut fb) = (String::new(), String::new());
+                voll(*et, &mut ft);
+                voll(*eb, &mut fb);
+                if ft == fb {
+                    liste.push((et.range(), rb.to_owned()));
+                } else if !ist_leer_element(rt)
+                    && ist_leer_element(rb)
+                    && et
+                        .children()
+                        .all(|c| c.is_text() && c.text().unwrap_or("").trim().is_empty())
+                {
+                    let kopf_ende = starttag_ende(rt);
+                    let schraeg = starttag_ende(rb) - 1;
+                    let mut abstand = schraeg;
+                    while abstand > 0 && rb.as_bytes()[abstand - 1].is_ascii_whitespace() {
+                        abstand -= 1;
+                    }
+                    let kopf = rt[..kopf_ende].trim_end();
+                    liste.push((et.range(), format!("{kopf}{}/>", &rb[abstand..schraeg])));
+                }
+            }
+            liste
+        };
+        for (bereich, neu) in ersetzungen.into_iter().rev() {
+            text = ersetzen(&text, bereich, &neu);
+        }
+        text = pruefen(text)?;
+    }
+    Ok(text)
+}
+
 /// Rückstellung byte-gleich (0.1.1, Werkstatt QREL-06 A17.6): `neu` entstand
 /// aus `vorher` durch [`setzen`]/[`namen_setzen`]. Jeder dabei geänderte
 /// Wert, der jetzt dem Wert der Basis gleicht (Vorgabe, aus der die
@@ -868,6 +956,7 @@ pub fn angleichen(neu: &str, vorher: &str, basis: &str) -> Result<String, Fehler
             t = zurueck;
         }
     }
+    t = form_angleichen(&t, vorher, basis_text)?;
     if !basis.trim().is_empty() && t != basis && nur_leerraum_anders(&t, basis) {
         return Ok(basis.to_owned());
     }
@@ -1229,6 +1318,54 @@ mod tests {
         )
         .unwrap();
         assert_eq!(z, VORGABE);
+    }
+
+    #[test]
+    fn angleichen_stellt_die_form_der_behaelter_her() {
+        // QD-080: Namen setzen klappt <desktops … /> auf; zurückgestellt wird
+        // es wieder zu <desktops … />, auch mit eigenem Wert an anderer Stelle
+        // und mit eigener Anzahl (eigene Attribute, Abstand vor „/>“ wie in
+        // der Basis)
+        let eigen = setzen(VORGABE, TASTATUR, "repeatRate", "40").unwrap();
+        for start in [
+            eigen.clone(),
+            setzen(&eigen, ARBEITSFLAECHEN, "number", "5").unwrap(),
+        ] {
+            let a = namen_setzen(&start, &["Büro".into()]).unwrap();
+            assert!(a.contains("<names>"));
+            let a = angleichen(&a, &start, VORGABE).unwrap();
+            let z = angleichen(&namen_setzen(&a, &[]).unwrap(), &a, VORGABE).unwrap();
+            assert_eq!(z, start);
+        }
+        // Namen der Basis in einer Zeile: deren Text kommt zurück
+        let einzeilig = VORGABE.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\"><names> <name>A</name></names></desktops>",
+        );
+        let start = setzen(&einzeilig, TASTATUR, "repeatRate", "40").unwrap();
+        let a = angleichen(
+            &namen_setzen(&start, &["B".into()]).unwrap(),
+            &start,
+            &einzeilig,
+        )
+        .unwrap();
+        let z = angleichen(&namen_setzen(&a, &["A".into()]).unwrap(), &a, &einzeilig).unwrap();
+        assert_eq!(z, start);
+        // ein Behälter, den dieses Übernehmen nicht berührt, behält seine Form
+        let hand = eigen.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\">\n  </desktops>",
+        );
+        let z = angleichen(
+            &setzen(&hand, TASTATUR, "repeatDelay", "610").unwrap(),
+            &hand,
+            VORGABE,
+        )
+        .unwrap();
+        assert!(
+            z.contains("prefix=\"Arbeitsfläche\">\n  </desktops>"),
+            "{z}"
+        );
     }
 
     #[test]

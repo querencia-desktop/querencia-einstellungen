@@ -1,0 +1,3 @@
+extent 3200 1080
+wait 3500
+shot 01-unveraendert.png

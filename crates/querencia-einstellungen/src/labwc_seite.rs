@@ -786,6 +786,277 @@ mod tests {
         std::fs::remove_dir_all(&w).unwrap();
     }
 
+    /// Ändern, übernehmen, zurückstellen, übernehmen in einem Bereich; danach
+    /// muss rc.xml byte-gleich `start` sein (0.1.6). Abweichungen landen als
+    /// Zeilenvergleich in `fehler`.
+    fn rund<B: Bereich>(
+        name: &str,
+        basis: &str,
+        start: &str,
+        aendern: &dyn Fn(&mut B::Werte),
+        fehler: &mut Vec<String>,
+    ) {
+        let w = ordner(&format!("rund-{}", fehler.len()));
+        let o = orte(&w, basis, true);
+        std::fs::write(o.rc(), start).unwrap();
+        let st = lk::lesen(&o);
+        let alt = B::lesen(&st);
+        let mut neu = alt.clone();
+        aendern(&mut neu);
+        if neu == alt {
+            fehler.push(format!("{name}: keine Änderung"));
+            std::fs::remove_dir_all(&w).unwrap();
+            return;
+        }
+        dateien_schreiben::<B>(&o, &st, &neu, &alt, "1").unwrap();
+        let st2 = lk::lesen(&o);
+        let ist = B::lesen(&st2);
+        dateien_schreiben::<B>(&o, &st2, &alt, &ist, "2").unwrap();
+        let ende = std::fs::read_to_string(o.rc()).unwrap();
+        if ende != start {
+            let d: Vec<String> = diff_zeilen(start, &ende);
+            fehler.push(format!("{name}:\n{}", d.join("\n")));
+        }
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    fn diff_zeilen(a: &str, b: &str) -> Vec<String> {
+        let az: Vec<&str> = a.lines().collect();
+        let bz: Vec<&str> = b.lines().collect();
+        let mut v = Vec::new();
+        let anfang = az.iter().zip(&bz).take_while(|(x, y)| x == y).count();
+        let ende = az[anfang..]
+            .iter()
+            .rev()
+            .zip(bz[anfang..].iter().rev())
+            .take_while(|(x, y)| x == y)
+            .count();
+        for z in &az[anfang..az.len() - ende] {
+            v.push(format!("  - {z:?}"));
+        }
+        for z in &bz[anfang..bz.len() - ende] {
+            v.push(format!("  + {z:?}"));
+        }
+        if v.is_empty() {
+            v.push(format!(
+                "  (nur Zeilenende/Leerraum, {} ↔ {} Bytes)",
+                a.len(),
+                b.len()
+            ));
+        }
+        v
+    }
+
+    /// Runtime `main` 2e134c6, `session/querencia/labwc/rc.xml` (live seit 21.10.)
+    const VORGABE_2E134C6: &str = include_str!("../testdaten/rc-vorgabe-2e134c6.xml");
+
+    /// Ändern und Zurückstellen in allen fünf Bereichen mit rc.xml, je Wert,
+    /// gegen zehn Ausgangslagen: Vorgabe = Benutzerkopie, ältere Vorgaben,
+    /// eigene Werte an anderer Stelle, Namen der Arbeitsflächen in der
+    /// Vorgabe (mehrzeilig, einzeilig) und als eigener Wert. Bis 0.1.5 blieb
+    /// nach dem Zurückstellen der Namen `<desktops …>`/`</desktops>` statt
+    /// `<desktops … />` stehen, sobald die Datei sonst von der Vorgabe abwich.
+    #[test]
+    fn aendern_und_zurueckstellen_byte_gleich_alle_bereiche() {
+        use crate::arbeitsflaechen::Werte as AW;
+        use crate::schriften::Schriften;
+        let eigen = {
+            let t = lx::setzen(VORGABE_2E134C6, lx::TASTATUR, "repeatRate", "40").unwrap();
+            lx::setzen(&t, lx::THEMA, "dropShadows", "yes").unwrap()
+        };
+        let mit_namen = VORGABE_2E134C6.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\">\n    <names>\n      <name>Büro</name>\n      <name>Netz</name>\n    </names>\n  </desktops>",
+        );
+        let einzeilig = VORGABE_2E134C6.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\"><names><name>Büro</name></names></desktops>",
+        );
+        let eigene_namen = lx::namen_setzen(VORGABE_2E134C6, &["A".into(), "B".into()]).unwrap();
+        let v = VORGABE_2E134C6.to_owned();
+        let starts: Vec<(&str, String, String)> = vec![
+            ("2e134c6", v.clone(), v.clone()),
+            ("548483c", v.clone(), VORGABE.to_owned()),
+            ("bb90803", v.clone(), VORGABE_BB90803.to_owned()),
+            ("eigen", v.clone(), eigen),
+            ("mit_namen", mit_namen.clone(), mit_namen.clone()),
+            ("einzeilig", einzeilig.clone(), einzeilig.clone()),
+            ("eigene_namen", v.clone(), eigene_namen.clone()),
+            (
+                "eigene_anzahl",
+                v.clone(),
+                lx::setzen(&v, lx::ARBEITSFLAECHEN, "number", "5").unwrap(),
+            ),
+            (
+                "einzeilig_eigen",
+                einzeilig.clone(),
+                lx::setzen(&einzeilig, lx::TASTATUR, "repeatRate", "40").unwrap(),
+            ),
+            (
+                "namen_eigen",
+                mit_namen.clone(),
+                lx::setzen(&mit_namen, lx::TASTATUR, "repeatRate", "40").unwrap(),
+            ),
+        ];
+        let mut fehler = Vec::new();
+        let mut faelle = 0;
+        for (sn, b, s) in &starts {
+            faelle += 22;
+            let f = &mut fehler;
+            rund::<Tastatur>(&format!("{sn} tastatur rate"), b, s, &|v| v.rate = 31, f);
+            rund::<Tastatur>(
+                &format!("{sn} tastatur verz"),
+                b,
+                s,
+                &|v| v.verzoegerung = 610,
+                f,
+            );
+            rund::<Tastatur>(
+                &format!("{sn} tastatur num"),
+                b,
+                s,
+                &|v| v.numlock = !v.numlock,
+                f,
+            );
+            rund::<Maus>(&format!("{sn} maus dk"), b, s, &|v| v.doppelklick = 410, f);
+            rund::<Maus>(
+                &format!("{sn} maus gesch"),
+                b,
+                s,
+                &|v| v.geschwindigkeit = 50,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus beschl"),
+                b,
+                s,
+                &|v| v.beschleunigung = !v.beschleunigung,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus links"),
+                b,
+                s,
+                &|v| v.linkshaendig = !v.linkshaendig,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus nat"),
+                b,
+                s,
+                &|v| v.natuerlich = !v.natuerlich,
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd thema"),
+                b,
+                s,
+                &|v| v.thema = "Anders".into(),
+                f,
+            );
+            rund::<Fensterdesign>(&format!("{sn} fd ecken"), b, s, &|v| v.eckenradius = 3, f);
+            rund::<Fensterdesign>(
+                &format!("{sn} fd schatten"),
+                b,
+                s,
+                &|v| v.schatten = !v.schatten,
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd knoepfe"),
+                b,
+                s,
+                &|v| v.knoepfe = "icon:close".into(),
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd schrift"),
+                b,
+                s,
+                &|v| v.schrift = "Sans".into(),
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd groesse"),
+                b,
+                s,
+                &|v| v.schriftgroesse = 13,
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch name"),
+                b,
+                s,
+                &|v| v.titel_schrift = "Sans".into(),
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch groesse"),
+                b,
+                s,
+                &|v| v.titel_groesse = 13,
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch fett"),
+                b,
+                s,
+                &|v| v.titel_fett = !v.titel_fett,
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af anzahl"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzahl += 1;
+                    v.namen.push(String::new());
+                },
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af weniger"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzahl -= 1;
+                    v.namen.pop();
+                },
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af name"),
+                b,
+                s,
+                &|v: &mut AW| v.namen[0] = "Eins".into(),
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af anzeige"),
+                b,
+                s,
+                &|v: &mut AW| v.anzeige = !v.anzeige,
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af dauer"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzeige = true;
+                    v.dauer = 1234;
+                },
+                f,
+            );
+        }
+        assert!(
+            fehler.is_empty(),
+            "{} von {faelle} Fällen:\n{}",
+            fehler.len(),
+            fehler.join("\n")
+        );
+    }
+
     #[test]
     fn labwc_standardwerte_wie_die_bereiche() {
         // ausdrücklich eingetragene labwc-Standardwerte lesen die Bereiche

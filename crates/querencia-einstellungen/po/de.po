@@ -128,7 +128,7 @@ msgstr "Neu laden"
 msgid "Apply"
 msgstr "Übernehmen"
 
-#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:236
+#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:256
 msgid "Close"
 msgstr "Schließen"
 
@@ -326,7 +326,7 @@ msgstr "Tastatur"
 msgid "Mouse"
 msgstr "Maus"
 
-#: src/bereiche.rs:68 src/bildschirm.rs:136
+#: src/bereiche.rs:68 src/bildschirm.rs:139
 msgid "Screen"
 msgstr "Bildschirm"
 
@@ -394,12 +394,14 @@ msgstr ""
 #: src/bereiche.rs:290
 msgid ""
 "The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
-msgstr "Dasselbe Menü schaltet WLAN und Flugmodus ein und aus. „Verbindungsinformationen …“ zeigt die Adresse und weitere Angaben der aktiven Verbindung."
+msgstr ""
+"Dasselbe Menü schaltet WLAN und Flugmodus ein und aus. „Verbindungsinformationen …“ zeigt die Adresse und weitere Angaben der aktiven Verbindung."
 
 #: src/bereiche.rs:293
 msgid ""
 "If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
-msgstr "Fehlt das Netzwerksymbol: Rechtsklick auf eine freie Stelle im Panel → „Zum Panel hinzufügen …“ → Netzwerk."
+msgstr ""
+"Fehlt das Netzwerksymbol: Rechtsklick auf eine freie Stelle im Panel → „Zum Panel hinzufügen …“ → Netzwerk."
 
 #: src/bereiche.rs:303
 msgid ""
@@ -407,150 +409,164 @@ msgid ""
 msgstr ""
 "Ohne NetworkManager zeigt das Panel nur den Zustand des Netzwerks. Einstellungen für Adressen, VPN und Proxy gibt es in Querencia noch nicht."
 
-#: src/bildschirm.rs:23
+#: src/bildschirm.rs:24
 msgid "Querencia – Screen"
 msgstr "Querencia – Bildschirm"
 
-#: src/bildschirm.rs:142
+#: src/bildschirm.rs:145
 msgid "Monitor Arrangement (drag to move)"
 msgstr "Anordnung der Monitore (ziehen zum Verschieben)"
 
-#: src/bildschirm.rs:156
+#: src/bildschirm.rs:159
 msgid "Monitor"
 msgstr "Monitor"
 
-#: src/bildschirm.rs:171
+#: src/bildschirm.rs:174
 msgid "On"
 msgstr "Eingeschaltet"
 
-#: src/bildschirm.rs:189
+#: src/bildschirm.rs:192
+msgid ""
+"This monitor did not report its data (EDID), so only basic resolutions such as 1024 × 768 are offered. With a graphics card passed through to a virtual machine this can happen after starting; unplugging and plugging in the monitor cable usually helps."
+msgstr ""
+"Dieser Monitor hat seine Daten (EDID) nicht gemeldet, deshalb stehen nur Grundauflösungen wie 1024 × 768 zur Wahl. Mit einer an eine virtuelle Maschine durchgereichten Grafikkarte kann das nach dem Start passieren; Monitorkabel ab- und wieder anstecken hilft meist."
+
+#: src/bildschirm.rs:202
 msgid "Use as Primary Monitor"
 msgstr "Als Hauptmonitor verwenden"
 
-#: src/bildschirm.rs:194
+#: src/bildschirm.rs:203
+msgid ""
+"labwc has no primary monitor of its own: the primary monitor is placed at the top left, the others next to it."
+msgstr ""
+"labwc kennt keinen eigenen Hauptmonitor: Der Hauptmonitor kommt nach links oben, die anderen daneben."
+
+#: src/bildschirm.rs:210
 msgid "Monitor:"
 msgstr "Monitor:"
 
-#: src/bildschirm.rs:198
+#: src/bildschirm.rs:214
 msgid "Resolution:"
 msgstr "Auflösung:"
 
-#: src/bildschirm.rs:200
+#: src/bildschirm.rs:216
 msgid "Refresh rate:"
 msgstr "Wiederholrate:"
 
-#: src/bildschirm.rs:202
+#: src/bildschirm.rs:218
 msgid "Rotation:"
 msgstr "Drehung:"
 
-#: src/bildschirm.rs:204
+#: src/bildschirm.rs:220
 msgid "Scale:"
 msgstr "Skalierung:"
 
-#: src/bildschirm.rs:228
+#: src/bildschirm.rs:236
+msgid ""
+"the compositor (labwc); saved in ~/.config/querencia/bildschirm.toml and applied at login with “querencia-einstellungen --bildschirm-anwenden”."
+msgstr ""
+"der Compositor (labwc); gespeichert in ~/.config/querencia/bildschirm.toml, bei der Anmeldung gesetzt mit „querencia-einstellungen --bildschirm-anwenden“."
+
+#: src/bildschirm.rs:248
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: src/bildschirm.rs:229
+#: src/bildschirm.rs:249
 msgctxt "screen settings"
 msgid "Apply"
 msgstr "Anwenden"
 
-#: src/bildschirm.rs:286
+#: src/bildschirm.rs:307
 #, no-c-format
 msgid "The screen cannot be managed: {error}"
 msgstr "Bildschirm kann nicht verwaltet werden: {error}"
 
-#: src/bildschirm.rs:307
+#: src/bildschirm.rs:328
 #, no-c-format
-msgid ""
-"{n} output reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
-msgid_plural ""
-"{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
-msgstr[0] ""
-"{n} Ausgabe gemeldet (wlr-output-management, labwc). Änderungen gelten erst nach „Anwenden“."
-msgstr[1] ""
-"{n} Ausgaben gemeldet (wlr-output-management, labwc). Änderungen gelten erst nach „Anwenden“."
+msgid "{n} monitor found. Changes take effect only after “Apply”."
+msgid_plural "{n} monitors found. Changes take effect only after “Apply”."
+msgstr[0] "{n} Monitor gefunden. Änderungen gelten erst nach „Anwenden“."
+msgstr[1] "{n} Monitore gefunden. Änderungen gelten erst nach „Anwenden“."
 
-#: src/bildschirm.rs:382
+#: src/bildschirm.rs:403
 #, no-c-format
 msgid "{name} – primary monitor"
 msgstr "{name} – Hauptmonitor"
 
-#: src/bildschirm.rs:385
+#: src/bildschirm.rs:406
 #, no-c-format
 msgid "{name} (off)"
 msgstr "{name} (aus)"
 
-#: src/bildschirm.rs:438
+#: src/bildschirm.rs:459
 #, no-c-format
 msgid "{size} (preferred)"
 msgstr "{size} (bevorzugt)"
 
-#: src/bildschirm.rs:489
+#: src/bildschirm.rs:514
 #, no-c-format
 msgid ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 msgstr ""
 "{output}{description}{size} · Modi: {modes} · logische Größe {width}×{height} bei {x},{y}{serial}"
 
-#: src/bildschirm.rs:512
+#: src/bildschirm.rs:537
 msgid "no list (free sizes, e.g. virtual output)"
 msgstr "keine Liste (freie Größen, z. B. virtuelle Ausgabe)"
 
-#: src/bildschirm.rs:526
+#: src/bildschirm.rs:551
 #, no-c-format
 msgid " · serial number {serial}"
 msgstr " · Seriennummer {serial}"
 
-#: src/bildschirm.rs:577
+#: src/bildschirm.rs:603
 msgid ""
-"Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
+"Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact."
 msgstr ""
-"Gebrochene Skalierung: GTK 4.10 zeichnet mit dem nächsten ganzen Faktor und verkleinert; der Desktop zeigt Zentrieren und Kacheln dann mit ¾ der Pixelgröße. Ganze Faktoren (1 ×, 2 ×) sind pixelgenau."
+"Gebrochene Skalierung: Programme zeichnen mit dem nächsten ganzen Faktor und werden verkleinert, das kann leicht unscharf wirken; der Desktop-Hintergrund zeigt „Zentriert“ und „Gekachelt“ unter Umständen kleiner. Ganze Faktoren (1 ×, 2 ×) sind pixelgenau."
 
-#: src/bildschirm.rs:612 src/bildschirm.rs:743
+#: src/bildschirm.rs:638 src/bildschirm.rs:769
 msgid "no connection"
 msgstr "keine Verbindung"
 
-#: src/bildschirm.rs:632
+#: src/bildschirm.rs:658
 msgid "No change compared to the current state."
 msgstr "Keine Änderung gegenüber dem aktuellen Zustand."
 
-#: src/bildschirm.rs:639
+#: src/bildschirm.rs:665
 msgid "no connection to the compositor"
 msgstr "keine Verbindung zum Compositor"
 
-#: src/bildschirm.rs:649
+#: src/bildschirm.rs:675
 #, no-c-format
 msgid "Not applied – {error}"
 msgstr "Nicht angewendet – {error}"
 
-#: src/bildschirm.rs:663
+#: src/bildschirm.rs:689
 #, no-c-format
 msgid ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 msgstr ""
 "Angewendet. Bestätigung innerhalb von {seconds} s, sonst wird der vorherige Zustand wiederhergestellt."
 
-#: src/bildschirm.rs:680
-msgid "Keep Screen Settings?"
-msgstr "Bildschirmeinstellungen behalten?"
+#: src/bildschirm.rs:706
+msgid "Keep These Settings?"
+msgstr "Einstellungen beibehalten?"
 
-#: src/bildschirm.rs:693
+#: src/bildschirm.rs:719
 msgid "The new screen settings are active. Do you want to keep them?"
 msgstr ""
-"Die neuen Bildschirmeinstellungen sind aktiv. Sollen sie behalten werden?"
+"Die neuen Bildschirmeinstellungen sind aktiv. Sollen sie beibehalten werden?"
 
-#: src/bildschirm.rs:703
+#: src/bildschirm.rs:729
 msgid "Restore Previous Settings"
 msgstr "Vorherige Einstellungen wiederherstellen"
 
-#: src/bildschirm.rs:704
+#: src/bildschirm.rs:730
 msgid "Keep Settings"
-msgstr "Einstellungen behalten"
+msgstr "Beibehalten"
 
-#: src/bildschirm.rs:715 src/i18n.rs:175
+#: src/bildschirm.rs:741 src/i18n.rs:175
 #, no-c-format
 msgid "Without confirmation the previous settings are restored in {n} second."
 msgid_plural ""
@@ -560,65 +576,63 @@ msgstr[0] ""
 msgstr[1] ""
 "Ohne Bestätigung werden die vorherigen Einstellungen in {n} Sekunden wiederhergestellt."
 
-#: src/bildschirm.rs:754
+#: src/bildschirm.rs:780
 msgid "Previous screen settings restored; nothing saved."
 msgstr ""
 "Vorherige Bildschirmeinstellungen wiederhergestellt; nichts gespeichert."
 
-#: src/bildschirm.rs:758
+#: src/bildschirm.rs:784
 #, no-c-format
 msgid "Restoring failed – {error}. The new state remains, nothing saved."
 msgstr ""
 "Wiederherstellen fehlgeschlagen – {error}. Der neue Zustand bleibt, nichts gespeichert."
 
-#: src/bildschirm.rs:832
+#: src/bildschirm.rs:858
 #, no-c-format
-msgid ""
-"Screen settings kept and saved in {file}. They are applied again at session start."
-msgstr ""
-"Bildschirmeinstellungen behalten und gespeichert in {file}. Sie werden beim Sitzungsstart wieder gesetzt."
+msgid "Screen settings kept and saved in {file}."
+msgstr "Bildschirmeinstellungen beibehalten und gespeichert in {file}."
 
-#: src/bildschirm.rs:837
+#: src/bildschirm.rs:863
 #, no-c-format
 msgid "Settings active, but not saved: {error}"
 msgstr "Einstellungen aktiv, aber nicht gespeichert: {error}"
 
-#: src/bildschirm.rs:897
+#: src/bildschirm.rs:923
 msgid "No output switched on"
 msgstr "Keine eingeschaltete Ausgabe"
 
-#: src/bildschirm.rs:1106
+#: src/bildschirm.rs:1132
 msgid "Reset to the current state of the compositor."
 msgstr "Zurückgesetzt auf den aktuellen Zustand des Compositors."
 
-#: src/bildschirm.rs:1110
+#: src/bildschirm.rs:1136
 #, no-c-format
 msgid "Reading failed – {error}"
 msgstr "Lesen fehlgeschlagen – {error}"
 
-#: src/bildschirm_modell.rs:34
+#: src/bildschirm_modell.rs:35
 msgid "automatic"
 msgstr "automatisch"
 
-#: src/bildschirm_modell.rs:101
+#: src/bildschirm_modell.rs:102
 msgid "Normal"
 msgstr "Normal"
 
-#: src/bildschirm_modell.rs:102
+#: src/bildschirm_modell.rs:103
 msgid "90° (right)"
 msgstr "90° (rechts)"
 
-#: src/bildschirm_modell.rs:103
+#: src/bildschirm_modell.rs:104
 msgid "180° (upside down)"
 msgstr "180° (über Kopf)"
 
-#: src/bildschirm_modell.rs:104
+#: src/bildschirm_modell.rs:105
 msgid "270° (left)"
 msgstr "270° (links)"
 
 #. TRANSLATORS: decimal separator of refresh rates and scale factors (59.95 Hz, 1.25 ×)
 #. TRANSLATORS: decimal separator of the pointer speed (+0.25)
-#: src/bildschirm_modell.rs:145 src/maus.rs:213
+#: src/bildschirm_modell.rs:146 src/maus.rs:213
 msgctxt "decimal separator"
 msgid "."
 msgstr ","
@@ -1110,37 +1124,43 @@ msgstr ""
 msgid "Applied at {time}; the desktop shows the image immediately."
 msgstr "Übernommen um {time}; der Desktop zeigt das Bild sofort."
 
-#: src/labwc_konfig.rs:198
+#: src/labwc_konfig.rs:255
 #, no-c-format
 msgid "{file} not readable ({error})"
 msgstr "{file} nicht lesbar ({error})"
 
-#: src/labwc_konfig.rs:386
+#: src/labwc_konfig.rs:443
 msgid "an empty rc.xml is not written"
 msgstr "leere rc.xml wird nicht geschrieben"
 
-#: src/labwc_konfig.rs:527
+#: src/labwc_konfig.rs:584
 msgid "labwc does not read the user copy"
 msgstr "labwc liest die Benutzerkopie nicht"
 
-#: src/labwc_konfig.rs:537
+#: src/labwc_konfig.rs:594
 #, no-c-format
 msgid "{program} cannot be started: {error}"
 msgstr "{program} nicht startbar: {error}"
 
-#: src/labwc_konfig.rs:577
+#: src/labwc_konfig.rs:634
 msgid ""
 "Changes take effect immediately after “Apply” (labwc reloads its configuration)."
 msgstr ""
 "Änderungen gelten nach „Übernehmen“ sofort (labwc lädt seine Konfiguration neu)."
 
-#: src/labwc_konfig.rs:580
+#: src/labwc_konfig.rs:637
 msgid ""
 "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there."
 msgstr ""
 "Wirksam ab der nächsten Anmeldung. Die laufende Sitzung liest die Benutzerkopie ~/.config/querencia/labwc noch nicht; „Übernehmen“ speichert dort."
 
-#: src/labwc_konfig.rs:583
+#: src/labwc_konfig.rs:640
+msgid ""
+"No Querencia default for labwc was found, labwc’s built-in values are shown. “Apply” creates ~/.config/querencia/labwc; labwc reads it from the next login."
+msgstr ""
+"Keine Querencia-Vorgabe für labwc gefunden, angezeigt werden labwcs eingebaute Werte. „Übernehmen“ legt ~/.config/querencia/labwc an; labwc liest es ab der nächsten Anmeldung."
+
+#: src/labwc_konfig.rs:643
 msgid ""
 "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login."
 msgstr ""

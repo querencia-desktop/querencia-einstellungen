@@ -1,7 +1,8 @@
 //! Modell des Bereichs „Bildschirm“ (G2-G): Ausgaben und Modi, wie der
 //! Compositor sie meldet; die Wahl des Benutzers je Ausgabe; Anordnung mit
-//! Einrasten; die Datei `~/.config/querencia/bildschirm.ini`. Ohne GTK und
-//! ohne Wayland, damit alles hier mit Unit-Tests prüfbar ist.
+//! Einrasten; die Datei `~/.config/querencia/bildschirm.toml` (seit 0.1.6,
+//! vorher `bildschirm.ini`, die weiter gelesen wird). Ohne GTK und ohne
+//! Wayland, damit alles hier mit Unit-Tests prüfbar ist.
 use crate::i18n::{gettext, pgettext};
 use std::path::PathBuf;
 
@@ -37,7 +38,7 @@ impl Modus {
         }
     }
 
-    /// Wert in `bildschirm.ini`: `1920x1080@60000`.
+    /// Wert in `bildschirm.ini` (bis 0.1.5) und im Protokoll: `1920x1080@60000`.
     pub fn dateiwert(&self) -> String {
         format!("{}x{}@{}", self.breite, self.hoehe, self.mhz)
     }
@@ -198,6 +199,27 @@ impl Ausgabe {
     }
 }
 
+/// Namensanfänge virtueller Ausgaben von wlroots (headless, verschachtelt in
+/// Wayland oder X11): Sie haben nie Gerätedaten.
+const VIRTUELL: &[&str] = &["HEADLESS-", "WL-", "X11-", "NOOP-"];
+
+/// Ein echter Anschluss, der weder Hersteller noch Modell meldet: Der
+/// Monitor hat keine EDID geliefert. labwc bietet dann nur Grundmodi wie
+/// 1024 × 768 an. Auf der Entwicklungs-VM mit durchgereichter Grafikkarte
+/// passiert das manchmal nach dem Start; Kabel ab- und wieder anstecken hilft.
+/// `zwangsweise` nennt Ausgaben, die als solche gelten (Prüfschalter
+/// `QE_BILDSCHIRM_OHNE_EDID`, Namen durch Komma getrennt).
+pub fn ohne_edid(a: &Ausgabe, zwangsweise: &str) -> bool {
+    if zwangsweise.split(',').any(|n| n.trim() == a.name) {
+        return true;
+    }
+    let leer = |t: &str| {
+        let t = t.trim();
+        t.is_empty() || t.eq_ignore_ascii_case("unknown")
+    };
+    !VIRTUELL.iter().any(|v| a.name.starts_with(v)) && leer(&a.hersteller) && leer(&a.modell)
+}
+
 /// Soll-Zustand einer Ausgabe, wie der Benutzer ihn wählt.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Wahl {
@@ -280,6 +302,22 @@ pub fn wahlen_aus(ausgaben: &[Ausgabe]) -> Vec<Wahl> {
 
 pub fn unterschiedlich(a: &[Wahl], b: &[Wahl]) -> bool {
     a.len() != b.len() || a.iter().zip(b).any(|(x, y)| !x.gleich(y))
+}
+
+/// Eingeschaltete Ausgaben, deren gemeldete Position nicht der Wahl
+/// entspricht (nach dem Setzen, siehe `Verbindung::setzen`).
+pub fn abweichende_lage(wahlen: &[Wahl], ausgaben: &[Ausgabe]) -> Vec<String> {
+    wahlen
+        .iter()
+        .filter(|w| w.aktiv)
+        .filter(|w| {
+            ausgaben
+                .iter()
+                .find(|a| a.name == w.name)
+                .is_some_and(|a| a.aktiv && a.position != w.position)
+        })
+        .map(|w| w.name.clone())
+        .collect()
 }
 
 // ------------------------------------------------------------ Anordnung
@@ -423,50 +461,282 @@ pub fn hauptmonitor_setzen(wahlen: &mut [Wahl], index: usize) {
 
 // ----------------------------------------------------------------- Datei
 
-pub const DATEINAME: &str = "bildschirm.ini";
+/// Gespeicherte Konfiguration (0.1.6).
+pub const DATEINAME: &str = "bildschirm.toml";
+/// Bis 0.1.5: wird gelesen, solange es keine `bildschirm.toml` gibt, und nie
+/// geschrieben oder gelöscht.
+pub const ALTE_DATEI: &str = "bildschirm.ini";
 
-pub fn konfig_pfad() -> PathBuf {
-    let basis = std::env::var_os("XDG_CONFIG_HOME")
+fn konfig_ordner() -> PathBuf {
+    std::env::var_os("XDG_CONFIG_HOME")
         .map(PathBuf::from)
         .filter(|p| p.is_absolute())
         .unwrap_or_else(|| {
             PathBuf::from(std::env::var_os("HOME").unwrap_or_default()).join(".config")
-        });
-    basis.join("querencia").join(DATEINAME)
+        })
+        .join("querencia")
+}
+
+pub fn konfig_pfad() -> PathBuf {
+    konfig_ordner().join(DATEINAME)
+}
+
+pub fn alte_konfig_pfad() -> PathBuf {
+    konfig_ordner().join(ALTE_DATEI)
 }
 
 /// Ein gespeicherter Eintrag: Kennung der Ausgabe und die gewählten Werte.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Eintrag {
     pub name: String,
+    /// Hersteller|Modell|Seriennummer wie [`Ausgabe::geraet`]
     pub geraet: String,
     pub wahl: Wahl,
 }
 
-/// Text von `bildschirm.ini`: eine Gruppe je Ausgabe.
+/// TOML-Zeichenkette in doppelten Anführungszeichen.
+fn toml_text(t: &str) -> String {
+    let mut s = String::with_capacity(t.len() + 2);
+    s.push('"');
+    for c in t.chars() {
+        match c {
+            '"' => s.push_str("\\\""),
+            '\\' => s.push_str("\\\\"),
+            '\n' => s.push_str("\\n"),
+            '\t' => s.push_str("\\t"),
+            c if c.is_control() => s.push_str(&format!("\\u{:04X}", c as u32)),
+            c => s.push(c),
+        }
+    }
+    s.push('"');
+    s
+}
+
+/// Skalierung als TOML-Zahl mit Nachkommastelle (`1.0`, `1.25`).
+fn toml_zahl(f: f64) -> String {
+    let t = format!("{f}");
+    if t.contains('.') || t.contains('e') {
+        t
+    } else {
+        format!("{t}.0")
+    }
+}
+
+/// Text von `bildschirm.toml`: eine Tabelle `[[ausgabe]]` je Ausgabe, mit
+/// Name, Hersteller, Modell und Seriennummer zur Zuordnung.
 pub fn konfig_schreiben(wahlen: &[Wahl], ausgaben: &[Ausgabe]) -> String {
     let mut text = String::from(
-        "# Querencia Einstellungen – Bildschirm. Wird beim Sitzungsstart mit\n# „querencia-einstellungen --bildschirm-anwenden“ gesetzt. Zuordnung über\n# Geraet (Hersteller|Modell|Seriennummer), sonst über den Namen.\n",
+        "# Querencia Einstellungen – Bildschirm. Beim Sitzungsstart setzt\n\
+         # „querencia-einstellungen --bildschirm-anwenden“ diese Werte. Zuordnung\n\
+         # über hersteller, modell und seriennummer, sonst über den Namen.\n\
+         # labwc speichert selbst keine Bildschirmeinstellungen.\n\
+         version = 1\n",
     );
     for w in wahlen {
         let a = ausgaben.iter().find(|a| a.name == w.name);
-        text.push_str(&format!("\n[Ausgabe {}]\n", w.name));
+        let feld = |f: fn(&Ausgabe) -> &str| a.map(f).unwrap_or_default().trim().to_owned();
+        text.push_str("\n[[ausgabe]]\n");
+        text.push_str(&format!("name = {}\n", toml_text(&w.name)));
         text.push_str(&format!(
-            "Geraet={}\n",
-            a.map(Ausgabe::geraet).unwrap_or_default()
+            "hersteller = {}\n",
+            toml_text(&feld(|a| &a.hersteller))
         ));
-        text.push_str(&format!("Aktiv={}\n", if w.aktiv { "ja" } else { "nein" }));
-        text.push_str(&format!("Modus={}\n", w.modus.dateiwert()));
-        text.push_str(&format!("Position={},{}\n", w.position.0, w.position.1));
-        text.push_str(&format!("Drehung={}\n", w.drehung.dateiwert()));
-        text.push_str(&format!("Skalierung={}\n", w.skalierung));
-        text.push_str(&format!("Haupt={}\n", if w.haupt { "ja" } else { "nein" }));
+        text.push_str(&format!("modell = {}\n", toml_text(&feld(|a| &a.modell))));
+        text.push_str(&format!(
+            "seriennummer = {}\n",
+            toml_text(&feld(|a| &a.seriennummer))
+        ));
+        text.push_str(&format!("aktiv = {}\n", w.aktiv));
+        text.push_str(&format!("breite = {}\n", w.modus.breite));
+        text.push_str(&format!("hoehe = {}\n", w.modus.hoehe));
+        text.push_str(&format!("wiederholrate_mhz = {}\n", w.modus.mhz));
+        text.push_str(&format!("x = {}\n", w.position.0));
+        text.push_str(&format!("y = {}\n", w.position.1));
+        text.push_str(&format!("drehung = {}\n", w.drehung.dateiwert()));
+        text.push_str(&format!("skalierung = {}\n", toml_zahl(w.skalierung)));
+        text.push_str(&format!("primaer = {}\n", w.haupt));
     }
     text
 }
 
-/// Liest `bildschirm.ini`; unbrauchbare Gruppen werden mit Grund übergangen.
+/// Ein TOML-Wert für Meldungen (`"abc"`, `1.5`, `true`, sonst die Art).
+fn wert_text(v: &toml::Value) -> String {
+    match v {
+        toml::Value::String(t) => format!("{t:?}"),
+        toml::Value::Integer(n) => n.to_string(),
+        toml::Value::Float(f) => f.to_string(),
+        toml::Value::Boolean(b) => b.to_string(),
+        anderes => format!("<{}>", anderes.type_str()),
+    }
+}
+
+/// Liest `bildschirm.toml`; unbrauchbare Einträge werden mit Grund
+/// übergangen, unbekannte Schlüssel gemeldet. Ist die Datei kein TOML,
+/// gibt es keinen Eintrag und eine Meldung.
 pub fn konfig_lesen(text: &str) -> (Vec<Eintrag>, Vec<String>) {
+    let mut eintraege = Vec::new();
+    let mut probleme = Vec::new();
+    let tabelle = match text.parse::<toml::Table>() {
+        Ok(t) => t,
+        Err(e) => {
+            probleme.push(format!("kein gültiges TOML: {}", e.to_string().trim()));
+            return (eintraege, probleme);
+        }
+    };
+    for (k, v) in &tabelle {
+        match (k.as_str(), v) {
+            ("version", toml::Value::Integer(1)) | ("ausgabe", _) => {}
+            ("version", v) => probleme.push(format!(
+                "version = {} unbekannt, gelesen wie 1",
+                wert_text(v)
+            )),
+            (k, _) => probleme.push(format!("unbekannter Schlüssel „{k}“")),
+        }
+    }
+    let liste = match tabelle.get("ausgabe") {
+        None => return (eintraege, probleme),
+        Some(toml::Value::Array(a)) => a.as_slice(),
+        Some(_) => {
+            probleme.push("„ausgabe“ ist keine Liste [[ausgabe]]".into());
+            return (eintraege, probleme);
+        }
+    };
+    for (i, e) in liste.iter().enumerate() {
+        let Some(t) = e.as_table() else {
+            probleme.push(format!("ausgabe {}: keine Tabelle", i + 1));
+            continue;
+        };
+        let name = t
+            .get("name")
+            .and_then(toml::Value::as_str)
+            .map(str::trim)
+            .unwrap_or_default()
+            .to_owned();
+        if name.is_empty() {
+            probleme.push(format!("ausgabe {}: name fehlt, übergangen", i + 1));
+            continue;
+        }
+        let ort = format!("ausgabe {name}");
+        let text_von = |k: &str| {
+            t.get(k)
+                .and_then(toml::Value::as_str)
+                .map(str::trim)
+                .unwrap_or_default()
+                .to_owned()
+        };
+        let ganz = |k: &str, probleme: &mut Vec<String>| -> Option<i64> {
+            match t.get(k) {
+                None => None,
+                Some(toml::Value::Integer(n)) => Some(*n),
+                Some(v) => {
+                    probleme.push(format!(
+                        "{ort}: {k} = {} ist keine ganze Zahl",
+                        wert_text(v)
+                    ));
+                    None
+                }
+            }
+        };
+        let mut wahl = Wahl {
+            name: name.clone(),
+            aktiv: true,
+            modus: Modus::neu(1024, 768, 0),
+            position: (0, 0),
+            drehung: Drehung::Normal,
+            skalierung: 1.0,
+            haupt: false,
+        };
+        match t.get("aktiv") {
+            None => {}
+            Some(toml::Value::Boolean(b)) => wahl.aktiv = *b,
+            Some(v) => probleme.push(format!("{ort}: aktiv = {} unbekannt", wert_text(v))),
+        }
+        let breite = ganz("breite", &mut probleme);
+        let hoehe = ganz("hoehe", &mut probleme);
+        let mhz = ganz("wiederholrate_mhz", &mut probleme).unwrap_or(0);
+        let modus = match (breite, hoehe) {
+            (Some(b), Some(h)) => Modus::aus_dateiwert(&format!("{b}x{h}@{mhz}")),
+            _ => None,
+        };
+        // eine eingeschaltete Ausgabe ohne Größe wird übergangen (unten,
+        // nachdem alle Schlüssel gemeldet sind)
+        let ohne_groesse = modus.is_none() && wahl.aktiv;
+        if let Some(m) = modus {
+            wahl.modus = m;
+        }
+        let x = ganz("x", &mut probleme).unwrap_or(0);
+        let y = ganz("y", &mut probleme).unwrap_or(0);
+        match (i32::try_from(x), i32::try_from(y)) {
+            (Ok(x), Ok(y)) => wahl.position = (x, y),
+            _ => probleme.push(format!("{ort}: x/y außerhalb des Bereichs")),
+        }
+        if let Some(d) = ganz("drehung", &mut probleme) {
+            match Drehung::aus_dateiwert(&d.to_string()) {
+                Some(d) => wahl.drehung = d,
+                None => probleme.push(format!("{ort}: drehung = {d} unbekannt")),
+            }
+        }
+        match t.get("skalierung") {
+            None => {}
+            Some(v) => match v.as_float().or_else(|| v.as_integer().map(|n| n as f64)) {
+                Some(f) if f > 0.0 && f <= 8.0 => wahl.skalierung = f,
+                _ => probleme.push(format!("{ort}: skalierung = {} unbrauchbar", wert_text(v))),
+            },
+        }
+        match t.get("primaer") {
+            None => {}
+            Some(toml::Value::Boolean(b)) => wahl.haupt = *b,
+            Some(v) => probleme.push(format!("{ort}: primaer = {} unbekannt", wert_text(v))),
+        }
+        for k in t.keys() {
+            if ![
+                "name",
+                "hersteller",
+                "modell",
+                "seriennummer",
+                "aktiv",
+                "breite",
+                "hoehe",
+                "wiederholrate_mhz",
+                "x",
+                "y",
+                "drehung",
+                "skalierung",
+                "primaer",
+            ]
+            .contains(&k.as_str())
+            {
+                probleme.push(format!("{ort}: unbekannter Schlüssel „{k}“"));
+            }
+        }
+        if ohne_groesse {
+            probleme.push(format!(
+                "{ort}: breite/hoehe fehlen oder sind unbrauchbar, übergangen"
+            ));
+            continue;
+        }
+        let geraet = format!(
+            "{}|{}|{}",
+            text_von("hersteller"),
+            text_von("modell"),
+            text_von("seriennummer")
+        );
+        eintraege.push(Eintrag {
+            name,
+            geraet: if geraet == "||" {
+                String::new()
+            } else {
+                geraet
+            },
+            wahl,
+        });
+    }
+    (eintraege, probleme)
+}
+
+/// Liest die alte `bildschirm.ini` (bis 0.1.5); unbrauchbare Gruppen werden
+/// mit Grund übergangen.
+pub fn ini_lesen(text: &str) -> (Vec<Eintrag>, Vec<String>) {
     let mut eintraege = Vec::new();
     let mut probleme = Vec::new();
     let mut aktueller: Option<(String, String, Wahl, bool)> = None; // name, geraet, wahl, modus gesetzt
@@ -594,7 +864,7 @@ pub fn zuordnen(eintraege: &[Eintrag], ausgaben: &[Ausgabe]) -> (Vec<Wahl>, usiz
 pub fn konfig_speichern(pfad: &std::path::Path, text: &str) -> Result<(), String> {
     let ordner = pfad.parent().ok_or("kein Ordner")?;
     std::fs::create_dir_all(ordner).map_err(|e| format!("{}: {e}", ordner.display()))?;
-    let neu = pfad.with_extension("ini.neu");
+    let neu = pfad.with_extension("toml.neu");
     std::fs::write(&neu, text).map_err(|e| format!("{}: {e}", neu.display()))?;
     std::fs::rename(&neu, pfad).map_err(|e| format!("{}: {e}", pfad.display()))
 }
@@ -690,7 +960,7 @@ mod tests {
     fn datei_rundreise() {
         let mut a = ausgabe("HDMI-A-1", 1920, 1080, 0, 0);
         a.hersteller = "Dell".into();
-        a.modell = "U2412M".into();
+        a.modell = "U2412M \"Pro\"".into();
         a.seriennummer = "123".into();
         let b = ausgabe("DP-1", 1024, 768, 1920, 0);
         let mut w = wahlen_aus(&[a.clone(), b.clone()]);
@@ -698,13 +968,32 @@ mod tests {
         w[0].skalierung = 1.5;
         w[0].drehung = Drehung::Rechts90;
         let text = konfig_schreiben(&w, &[a.clone(), b.clone()]);
-        assert!(text.contains("[Ausgabe HDMI-A-1]\nGeraet=Dell|U2412M|123\nAktiv=ja\nModus=1920x1080@60000\nPosition=0,0\nDrehung=90\nSkalierung=1.5\nHaupt=ja\n"));
+        assert!(
+            text.contains(
+                "\n[[ausgabe]]\nname = \"HDMI-A-1\"\nhersteller = \"Dell\"\nmodell = \"U2412M \\\"Pro\\\"\"\nseriennummer = \"123\"\naktiv = true\nbreite = 1920\nhoehe = 1080\nwiederholrate_mhz = 60000\nx = 0\ny = 0\ndrehung = 90\nskalierung = 1.5\nprimaer = true\n"
+            ),
+            "{text}"
+        );
+        assert!(
+            text.contains("skalierung = 1.0\nprimaer = false\n"),
+            "{text}"
+        );
         let (eintraege, probleme) = konfig_lesen(&text);
         assert!(probleme.is_empty(), "{probleme:?}");
         assert_eq!(eintraege.len(), 2);
+        assert_eq!(eintraege[0].geraet, "Dell|U2412M \"Pro\"|123");
+        assert_eq!(eintraege[1].geraet, "", "ohne Gerätedaten zählt der Name");
         let (zu, treffer) = zuordnen(&eintraege, &[a, b]);
         assert_eq!(treffer, 2);
         assert!(!unterschiedlich(&zu, &w));
+        // alle angebotenen Skalierungen kommen genau zurück
+        for s in SKALIERUNGEN {
+            let mut w2 = w.clone();
+            w2[0].skalierung = *s;
+            let (e, p) = konfig_lesen(&konfig_schreiben(&w2, &[]));
+            assert!(p.is_empty(), "{p:?}");
+            assert_eq!(e[0].wahl.skalierung, *s);
+        }
     }
 
     #[test]
@@ -714,7 +1003,7 @@ mod tests {
         alt.modell = "X".into();
         alt.seriennummer = "1".into();
         let w = wahlen_aus(&[alt.clone()]);
-        let (eintraege, _) = konfig_lesen(&konfig_schreiben(&w, &[alt.clone()]));
+        let (eintraege, _) = konfig_lesen(&konfig_schreiben(&w, std::slice::from_ref(&alt)));
         // dieselbe Ausgabe hängt jetzt an DP-2
         let mut neu = alt.clone();
         neu.name = "DP-2".into();
@@ -736,12 +1025,87 @@ mod tests {
     }
 
     #[test]
-    fn lesen_ist_tolerant() {
+    fn abweichende_lage_nur_eingeschaltete() {
+        // labwc legte HEADLESS-2 (automatisch platziert) neben die verschobene
+        let soll = wahlen_aus(&[
+            ausgabe("HEADLESS-1", 1920, 1080, 0, 720),
+            ausgabe("HEADLESS-2", 1280, 720, 0, 0),
+        ]);
+        let ist = [
+            ausgabe("HEADLESS-1", 1920, 1080, 0, 720),
+            ausgabe("HEADLESS-2", 1280, 720, 1920, 720),
+        ];
+        assert_eq!(abweichende_lage(&soll, &ist), ["HEADLESS-2"]);
+        let mut aus = soll.clone();
+        aus[1].aktiv = false;
+        assert!(abweichende_lage(&aus, &ist).is_empty());
+        assert!(abweichende_lage(&soll, &ist[..1]).is_empty());
+    }
+
+    #[test]
+    fn ohne_edid_nur_an_echten_anschluessen() {
+        let mut a = ausgabe("HDMI-A-1", 1024, 768, 0, 0);
+        assert!(ohne_edid(&a, ""));
+        a.hersteller = "Unknown".into();
+        assert!(ohne_edid(&a, ""));
+        a.modell = "ASUS VS247".into();
+        assert!(!ohne_edid(&a, ""));
+        let h = ausgabe("HEADLESS-1", 1920, 1080, 0, 0);
+        assert!(!ohne_edid(&h, ""));
+        assert!(ohne_edid(&h, "HEADLESS-2, HEADLESS-1"));
+        assert!(!ohne_edid(&h, "HEADLESS-10"));
+    }
+
+    #[test]
+    fn alte_ini_wird_gelesen_wie_bisher() {
+        let ini = "# alt\n\n[Ausgabe HDMI-A-1]\nGeraet=Dell|U2412M|123\nAktiv=ja\nModus=1920x1080@60000\nPosition=0,0\nDrehung=90\nSkalierung=1.5\nHaupt=ja\n\n[Ausgabe DP-1]\nGeraet=||\nAktiv=nein\nModus=1024x768@60000\nPosition=1920,0\nDrehung=0\nSkalierung=1\nHaupt=nein\n";
+        let (e, p) = ini_lesen(ini);
+        assert!(p.is_empty(), "{p:?}");
+        let mut a = ausgabe("HDMI-A-1", 1920, 1080, 0, 0);
+        a.hersteller = "Dell".into();
+        a.modell = "U2412M".into();
+        a.seriennummer = "123".into();
+        let b = ausgabe("DP-1", 1024, 768, 1920, 0);
+        // dieselben Werte über die neue Datei
+        let (zu, treffer) = zuordnen(&e, &[a.clone(), b.clone()]);
+        assert_eq!(treffer, 2);
+        let (e2, p2) = konfig_lesen(&konfig_schreiben(&zu, &[a.clone(), b.clone()]));
+        assert!(p2.is_empty(), "{p2:?}");
+        let (zu2, _) = zuordnen(&e2, &[a, b]);
+        assert_eq!(zu, zu2);
+        assert!(zu[0].haupt && !zu[1].aktiv && zu[0].skalierung == 1.5);
+    }
+
+    #[test]
+    fn toml_lesen_ist_tolerant() {
+        let (e, p) = konfig_lesen("das ist [kein toml");
+        assert!(e.is_empty());
+        assert_eq!(p.len(), 1, "{p:?}");
+        let (e, p) = konfig_lesen(
+            "version = 2\nfremd = 1\n[[ausgabe]]\nname = \"X\"\naktiv = true\nskalierung = \"abc\"\nfarbe = 1\n[[ausgabe]]\nname = \"Y\"\naktiv = false\n[[ausgabe]]\naktiv = true\n[[ausgabe]]\nname = \"Z\"\nbreite = 1600\nhoehe = 900\nskalierung = 2\nx = 1.5\n",
+        );
+        let namen: Vec<&str> = e.iter().map(|e| e.name.as_str()).collect();
+        assert_eq!(
+            namen,
+            ["Y", "Z"],
+            "X ohne Größe, dritte ohne Namen: übergangen"
+        );
+        assert_eq!(e[1].wahl.modus, Modus::neu(1600, 900, 0));
+        assert_eq!(e[1].wahl.skalierung, 2.0, "ganze Zahl gilt als Skalierung");
+        assert_eq!(
+            p.len(),
+            7,
+            "version, fremd, skalierung, farbe, X übergangen, ohne Namen, x: {p:?}"
+        );
+    }
+
+    #[test]
+    fn ini_lesen_ist_tolerant() {
         let (e, p) =
-            konfig_lesen("[Ausgabe X]\nAktiv=ja\nSkalierung=abc\nFremd=1\n[Sonst]\nModus=1x1@0\n");
+            ini_lesen("[Ausgabe X]\nAktiv=ja\nSkalierung=abc\nFremd=1\n[Sonst]\nModus=1x1@0\n");
         assert!(e.is_empty(), "Gruppe ohne Modus wird übergangen: {e:?}");
         assert_eq!(p.len(), 5, "{p:?}");
-        let (e, p) = konfig_lesen("[Ausgabe Y]\nAktiv=nein\n");
+        let (e, p) = ini_lesen("[Ausgabe Y]\nAktiv=nein\n");
         assert_eq!(e.len(), 1, "ausgeschaltete Ausgabe braucht keinen Modus");
         assert!(p.is_empty());
     }

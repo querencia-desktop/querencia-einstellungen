@@ -4,8 +4,9 @@
 //! Anwenden (erst `test`, dann `apply`), Zurücksetzen, Schließen. Nach dem
 //! Anwenden fragt ein Dialog mit 15-s-Countdown; ohne Bestätigung wird die
 //! vorherige Konfiguration wiederhergestellt. Bestätigt wird nach
-//! `~/.config/querencia/bildschirm.ini` gespeichert (atomar); beim
-//! Sitzungsstart setzt `--bildschirm-anwenden` sie wieder.
+//! `~/.config/querencia/bildschirm.toml` gespeichert (atomar, seit 0.1.6;
+//! vorher `bildschirm.ini`); beim Sitzungsstart setzt `--bildschirm-anwenden`
+//! sie wieder. labwc selbst speichert keine Bildschirmeinstellungen.
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -47,6 +48,8 @@ struct Oberflaeche {
     drehung: gtk4::DropDown,
     skalierung: gtk4::DropDown,
     skalierung_hinweis: gtk4::Label,
+    /// Hinweis, wenn der gewählte Monitor keine Daten (EDID) meldet
+    edid_hinweis: gtk4::Label,
     haupt: gtk4::Button,
     details: gtk4::Label,
     status: gtk4::Label,
@@ -186,7 +189,20 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     skalierung_hinweis.set_wrap(true);
     skalierung_hinweis.set_max_width_chars(50);
     skalierung_hinweis.add_css_class("dim-label");
+    let edid_hinweis = gtk4::Label::new(Some(&gettext(
+        "This monitor did not report its data (EDID), so only basic resolutions such as 1024 × 768 are offered. With a graphics card passed through to a virtual machine this can happen after starting; unplugging and plugging in the monitor cable usually helps.",
+    )));
+    edid_hinweis.set_xalign(0.0);
+    edid_hinweis.set_wrap(true);
+    edid_hinweis.set_max_width_chars(60);
+    edid_hinweis.set_margin_start(8);
+    edid_hinweis.set_margin_end(8);
+    edid_hinweis.set_margin_bottom(6);
+    edid_hinweis.set_visible(false);
     let haupt = gtk4::Button::with_label(&gettext("Use as Primary Monitor"));
+    haupt.set_tooltip_text(Some(&gettext(
+        "labwc has no primary monitor of its own: the primary monitor is placed at the top left, the others next to it.",
+    )));
     let details = gtk4::Label::new(None);
     details.set_xalign(0.0);
     details.set_wrap(true);
@@ -213,12 +229,24 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     details.set_margin_bottom(6);
     details.set_max_width_chars(60);
     rahmen_box.append(&details);
+    rahmen_box.append(&edid_hinweis);
     rahmen.set_child(Some(&rahmen_box));
     aussen.append(&rahmen);
     aussen.append(&anordnung_rahmen);
+    let quelle = crate::bereiche::quelle(&gettext(
+        "the compositor (labwc); saved in ~/.config/querencia/bildschirm.toml and applied at login with “querencia-einstellungen --bildschirm-anwenden”.",
+    ));
 
     // --- Statuszeile und Schaltflächen (Fuß)
     let fuss = gtk4::Box::new(gtk4::Orientation::Vertical, 8);
+    // Fußzeile „Quelle“: im Kontrollzentrum letzte Zeile des Inhalts, im
+    // eigenen Fenster fest über der Statuszeile (der Inhalt rollt dort, eine
+    // Zeile am Rand des Rollbereichs wäre halb verdeckt)
+    if mit_schliessen {
+        fuss.append(&quelle);
+    } else {
+        aussen.append(&quelle);
+    }
     let status = gtk4::Label::new(None);
     status.set_xalign(0.0);
     status.set_wrap(true);
@@ -271,6 +299,7 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
         drehung,
         skalierung,
         skalierung_hinweis,
+        edid_hinweis,
         haupt,
         details,
         status,
@@ -305,8 +334,8 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
         o.auswahl_zeigen();
         let n = o.zustand.borrow().ausgaben.len();
         o.status.set_text(&ngettext_f(
-            "{n} output reported (wlr-output-management, labwc). Changes take effect only after “Apply”.",
-            "{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”.",
+            "{n} monitor found. Changes take effect only after “Apply”.",
+            "{n} monitors found. Changes take effect only after “Apply”.",
             n as u32,
             &[],
         ));
@@ -485,6 +514,10 @@ impl Oberflaeche {
             .unwrap_or(0);
         let aktiv = w.aktiv;
         let haupt = w.haupt;
+        let edid_fehlt = bm::ohne_edid(
+            a,
+            &std::env::var("QE_BILDSCHIRM_OHNE_EDID").unwrap_or_default(),
+        );
         let (lb, lh) = w.logische_groesse();
         let details = gettext_f(
             "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}",
@@ -564,6 +597,7 @@ impl Oberflaeche {
         }
         self.haupt.set_sensitive(aktiv && !haupt);
         self.details.set_text(&details);
+        self.edid_hinweis.set_visible(edid_fehlt);
         self.skalierung_hinweis_zeigen();
         self.anwenden.set_sensitive(unterschied);
         self.anordnung.queue_draw();
@@ -575,7 +609,7 @@ impl Oberflaeche {
         drop(z);
         if (s - s.round()).abs() > 0.001 {
             self.skalierung_hinweis.set_text(&gettext(
-                "Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact.",
+                "Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact.",
             ));
         } else {
             self.skalierung_hinweis.set_text("");
@@ -640,7 +674,8 @@ impl Oberflaeche {
                 Some(v) => v
                     .anwenden(&soll, true)
                     .map_err(|e| format!("Test: {e}"))
-                    .and_then(|()| v.anwenden(&soll, false)),
+                    .and_then(|()| v.setzen(&soll))
+                    .map(|rest| lage_melden(&rest)),
             }
         };
         match ergebnis {
@@ -677,7 +712,7 @@ impl Oberflaeche {
             .root()
             .and_then(|r| r.downcast::<gtk4::Window>().ok());
         let dialog = gtk4::Window::builder()
-            .title(gettext("Keep Screen Settings?"))
+            .title(gettext("Keep These Settings?"))
             .modal(true)
             .default_width(460)
             .resizable(false)
@@ -739,7 +774,7 @@ impl Oberflaeche {
                 let ergebnis = {
                     let mut z = o.zustand.borrow_mut();
                     match z.verbindung.as_mut() {
-                        Some(v) => v.anwenden(&vorher, false),
+                        Some(v) => v.setzen(&vorher).map(|rest| lage_melden(&rest)),
                         None => Err(gettext("no connection")),
                     }
                 };
@@ -830,7 +865,7 @@ impl Oberflaeche {
             Ok(()) => {
                 eprintln!("querencia-einstellungen: {} geschrieben", pfad.display());
                 self.status.set_text(&gettext_f(
-                    "Screen settings kept and saved in {file}. They are applied again at session start.",
+                    "Screen settings kept and saved in {file}.",
                     &[("file", &pfad.display().to_string())],
                 ));
             }
@@ -955,6 +990,17 @@ impl Oberflaeche {
                 px >= x && px <= x + f64::from(lb) * m && py >= y && py <= y + f64::from(lh) * m
             })
             .map(|(i, _)| i)
+    }
+}
+
+/// Protokollzeile, wenn labwc Ausgaben auch nach dem zweiten Setzen anders
+/// legt (siehe `Verbindung::setzen`); die Seite zeigt danach den echten Stand.
+fn lage_melden(abweichend: &[String]) {
+    if !abweichend.is_empty() {
+        eprintln!(
+            "querencia-einstellungen: Bildschirm: labwc legt {} anders als gewählt",
+            abweichend.join(", ")
+        );
     }
 }
 
@@ -1164,24 +1210,44 @@ fn verdrahten(o: &Rc<Oberflaeche>) {
 }
 
 /// `--bildschirm-anwenden`: gespeicherte Konfiguration setzen (Sitzungsstart).
+/// Liest `bildschirm.toml`, ohne sie die alte `bildschirm.ini` (bis 0.1.5).
 /// Exit 0 gesetzt oder nichts zu tun, 1 Fehler, 2 keine Datei.
 pub fn gespeicherte_anwenden() -> i32 {
-    let pfad = bm::konfig_pfad();
-    let text = match std::fs::read_to_string(&pfad) {
-        Ok(t) => t,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            eprintln!(
-                "querencia-einstellungen: {}: keine Datei, nichts zu tun",
-                pfad.display()
-            );
-            return 2;
-        }
+    let lesen = |pfad: &std::path::Path| match std::fs::read_to_string(pfad) {
+        Ok(t) => Ok(Some(t)),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(e) => Err(format!("{}: {e}", pfad.display())),
+    };
+    let neu = bm::konfig_pfad();
+    let alt = bm::alte_konfig_pfad();
+    let (pfad, (eintraege, probleme)) = match lesen(&neu) {
+        Ok(Some(t)) => (neu, bm::konfig_lesen(&t)),
+        Ok(None) => match lesen(&alt) {
+            Ok(Some(t)) => {
+                eprintln!(
+                    "querencia-einstellungen: {} fehlt, lese die alte {}",
+                    neu.display(),
+                    alt.display()
+                );
+                (alt, bm::ini_lesen(&t))
+            }
+            Ok(None) => {
+                eprintln!(
+                    "querencia-einstellungen: {}: keine Datei, nichts zu tun",
+                    neu.display()
+                );
+                return 2;
+            }
+            Err(e) => {
+                eprintln!("querencia-einstellungen: {e}");
+                return 1;
+            }
+        },
         Err(e) => {
-            eprintln!("querencia-einstellungen: {}: {e}", pfad.display());
+            eprintln!("querencia-einstellungen: {e}");
             return 1;
         }
     };
-    let (eintraege, probleme) = bm::konfig_lesen(&text);
     for p in &probleme {
         eprintln!("querencia-einstellungen: {}: {p}", pfad.display());
     }
@@ -1225,7 +1291,8 @@ pub fn gespeicherte_anwenden() -> i32 {
     match v
         .anwenden(&wahlen, true)
         .map_err(|e| format!("Test: {e}"))
-        .and_then(|()| v.anwenden(&wahlen, false))
+        .and_then(|()| v.setzen(&wahlen))
+        .map(|rest| lage_melden(&rest))
     {
         Ok(()) => {
             eprintln!(

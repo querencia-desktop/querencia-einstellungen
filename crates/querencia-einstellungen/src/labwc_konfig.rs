@@ -26,9 +26,15 @@ use std::path::{Path, PathBuf};
 use crate::i18n::{gettext, gettext_f};
 use crate::labwc_xml;
 
-/// Lage der Vorgabe im Paket (nur lesen), wenn nichts anderes sie nennt
-/// ([`vorgabe_ermitteln`]).
+/// Vorgabe unter `/etc` (nur lesen): Lage im Paket bis 0.1.5 und Ort für
+/// Anpassungen der Verwaltung ([`vorgabe_ermitteln`]).
 pub const VORGABE_PAKET: &str = "/etc/querencia/labwc";
+/// Vorgabe des installierten Systems (nur lesen), 0.1.6.
+pub const VORGABE_SYSTEM: &str = "/usr/share/querencia/labwc";
+/// Lage der Vorgabe neben dem Programm, wie `share/locale` in der Ablage
+/// (`<ablage>/share/querencia/labwc`) bzw. unter dem Präfix
+/// (`/usr/bin/../share/querencia/labwc`).
+pub const VORGABE_IN_ABLAGE: &str = "share/querencia/labwc";
 /// Lage der Vorgabe in einem Checkout des Runtime-Repos (`$QUERENCIA_REPO`).
 pub const VORGABE_IM_REPO: &str = "session/querencia/labwc";
 /// Eigene Umgebungsdatei. labwc liest `environment.d/*.env` nach
@@ -60,8 +66,15 @@ pub enum Herkunft {
     /// Zeile `quelle …` in `.vorgabe/stand`, die der Sitzungsstarter beim
     /// Abgleich schreibt (Entwicklungs-VM: der Runtime-Checkout)
     Stand,
+    /// neben dem Programm ([`VORGABE_IN_ABLAGE`], 0.1.6)
+    Ablage,
     /// [`VORGABE_PAKET`]
     Paket,
+    /// [`VORGABE_SYSTEM`] (0.1.6)
+    System,
+    /// keine Vorgabe gefunden: labwcs eingebaute Werte gelten, die Seiten
+    /// sagen es (0.1.6; bis 0.1.5 hieß das „Paket“ ohne Datei)
+    Keine,
 }
 
 /// Bis 0.1.1 stand der Pfad des Runtime-Checkouts der Entwicklungs-VM fest
@@ -71,13 +84,23 @@ pub enum Herkunft {
 ///    Sitzungsstarter),
 /// 3. die Quelle, aus der der Sitzungsstarter die Benutzerkopie zuletzt
 ///    abgeglichen hat (`<benutzer>/.vorgabe/stand`, Zeile
-///    `quelle <ordner> (commit …)`), wenn dort eine `rc.xml` liegt,
-/// 4. die Paketlage [`VORGABE_PAKET`].
+///    `quelle <ordner> (commit …)`), wenn dort eine `rc.xml` liegt.
 ///
-/// Leere oder relative Angaben zählen nicht.
+/// Seit 0.1.6 (QD-063) folgen, jeweils nur mit `rc.xml`:
+/// 4. die Ablage des Programms (`exe_ordner`, [`VORGABE_IN_ABLAGE`] neben
+///    der Binary, dann unter ihrem Präfix),
+/// 5. [`VORGABE_PAKET`] unter `/etc`,
+/// 6. [`VORGABE_SYSTEM`] unter `/usr/share`.
+///
+/// Findet sich keine, gilt [`VORGABE_SYSTEM`] mit [`Herkunft::Keine`]:
+/// Die Seiten zeigen dann labwcs eingebaute Werte und sagen das.
+/// Leere oder relative Angaben zählen nicht. `system` ersetzt in Prüfungen
+/// die beiden festen Orte 5 und 6.
 pub fn vorgabe_ermitteln(
     umgebung: impl Fn(&str) -> Option<std::ffi::OsString>,
     benutzer: &Path,
+    exe_ordner: Option<&Path>,
+    system: [&Path; 2],
 ) -> (PathBuf, Herkunft) {
     let absolut = |v: std::ffi::OsString| Some(PathBuf::from(v)).filter(|p| p.is_absolute());
     if let Some(p) = umgebung("QE_LABWC_VORGABE").and_then(absolut) {
@@ -91,7 +114,36 @@ pub fn vorgabe_ermitteln(
     {
         return (p, Herkunft::Stand);
     }
-    (PathBuf::from(VORGABE_PAKET), Herkunft::Paket)
+    let mit_rc = |p: &Path| p.join("rc.xml").is_file();
+    if let Some(exe) = exe_ordner {
+        for p in [
+            Some(exe.join(VORGABE_IN_ABLAGE)),
+            exe.parent().map(|praefix| praefix.join(VORGABE_IN_ABLAGE)),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            if mit_rc(&p) {
+                return (p, Herkunft::Ablage);
+            }
+        }
+    }
+    let [paket, system] = system;
+    if mit_rc(paket) {
+        return (paket.to_path_buf(), Herkunft::Paket);
+    }
+    if mit_rc(system) {
+        return (system.to_path_buf(), Herkunft::System);
+    }
+    (system.to_path_buf(), Herkunft::Keine)
+}
+
+/// Ordner der laufenden Binary (Link in `~/opt/querencia/bin` aufgelöst).
+fn exe_ordner() -> Option<PathBuf> {
+    std::env::current_exe()
+        .ok()
+        .and_then(|exe| exe.canonicalize().ok())
+        .and_then(|exe| exe.parent().map(Path::to_path_buf))
 }
 
 /// Ordner aus der Zeile `quelle <ordner> (commit <kurz>)` von `.vorgabe/stand`.
@@ -111,7 +163,12 @@ impl Orte {
         let benutzer = gtk4::glib::user_config_dir()
             .join("querencia")
             .join("labwc");
-        let (vorgabe, herkunft) = vorgabe_ermitteln(|k| std::env::var_os(k), &benutzer);
+        let (vorgabe, herkunft) = vorgabe_ermitteln(
+            |k| std::env::var_os(k),
+            &benutzer,
+            exe_ordner().as_deref(),
+            [Path::new(VORGABE_PAKET), Path::new(VORGABE_SYSTEM)],
+        );
         (Orte { benutzer, vorgabe }, herkunft)
     }
     pub fn rc(&self) -> PathBuf {
@@ -580,6 +637,9 @@ pub fn wirkung_text(w: &Wirkung, stand: &Stand) -> String {
         (Wirkung::NaechsteAnmeldung { .. }, Quelle::Benutzer) => gettext(
             "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there.",
         ),
+        (_, Quelle::Keine) => gettext(
+            "No Querencia default for labwc was found, labwc’s built-in values are shown. “Apply” creates ~/.config/querencia/labwc; labwc reads it from the next login.",
+        ),
         (Wirkung::NaechsteAnmeldung { .. }, _) => gettext(
             "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login.",
         ),
@@ -684,17 +744,31 @@ mod tests {
         }
     }
 
+    /// Wie [`Orte::ermitteln`], aber ohne Ablage und mit Systemorten, die es
+    /// nicht gibt.
+    fn ermitteln(
+        u: impl Fn(&str) -> Option<std::ffi::OsString>,
+        benutzer: &Path,
+    ) -> (PathBuf, Herkunft) {
+        vorgabe_ermitteln(
+            u,
+            benutzer,
+            None,
+            [Path::new("/nicht/da/etc"), Path::new("/nicht/da/usr")],
+        )
+    }
+
     #[test]
-    fn vorgabe_aus_umgebung_repo_stand_oder_paket() {
+    fn vorgabe_aus_umgebung_repo_stand_oder_keine() {
         let w = ordner("herkunft");
         let benutzer = w.join("config/querencia/labwc");
         let checkout = w.join("checkout/session/querencia/labwc");
         std::fs::create_dir_all(benutzer.join(".vorgabe")).unwrap();
         std::fs::create_dir_all(&checkout).unwrap();
-        // ohne alles: Paket
+        // ohne alles: keine Vorgabe (0.1.6; bis 0.1.5 „Paket“ ohne Datei)
         assert_eq!(
-            vorgabe_ermitteln(umgebung(&[]), &benutzer),
-            (PathBuf::from(VORGABE_PAKET), Herkunft::Paket)
+            ermitteln(umgebung(&[]), &benutzer),
+            (PathBuf::from("/nicht/da/usr"), Herkunft::Keine)
         );
         // Stand des Starters, Ordner ohne rc.xml: zählt nicht
         let stand = format!(
@@ -702,35 +776,26 @@ mod tests {
             checkout.display()
         );
         std::fs::write(benutzer.join(".vorgabe/stand"), &stand).unwrap();
-        assert_eq!(
-            vorgabe_ermitteln(umgebung(&[]), &benutzer).1,
-            Herkunft::Paket
-        );
+        assert_eq!(ermitteln(umgebung(&[]), &benutzer).1, Herkunft::Keine);
         std::fs::write(checkout.join("rc.xml"), "<labwc_config/>\n").unwrap();
         assert_eq!(
-            vorgabe_ermitteln(umgebung(&[]), &benutzer),
+            ermitteln(umgebung(&[]), &benutzer),
             (checkout.clone(), Herkunft::Stand)
         );
         // relative oder leere Angaben zählen nicht
         let rel = [("QE_LABWC_VORGABE", ""), ("QUERENCIA_REPO", "checkout")];
-        assert_eq!(
-            vorgabe_ermitteln(umgebung(&rel), &benutzer).1,
-            Herkunft::Stand
-        );
+        assert_eq!(ermitteln(umgebung(&rel), &benutzer).1, Herkunft::Stand);
         std::fs::write(
             benutzer.join(".vorgabe/stand"),
             "quelle session/querencia/labwc\n",
         )
         .unwrap();
-        assert_eq!(
-            vorgabe_ermitteln(umgebung(&[]), &benutzer).1,
-            Herkunft::Paket
-        );
+        assert_eq!(ermitteln(umgebung(&[]), &benutzer).1, Herkunft::Keine);
         // QUERENCIA_REPO vor dem Stand, QE_LABWC_VORGABE vor allem
         std::fs::write(benutzer.join(".vorgabe/stand"), &stand).unwrap();
         let repo = [("QUERENCIA_REPO", "/srv/anna/querencia-runtime")];
         assert_eq!(
-            vorgabe_ermitteln(umgebung(&repo), &benutzer),
+            ermitteln(umgebung(&repo), &benutzer),
             (
                 PathBuf::from("/srv/anna/querencia-runtime/session/querencia/labwc"),
                 Herkunft::Repo
@@ -741,7 +806,7 @@ mod tests {
             ("QE_LABWC_VORGABE", "/tmp/pruefung/labwc"),
         ];
         assert_eq!(
-            vorgabe_ermitteln(umgebung(&beide), &benutzer),
+            ermitteln(umgebung(&beide), &benutzer),
             (PathBuf::from("/tmp/pruefung/labwc"), Herkunft::Umgebung)
         );
         // Stand ohne Commit-Angabe, Pfad mit Leerzeichen
@@ -753,10 +818,72 @@ mod tests {
             format!("quelle {}\n", leer.display()),
         )
         .unwrap();
+        assert_eq!(ermitteln(umgebung(&[]), &benutzer), (leer, Herkunft::Stand));
+        let _ = std::fs::remove_dir_all(&w);
+    }
+
+    /// QD-063 (0.1.6): ohne Umgebung und Stand gilt die Vorgabe neben dem
+    /// Programm, dann `/etc`, dann `/usr/share`; ohne jede `rc.xml` keine.
+    #[test]
+    fn vorgabe_aus_ablage_etc_oder_usr_share() {
+        let w = ordner("qd063");
+        let benutzer = w.join("config/querencia/labwc");
+        let ablage = w.join("opt/querencia/einstellungen/0123456789abcdef");
+        let usr_bin = w.join("usr/bin");
+        let etc = w.join("etc/querencia/labwc");
+        let usr = w.join("usr/share/querencia/labwc");
+        for d in [&benutzer, &ablage, &usr_bin, &etc, &usr] {
+            std::fs::create_dir_all(d).unwrap();
+        }
+        let rc = |d: &Path| {
+            std::fs::create_dir_all(d).unwrap();
+            std::fs::write(d.join("rc.xml"), "<labwc_config/>\n").unwrap();
+        };
+        let e = |exe: &Path| vorgabe_ermitteln(umgebung(&[]), &benutzer, Some(exe), [&etc, &usr]);
+        // nichts da: keine, gezeigt wird der Ort unter /usr/share
+        assert_eq!(e(&ablage), (usr.clone(), Herkunft::Keine));
+        // Ordner ohne rc.xml zählen nicht
+        std::fs::create_dir_all(ablage.join(VORGABE_IN_ABLAGE)).unwrap();
+        assert_eq!(e(&ablage).1, Herkunft::Keine);
+        rc(&usr);
+        assert_eq!(e(&ablage), (usr.clone(), Herkunft::System));
+        rc(&etc);
+        assert_eq!(e(&ablage), (etc.clone(), Herkunft::Paket));
+        // /usr/bin/../share/querencia/labwc: Präfix des Pakets
+        rc(&w.join("usr").join(VORGABE_IN_ABLAGE));
         assert_eq!(
-            vorgabe_ermitteln(umgebung(&[]), &benutzer),
-            (leer, Herkunft::Stand)
+            e(&usr_bin),
+            (w.join("usr").join(VORGABE_IN_ABLAGE), Herkunft::Ablage)
         );
+        // neben der Binary in der Ablage zuerst
+        rc(&ablage.join(VORGABE_IN_ABLAGE));
+        assert_eq!(
+            e(&ablage),
+            (ablage.join(VORGABE_IN_ABLAGE), Herkunft::Ablage)
+        );
+        // Stand des Starters und Umgebung bleiben davor
+        let checkout = w.join("checkout");
+        rc(&checkout);
+        std::fs::create_dir_all(benutzer.join(".vorgabe")).unwrap();
+        std::fs::write(
+            benutzer.join(".vorgabe/stand"),
+            format!("quelle {} (commit 2e134c6)\n", checkout.display()),
+        )
+        .unwrap();
+        assert_eq!(e(&ablage), (checkout, Herkunft::Stand));
+        let u = [("QE_LABWC_VORGABE", "/tmp/pruefung/labwc")];
+        assert_eq!(
+            vorgabe_ermitteln(umgebung(&u), &benutzer, Some(&ablage), [&etc, &usr]).1,
+            Herkunft::Umgebung
+        );
+        // ohne Vorgabe liest der Bereich labwcs Werte, kein Absturz
+        let o = Orte {
+            benutzer: w.join("leer/labwc"),
+            vorgabe: w.join("nicht/da"),
+        };
+        let st = lesen(&o);
+        assert_eq!(st.quelle, Quelle::Keine);
+        assert!(st.rc_vorgabe.is_empty() && st.fehler.is_none());
         let _ = std::fs::remove_dir_all(&w);
     }
 

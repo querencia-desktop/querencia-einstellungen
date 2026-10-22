@@ -111,6 +111,20 @@ auch Sicherungen des Starters weg.
   wenn sie leer werden und die Basis sie nicht hat. Bleibt danach nur
   Leerraum anders als in der Basis, wird die Basis byte-gleich geschrieben.
   Eigene Werte, fremde Blöcke und Kommentare bleiben unberührt.
+- **Form der Behälter (ab 0.1.6).** Bis 0.1.5 galt die Rückstellung nur
+  dann byte-gleich, wenn die übrige Datei der Basis glich: Namen der
+  Arbeitsflächen setzen klappte `<desktops … />` auf, zurückgestellt blieb
+  `<desktops …>` mit leerer Zeile und `</desktops>` stehen; das verdeckte die
+  Regel „nur Leerraum anders → die Basis“. Mit einem eigenen Wert an anderer
+  Stelle (z. B. Tastenwiederholung) blieb rc.xml verändert. Seit 0.1.6
+  (`labwc_xml::form_angleichen`) bekommt jeder Behälter, den dieses
+  Übernehmen verändert hat und der danach dem Behälter der Basis bis auf
+  Leerraum gleicht, deren Text zurück (Form, Einrückung, Anführungszeichen);
+  ist er leer, in der Basis aber `<x … />`, wird er wieder zu `<x … />` mit
+  den eigenen Attributen. Unberührte Behälter behalten ihre Form. Geprüft
+  mit dem Test `aendern_und_zurueckstellen_byte_gleich_alle_bereiche`: fünf
+  Bereiche, 22 Änderungen, zehn Ausgangslagen (220 Fälle), Vorher/Nachher
+  byte-genau; ohne die Regel scheitern vier davon.
 - **Umgebung.** `environment.d/zz-querencia-einstellungen.env` verschwindet
   wieder, wenn nur noch ihr eigener Kopf übrig ist; Zeilen, die nicht von
   Einstellungen stammen, halten sie.
@@ -123,7 +137,7 @@ auch Sicherungen des Starters weg.
   gehen. `<datei>.vorher-*` (Starter und Einstellungen bis 0.1.0, nicht zu
   unterscheiden) löschen Einstellungen nie.
 
-## 7. Wo Einstellungen die Vorgabe finden (ab 0.1.2, G1a)
+## 7. Wo Einstellungen die Vorgabe finden (ab 0.1.2, G1a; 0.1.6)
 
 Bis 0.1.1 stand der Pfad des Runtime-Checkouts der Entwicklungs-VM fest im
 Programm. Ab 0.1.2 ermittelt `labwc_konfig::vorgabe_ermitteln` ihn zur
@@ -134,10 +148,18 @@ Laufzeit, in dieser Reihenfolge (die erste passende Angabe gilt):
 | 1 | `QE_LABWC_VORGABE=<ordner>` | Prüfungen (isolierte Läufe, Tests) |
 | 2 | `$QUERENCIA_REPO/session/querencia/labwc` | Entwicklung mit einem Runtime-Checkout; gleicher Name wie im Starter |
 | 3 | Zeile `quelle <ordner> (commit …)` in `~/.config/querencia/labwc/.vorgabe/stand`, wenn dort eine `rc.xml` liegt | Sitzung: der Starter hat die Benutzerkopie aus diesem Ordner abgeglichen (Entwicklungs-VM: Runtime-Checkout) |
-| 4 | `/etc/querencia/labwc` | Paket |
+| 4 | `<ablage>/share/querencia/labwc` neben der Binary, sonst `<präfix>/share/querencia/labwc` (`/usr/bin/..`) – ab 0.1.6 | Ablage des Programms, Paket mit Präfix |
+| 5 | `/etc/querencia/labwc` | Paket bis 0.1.5, Anpassung der Verwaltung |
+| 6 | `/usr/share/querencia/labwc` – ab 0.1.6 | installiertes System |
+
+Die Orte 4 bis 6 zählen nur mit einer `rc.xml` darin (QD-063). Findet sich
+keine Vorgabe, nennt `--labwc-zeigen` `vorgabe=/usr/share/querencia/labwc`
+mit `vorgabe-herkunft=Keine`; die labwc-Seiten zeigen dann labwcs eingebaute
+Werte und sagen das („Keine Querencia-Vorgabe für labwc gefunden …“), statt
+wortlos „Standard“ zu nennen. Bis 0.1.5 hieß dieser Fall `Paket`.
 
 Leere und relative Angaben zählen nicht. `querencia-einstellungen
 --labwc-zeigen` nennt Ordner und Herkunft (`vorgabe=`, `vorgabe-herkunft=`
-`Umgebung|Repo|Stand|Paket`). Für den Starter heißt das: Die Zeile `quelle`
+`Umgebung|Repo|Stand|Ablage|Paket|System|Keine`). Für den Starter heißt das: Die Zeile `quelle`
 in `.vorgabe/stand` bleibt in dieser Form (absoluter Ordner, danach
 ` (commit …)`); ein Paket-Starter schreibt dort `/etc/querencia/labwc`.
