@@ -12,7 +12,7 @@
 # Entwicklungs-VM (gleiche Vorgabe, gleiche Werte).
 set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
-B=$(readlink -f "${1:-$P/nachweis/016/release/querencia-einstellungen}")
+B=$(readlink -f "${1:-$P/nachweis/016-2/release/querencia-einstellungen}")
 ALT=${2:-}
 VQ=$P/szenarien/011/vorgabe-548483c
 T=$(mktemp -d "$P/nachweis/vorgabe-pruefen-XXXXXX")
@@ -81,8 +81,8 @@ if [ -n "$ALT" ]; then
     pruef "0.1.6 nimmt die Quelle aus dem echten Stand ($Q), Herkunft Stand" "[ \"\$(wert live-neu vorgabe)\" = \"$Q\" ] && [ \"\$(wert live-neu vorgabe-herkunft)\" = Stand ]"
     pruef "0.1.6 und 0.1.5 lesen dieselbe Vorgabe und dieselben Werte (bis auf den Wegwerf-Pfad der Benutzerkopie)" "diff <(grep -v '^benutzerkopie=' $T/live-neu.txt) <(grep -v '^benutzerkopie=' $T/live-alt.txt)"
 fi
-mkdir -p "$P/nachweis/016/vorgabe-faelle"; cp "$T"/*.txt "$P/nachweis/016/vorgabe-faelle/" 2>/dev/null
-sed -i "s#$T#<T>#g" "$P"/nachweis/016/vorgabe-faelle/*.txt
+mkdir -p "$P/${NW:-nachweis/016-2}/vorgabe-faelle"; cp "$T"/*.txt "$P/${NW:-nachweis/016-2}/vorgabe-faelle/" 2>/dev/null
+sed -i "s#$T#<T>#g" "$P"/${NW:-nachweis/016-2}/vorgabe-faelle/*.txt
 chmod -R u+w "$T"; rm -rf "${T:?}"
 echo "ERGEBNIS vorgabe-pruefen-016: $ok PASS, $bad FAIL"
 [ "$bad" = 0 ]

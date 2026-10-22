@@ -14,7 +14,12 @@
              (Markierung, INFO); Ausnahmen wie 0.1.5: Uhrzeit im
              Formatbeispiel, Spalte des Overlay-Rollbalkens, „Erscheinungsbild
              unten“ (höchstens 0,1 % der Fläche, 16 Stufen); dazu auf
-             „Informationen“ die Programmversion (eine Ziffer)
+             „Informationen“ die Programmversion (eine Ziffer); ab 0.1.6-2
+             Fensterdesign bei dunkler Darstellung (ein Hinweissatz mehr) und
+             „Erscheinungsbild unten“ (längere Quellzeile): Inhalt gleich bis
+             auf eine senkrechte Verschiebung, Toleranz wie oben; steht der
+             feste Zeiger danach über einem Optionsknopf, ist dessen Feld
+             (bis 24×24 px) ausgenommen
   r          (0.1.6-2) Fensterrahmen folgt der dunklen Darstellung: Name in
              rc.xml nach dem Umschalten (hell → Dunkel, dunkel → Klassisch,
              fremder Rahmen und ohne dunkles Thema unverändert), nach dem
@@ -211,6 +216,23 @@ def markierung(a, b, name):
     ges.save(os.path.join(BILDORDNER, name))
 
 
+def verschoben(a, b, y0, y1):
+    """Inhalt a[y0:y1] gleich b um dy verschoben (dy in ±60 mit den wenigsten
+    abweichenden Pixeln); Spalten ab INHALT_X bis vor den Rollbalken.
+    Liefert (dy, Pixel, höchste Stufe, Fläche)."""
+    w, h = a.size
+    best = None
+    for dy in range(-60, 61):
+        if y1 + dy > h or y0 + dy < 0:
+            continue
+        d = ImageChops.difference(a.crop((INHALT_X, y0, ROLLBALKEN[0], y1)),
+                                  b.crop((INHALT_X, y0 + dy, ROLLBALKEN[0], y1 + dy))).convert("L")
+        n = sum(1 for v in getattr(d, "get_flattened_data", d.getdata)() if v)
+        if best is None or n < best[1]:
+            best = (dy, n, d.getextrema()[1], (ROLLBALKEN[0] - INHALT_X) * (y1 - y0))
+    return best
+
+
 def d1():
     for k in ("de-1024", "en-1920"):
         for art in ("hell", "dunkel"):
@@ -231,6 +253,37 @@ def d1():
                     sb = d.crop((0, 0, INHALT_X, h)).getbbox()
                     pruef(g, f"{fall}: Seitenleiste gleich", sb is None, sb)
                     info(g, f"{fall}: Seite geändert (Markierung)", d.getbbox())
+                    continue
+                # 0.1.6-2, benannte Ausnahmen: bei dunkler Darstellung nennt das
+                # Fensterdesign den Rahmen-Zusammenhang (ein Satz mehr im Hinweis,
+                # alles darunter rückt nach unten); im Erscheinungsbild ist die
+                # Quellzeile länger (ans Ende gerollt rückt der Inhalt nach oben)
+                if (s == "fensterdesign" and art == "dunkel") or s == "erscheinungsbild-unten":
+                    # Bänder mit Abstand zu den Rändern des Rollbereichs (oben
+                    # Kopf, unten Fuß), damit der verschobene Ausschnitt innen bleibt
+                    y0, y1 = (175, 520) if s == "fensterdesign" else (130, 470)
+                    v = verschoben(a, b, y0, y1)
+                    hover = None
+                    if v is not None and not (v[1] <= v[3] // 1000 and v[2] <= 16):
+                        # Zeiger-Hover: der feste Zeiger steht nach der Verschiebung
+                        # über einem Optionsknopf (Ring); nur ein Feld bis 24×24 px
+                        # darf stärker abweichen, der Rest wie oben
+                        dv = ImageChops.difference(
+                            a.crop((INHALT_X, y0, ROLLBALKEN[0], y1)),
+                            b.crop((INHALT_X, y0 + v[0], ROLLBALKEN[0], y1 + v[0]))).convert("L")
+                        hover = dv.point(lambda x: 255 if x > 16 else 0).getbbox()
+                        if hover and hover[2] - hover[0] <= 24 and hover[3] - hover[1] <= 24:
+                            dv.paste(0, (hover[0] - 4, hover[1] - 4, hover[2] + 4, hover[3] + 4))
+                            n = sum(1 for x in getattr(dv, "get_flattened_data", dv.getdata)() if x)
+                            v = (v[0], n, dv.getextrema()[1], v[3])
+                    sb = d.crop((0, 0, INHALT_X, h)).getbbox()
+                    markierung(a, b, f"verschoben-{art}-{k}-{s}.png")
+                    pruef(g, f"{fall}: Seitenleiste gleich, Inhalt gleich bis auf eine senkrechte Verschiebung "
+                          f"({'Hinweissatz Fensterrahmen' if s == 'fensterdesign' else 'längere Quellzeile'})",
+                          sb is None and v is not None and v[1] <= v[3] // 1000 and v[2] <= 16,
+                          f"dy {v[0] if v else None}, danach {v[1] if v else '-'} Pixel abweichend (höchstens "
+                          f"{v[2] if v else '-'} Stufen, Fläche {v[3] if v else '-'}), Seitenleiste {sb}"
+                          + (f", Zeiger-Hover-Feld {hover} ausgenommen" if hover else ""))
                     continue
                 if s == "sprache":
                     d.paste((0, 0, 0), (INHALT_X, UHRZEIT[0], w, UHRZEIT[1]))
