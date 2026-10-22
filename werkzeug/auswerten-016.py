@@ -15,6 +15,13 @@
              Formatbeispiel, Spalte des Overlay-Rollbalkens, „Erscheinungsbild
              unten“ (höchstens 0,1 % der Fläche, 16 Stufen); dazu auf
              „Informationen“ die Programmversion (eine Ziffer)
+  r          (0.1.6-2) Fensterrahmen folgt der dunklen Darstellung: Name in
+             rc.xml nach dem Umschalten (hell → Dunkel, dunkel → Klassisch,
+             fremder Rahmen und ohne dunkles Thema unverändert), nach dem
+             Zurückstellen rc.xml byte-gleich (SHA256 vorher/nachher), keine
+             eigene Sicherung, die fremde rc.xml.vorher-* bleibt; labwc
+             --reconfigure traf den isolierten labwc (LABWC_PID, eigenes
+             XDG_RUNTIME_DIR, nicht der Sitzungs-labwc)
   alle       kein „panicked“ in den Protokollen der App
 
   . ~/projects/querencia-boot-splash/werkzeug/pil-umgebung.sh  # Pillow (PYTHONPATH)
@@ -30,7 +37,8 @@ from PIL import Image, ImageChops
 sys.dont_write_bytecode = True
 P = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 N = os.path.join(P, "nachweis")
-BILDORDNER = os.path.join(N, "016", "bilder")
+NW = os.path.join(P, os.environ.get("NW", "nachweis/016-2"))
+BILDORDNER = os.path.join(NW, "bilder")
 SEITEN = ["erscheinungsbild", "hintergrundbild", "symbole", "fensterdesign", "schriften", "panels",
           "tastatur", "maus", "bildschirm", "arbeitsflaechen", "standardanwendungen", "netzwerk",
           "sprache", "informationen"]
@@ -247,8 +255,65 @@ def d1():
                 pruef(g, f"{fall}: pixelgleich", bb is None, bb)
 
 
+def rahmen():
+    import hashlib
+    import re
+    g = "Fensterrahmen"
+    pv = os.path.join(NW, "produktiv-vorher.txt")
+    live = re.search(r"labwc_sitzung=([0-9,]*)", open(pv, encoding="utf-8").read() if os.path.exists(pv) else "")
+    live_pids = {p for p in (live.group(1).split(",") if live else []) if p}
+    fremd = "rc.xml.vorher-20261020-112812"
+    erwartet = {"hell": "Querencia-Klassisch-Dunkel", "dunkel": "Querencia-Klassisch",
+                "fremd": "Probe-Rahmen", "ohne": "Querencia-Klassisch"}
+    for fall, mitte in erwartet.items():
+        lauf = f"016-r-{fall}-de-1920"
+        d = os.path.join(N, lauf)
+        def lies(*teile):
+            p = os.path.join(d, *teile)
+            return open(p, "rb").read() if os.path.exists(p) else None
+        vorher, zwischen, nachher = lies("labwc-vorher", "rc.xml"), lies("rc-zwischen.xml"), lies("labwc-nachher", "rc.xml")
+        if None in (vorher, zwischen, nachher):
+            pruef(g, f"{lauf}: rc.xml vorher/zwischen/nachher", False, "fehlt")
+            continue
+        name = re.search(rb"<theme>\s*<name>([^<]*)</name>", zwischen)
+        pruef(g, f"{lauf}: Rahmen nach dem Umschalten {mitte}", name and name.group(1).decode() == mitte,
+              name.group(1).decode() if name else None)
+        if fall in ("fremd", "ohne"):
+            pruef(g, f"{lauf}: rc.xml beim Umschalten nicht verändert", zwischen == vorher,
+                  hashlib.sha256(zwischen).hexdigest()[:16])
+        sv, sn = hashlib.sha256(vorher).hexdigest(), hashlib.sha256(nachher).hexdigest()
+        pruef(g, f"{lauf}: rc.xml nach dem Zurückstellen byte-gleich (SHA256 vorher = nachher)", sv == sn,
+              f"vorher {sv} nachher {sn}")
+        dateien = sorted(os.listdir(os.path.join(d, "labwc-nachher")))
+        pruef(g, f"{lauf}: keine eigene Sicherung, fremde {fremd} unverändert",
+              not [f for f in dateien if ".einstellungen-vorher-" in f]
+              and lies("labwc-nachher", fremd) == lies("labwc-vorher", fremd) is not None, dateien)
+        u = (text(lauf, "umgebung.txt") or "")
+        pid = re.search(r"LABWC_PID=(\d+)", u)
+        pruef(g, f"{lauf}: labwc --reconfigure nur an den isolierten labwc",
+              pid and live_pids and pid.group(1) not in live_pids
+              and "XDG_RUNTIME_DIR=" + os.path.expanduser("~/.cache/qe01/") in u
+              and " -C " + os.path.expanduser("~/.cache/qe01/") in u.split("cmdline=", 1)[-1],
+              f"Sitzungs-labwc {sorted(live_pids)}; " + u.strip().replace("\n", " | ")[:300])
+        log = applog(lauf)
+        neu_geladen = log.count("labwc hat die Konfiguration neu geladen")
+        pruef(g, f"{lauf}: zweimal übernommen; labwc neu geladen, wo rc.xml geschrieben wurde",
+              log.count("Erscheinungsbild übernommen") == 2
+              and neu_geladen == (2 if fall in ("hell", "dunkel") else 0), f"neu geladen {neu_geladen}×")
+        # Seite Fensterdesign nach dem Umschalten: neu gelesen, zeigt den Rahmen aus rc.xml
+        fd = [z for z in log.splitlines() if "Fensterdesign geladen" in z]
+        pruef(g, f"{lauf}: Fensterdesign zeigt danach {mitte}", bool(fd) and f'thema: "{mitte}",' in fd[-1],
+              fd[-1][-160:] if fd else "keine Zeile")
+        for datei in ("01-start.png", "02-umgeschaltet.png", "03-fensterdesign.png", "04-zurueck.png"):
+            p = os.path.join(d, datei)
+            if os.path.exists(p):
+                Image.open(p).convert("RGB").crop((300, 120, 1620, 960)).save(
+                    os.path.join(BILDORDNER, f"rahmen-{fall}-{datei}"))
+            pruef(g, f"{lauf}/{datei}", os.path.exists(p), "")
+
+
 def abstuerze():
-    laeufe = sorted(os.path.basename(d) for d in glob.glob(os.path.join(N, "016-[dfkp][0-9-]*")))
+    laeufe = sorted(os.path.basename(d) for d in glob.glob(os.path.join(N, "016-[dfkpr][0-9-]*")))
     schlecht = [l for l in laeufe if "panicked" in (applog(l) + (text(l, "logs/eingabe.log") or ""))]
     pruef("alle", f"{len(laeufe)} Läufe ohne „panicked“", not schlecht and laeufe, schlecht)
     fehlt = [l for l in laeufe if "szenario exit=0" not in (text(l, "logs/eingabe.log") or "")]
@@ -259,8 +324,9 @@ def main():
     funktion()
     fotos()
     d1()
+    rahmen()
     abstuerze()
-    ziel = sys.argv[1] if len(sys.argv) > 1 else os.path.join(N, "016", "gui-016.tsv")
+    ziel = sys.argv[1] if len(sys.argv) > 1 else os.path.join(NW, "gui-016.tsv")
     with open(ziel, "w", encoding="utf-8") as f:
         f.write("gruppe\tfall\tergebnis\tdetail\n")
         for z in zeilen:

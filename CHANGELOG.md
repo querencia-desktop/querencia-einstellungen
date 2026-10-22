@@ -27,6 +27,11 @@ zusammengefasst.
   erklärt im Tooltip, was das unter labwc bedeutet.
 - labwc-Seiten: Gibt es keine Querencia-Vorgabe für labwc, sagen die Seiten
   das und zeigen labwcs eingebaute Werte.
+- Erscheinungsbild: „Dunkle Darstellung bevorzugen“ stellt beim Übernehmen
+  auch den Fensterrahmen um (Querencia-Klassisch ↔ Querencia-Klassisch-Dunkel),
+  wenn gerade einer der beiden eingestellt ist; ein anderer Rahmen bleibt.
+  Fehlt der dunkle Rahmen, bleiben die Rahmen hell und die Seite sagt es.
+  Das Fensterdesign nennt bei dunkler Darstellung den Zusammenhang.
 
 ### Geändert
 - Die Rückfrage nach „Anwenden“ heißt „Einstellungen beibehalten?“, der Knopf
@@ -37,6 +42,9 @@ zusammengefasst.
   gesucht (vorher nur Checkout, Starter-Stand und `/etc`).
 - Bildschirm: Statuszeile und Skalierungshinweis ohne Fachbegriffe der
   Entwicklung.
+- Die Seiten mit labwc-Einstellungen lesen ihren Stand neu, wenn man sie
+  öffnet und sich inzwischen etwas geändert hat (z. B. der Fensterrahmen nach
+  dem Umschalten im Erscheinungsbild).
 
 ### Behoben
 - Ändern und Zurückstellen der Namen der Arbeitsflächen ließ `rc.xml` nicht

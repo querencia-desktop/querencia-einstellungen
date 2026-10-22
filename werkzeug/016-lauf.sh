@@ -6,7 +6,9 @@
 # vorher entfernt (13 §5, Nachtrag 21.10. 20:38); isoliert.sh setzt
 # QUERENCIA_STATE_DIR selbst ins Profil. Weitere QE_*-Variablen gehen durch
 # (z. B. QE_OUTPUTS, QE_BILDSCHIRM_TOML, QE_BILDSCHIRM_INI,
-# QE_BILDSCHIRM_OHNE_EDID).
+# QE_BILDSCHIRM_OHNE_EDID, QE_LABWC_DATEIEN, QE_HEIM_DATEIEN, QE_THEMEN_WEG).
+# NW=<ordner relativ zum Worktree> (Standard nachweis/016-2) nimmt die
+# gsettings-Vorlagen auf.
 #
 #   bash werkzeug/016-lauf.sh <lauf> <binary> <hell|dunkel> <de|en> <BREITExHÖHE> <szenario> [app-args]
 set -uo pipefail
@@ -16,7 +18,7 @@ NAME=${1:?Lauf}; BIN=${2:?Binary}; ART=${3:?hell|dunkel}; SP=${4:?de|en}; AUFL=$
 THEMA=${THEMA:-$HOME/opt/querencia-theme/22824d05ceb49cad/Querencia-Klassisch}
 BILDER01=${BILDER01:-$HOME/projects/querencia-einstellungen-014/nachweis/bilder-01}
 BILDER02=${BILDER02:-$HOME/projects/querencia-einstellungen-014/nachweis/bilder-02}
-NW=$P/nachweis/016
+NW=$P/${NW:-nachweis/016-2}
 mkdir -p "$NW"
 GS=$P/szenarien/g2aj/gsettings-live.txt
 case $ART in
@@ -27,6 +29,6 @@ esac
 EN=; [ "$SP" = en ] && EN=$P/szenarien/010/daten-en
 for v in $(compgen -e); do case $v in QUERENCIA_*) unset "$v" ;; esac; done
 QE_PROFIL_STABIL=$HOME/.cache/qe01/einstellungen-016-profil QE_APP_BIN=$BIN QE_PORTAL=settings QE_GSETTINGS=$NW/gsettings-$ART.txt \
-    QE_THEMA_ORDNER=$THEMA QE_LABWC_DATEIEN=$EN QE_HINTERGRUENDE=$BILDER01:$BILDER02 QE_APP_ARGS=$ARGS \
+    QE_THEMA_ORDNER=$THEMA QE_LABWC_DATEIEN=${QE_LABWC_DATEIEN:-$EN} QE_HINTERGRUENDE=$BILDER01:$BILDER02 QE_APP_ARGS=$ARGS \
     bash werkzeug/g2aj-lauf.sh "$NAME" "$AUFL" "$SZ"
 rm -rf "nachweis/$NAME/profil/heim/.config/dconf"

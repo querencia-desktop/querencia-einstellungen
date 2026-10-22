@@ -18,16 +18,22 @@
 #          die Fotogröße stellt
 #   d1     Regression mit den 0.1.5-Szenarien: alle Seiten alt (0.1.5, live
 #          Ablage) ↔ neu, de 1024 und en 1920, hell und dunkel
+#   r      (0.1.6-2) Fensterrahmen folgt „Dunkle Darstellung bevorzugen“:
+#          Ausgangslage heller Querencia-Rahmen, dunkler, fremder Rahmen,
+#          ohne installiertes dunkles Thema; je umschalten (Übernehmen,
+#          labwc --reconfigure des isolierten labwc), Fensterdesign ansehen,
+#          zurückstellen. Thema-Ablage 519997cf (Thema 0.2.2 mit dem
+#          dunklen labwc-Rahmen). Eine fremde rc.xml.vorher-* liegt bereit.
 #
 #   bash werkzeug/016-gui-lauf.sh [nur-läufe-mit-diesem-muster]
 set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 ALT=${ALT_BIN:-$HOME/opt/querencia/einstellungen/3069d052f00d30a2/querencia-einstellungen}
-NEU=${NEU_BIN:-$P/nachweis/016/release/querencia-einstellungen}
+NEU=${NEU_BIN:-$P/nachweis/016-2/release/querencia-einstellungen}
 MUSTER=${1:-}
 Z=szenarien/016
-NW=nachweis/016
+export NW=${NW:-nachweis/016-2}
 mkdir -p "$NW"
 for f in "$ALT" "$NEU" "$Z/foto-1024.toml" szenarien/015/d1-alle-seiten-1024.txt; do [ -e "$f" ] || { echo "fehlt: $f" >&2; exit 2; }; done
 AB=$(date +%s)
@@ -60,6 +66,13 @@ QE_BILDSCHIRM_OHNE_EDID=HEADLESS-1,HEADLESS-2 QE_BILDSCHIRM_TOML=$Z/foto-1920.to
 for sp in de en; do for b in 1024 1920; do for art in hell dunkel; do
     QE_BILDSCHIRM_TOML=$Z/foto-$b.toml lauf "016-p-$art-$sp-$b" "$NEU" $art $sp 1920x1080 "$Z/foto-$b.txt" --bildschirm-anwenden
 done; done; done
+# Fensterrahmen (ein Ausgang, 1920, de)
+export QE_OUTPUTS=1
+RAHMEN_THEMA=${RAHMEN_THEMA:-$HOME/opt/querencia-theme/519997cf33de0cb1/Querencia-Klassisch}
+THEMA=$RAHMEN_THEMA QE_LABWC_DATEIEN=$P/$Z/rahmen-hell lauf 016-r-hell-de-1920 "$NEU" hell de 1920x1080 $Z/r-hell.txt "--seite erscheinungsbild"
+THEMA=$RAHMEN_THEMA QE_LABWC_DATEIEN=$P/$Z/rahmen-dunkel lauf 016-r-dunkel-de-1920 "$NEU" dunkel de 1920x1080 $Z/r-dunkel.txt "--seite erscheinungsbild"
+THEMA=$RAHMEN_THEMA QE_LABWC_DATEIEN=$P/$Z/rahmen-fremd QE_HEIM_DATEIEN=$P/$Z/heim-fremd lauf 016-r-fremd-de-1920 "$NEU" hell de 1920x1080 $Z/r-fremd.txt "--seite erscheinungsbild"
+THEMA=$RAHMEN_THEMA QE_LABWC_DATEIEN=$P/$Z/rahmen-hell QE_THEMEN_WEG=Querencia-Klassisch-Dunkel lauf 016-r-ohne-de-1920 "$NEU" hell de 1920x1080 $Z/r-ohne.txt "--seite erscheinungsbild"
 # Regression wie 0.1.5 (ein Ausgang)
 export QE_OUTPUTS=1
 for k in de-1024 en-1920; do

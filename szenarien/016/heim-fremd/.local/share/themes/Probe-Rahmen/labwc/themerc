@@ -1,0 +1,7 @@
+# Prüfrahmen (fremdes labwc-Thema) für die isolierten Läufe von Einstellungen 0.1.6
+window.active.title.bg.color: #3f7a3a
+window.inactive.title.bg.color: #7aa874
+window.active.label.text.color: #ffffff
+window.inactive.label.text.color: #e8f0e6
+window.active.border.color: #3f7a3a
+window.inactive.border.color: #7aa874

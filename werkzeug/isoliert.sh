@@ -220,6 +220,12 @@ fi
 # (z. B. ein Starter unter .local/share/applications, der Adressen nur
 # protokolliert, statt einen Browser zu öffnen).
 if [ -n "${QE_HEIM_DATEIEN:-}" ]; then cp -a "$QE_HEIM_DATEIEN/." "$HEIM/"; fi
+# 0.1.6: QE_THEMEN_WEG=<name>[:<name>…] – diese Themen fehlen im Profil-HOME
+# (z. B. der dunkle Fensterrahmen, um „nicht installiert“ zu prüfen).
+if [ -n "${QE_THEMEN_WEG:-}" ]; then
+    IFS=: read -ra weg_themen <<<"$QE_THEMEN_WEG"
+    for t in "${weg_themen[@]}"; do rm -rf "${HEIM:?}/.local/share/themes/${t:?}"; done
+fi
 echo "HOME=$HEIM Thema=$(readlink -f "$HEIM/.local/share/themes/Querencia-Klassisch")" > "$N/heim.txt"
 # 0.1.2: QE_PROFIL_STABIL=<verweis> – die Sitzung sieht das Profil unter einem
 # festen Verweis statt unter nachweis/<lauf>/profil, damit angezeigte Pfade

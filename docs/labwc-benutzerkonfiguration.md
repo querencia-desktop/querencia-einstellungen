@@ -163,3 +163,44 @@ Leere und relative Angaben zählen nicht. `querencia-einstellungen
 `Umgebung|Repo|Stand|Ablage|Paket|System|Keine`). Für den Starter heißt das: Die Zeile `quelle`
 in `.vorgabe/stand` bleibt in dieser Form (absoluter Ordner, danach
 ` (commit …)`); ein Paket-Starter schreibt dort `/etc/querencia/labwc`.
+
+## 8. Fensterrahmen folgt dem Farbschema (ab 0.1.6)
+
+Entscheidung der Startsession (22.10.): Schaltet „Erscheinungsbild“ die
+Einstellung „Dunkle Darstellung bevorzugen“ um und wird übernommen, setzt
+Einstellungen zusätzlich `<theme><name>` in der Benutzerkopie und lädt labwc
+neu (wie jede rc.xml-Änderung, nur wenn labwc die Benutzerkopie liest):
+
+| rc.xml nennt | dunkel an | dunkel aus |
+|---|---|---|
+| `Querencia-Klassisch` | `Querencia-Klassisch-Dunkel`, wenn das Thema installiert ist; sonst bleibt der Name, die Seite sagt es | – |
+| `Querencia-Klassisch-Dunkel` | – | `Querencia-Klassisch` |
+| einen anderen Rahmen oder nichts | bleibt | bleibt |
+
+- Ein Kennzeichen „vom Benutzer gewählt“ gibt es nicht: Wer im Fensterdesign
+  `Querencia-Klassisch-Dunkel` ausdrücklich wählt und danach die dunkle
+  Darstellung ausschaltet, bekommt wieder den hellen Rahmen. Ein fremder
+  Rahmen bleibt immer stehen.
+- „Installiert“ prüft wie die Liste im Fensterdesign:
+  `themes/Querencia-Klassisch-Dunkel/labwc/themerc` unter
+  `$XDG_DATA_HOME`, `~/.themes` und den Systemordnern (`$XDG_DATA_DIRS`,
+  sonst `/usr/local/share`, `/usr/share`). labwc sucht zusätzlich in
+  `/opt/share`; ein Thema nur dort gilt den Einstellungen als fehlend.
+- Das Zurückstellen gleicht §6 an: hell → dunkel → hell lässt rc.xml
+  byte-gleich, der Dreiwegevergleich des Starters sieht die Datei wieder als
+  unverändert. Sicherungen nach §6.
+- Die GTK-Themenliste im Erscheinungsbild zeigt `Querencia-Klassisch-Dunkel`
+  nicht (der Ordner hat nur `labwc/`, keine `gtk-4.0/gtk.css`); im
+  Fensterdesign ist er als Rahmen wählbar. Bei dunkler Darstellung nennt
+  das Fensterdesign den Zusammenhang in einem Satz.
+- Die labwc-Seiten lesen ihren Stand neu, wenn sie sichtbar werden und sich
+  rc.xml, Umgebung oder gsettings geändert haben (sonst zeigte das
+  Fensterdesign nach der Umschaltung den alten Rahmen).
+- **Änderung des Farbschemas außerhalb der Einstellungen** (gsettings,
+  anderes Programm): Es gibt keinen Hintergrunddienst. Der Rahmen bleibt, wie
+  er ist, bis die dunkle Darstellung im Erscheinungsbild wieder umgeschaltet
+  und übernommen wird; eine schon passende Einstellung ändert nichts (die
+  Umschaltung folgt dem Wechsel, nicht dem Zustand).
+- Rückfall auf 0.1.5: Das Integrationsskript stellt beim `zurueck` einen
+  dunklen Rahmen in rc.xml auf `Querencia-Klassisch` (vor dem Zurücknehmen
+  von Thema 0.2.2).

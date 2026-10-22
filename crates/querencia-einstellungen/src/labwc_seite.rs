@@ -338,10 +338,39 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     ganz.append(&gtk4::Separator::new(gtk4::Orientation::Horizontal));
     fuss.set_margin_top(8);
     ganz.append(&fuss);
+    // 0.1.6: Eine andere Seite kann denselben Stand ändern (Erscheinungsbild
+    // stellt den Fensterrahmen um). Wird die Seite sichtbar, liest sie neu,
+    // falls sich etwas geändert hat und hier nichts Ungespeichertes offen ist.
+    let schwach = Rc::downgrade(&s);
+    ganz.connect_map(move |_| {
+        if let Some(s) = schwach.upgrade() {
+            s.auffrischen();
+        }
+    });
     ganz.upcast()
 }
 
 impl<B: Bereich> Seite<B> {
+    /// Neu lesen, wenn sich rc.xml, Umgebung oder gsettings seit dem letzten
+    /// Laden geändert haben und keine Änderung auf „Übernehmen“ wartet.
+    fn auffrischen(&self) {
+        if self.uebernehmen.is_sensitive() {
+            return;
+        }
+        let neu = self.stand_lesen();
+        let anders = self.stand.borrow().as_ref().is_none_or(|alt| {
+            alt.rc != neu.rc
+                || alt.env != neu.env
+                || alt.gs != neu.gs
+                || alt.rc_vorgabe != neu.rc_vorgabe
+                || alt.vorgabe_neu != neu.vorgabe_neu
+                || alt.fehler != neu.fehler
+        });
+        if anders {
+            self.laden();
+        }
+    }
+
     fn stand_lesen(&self) -> Stand {
         let mut st = lk::lesen(&self.orte);
         st.gs = gsettings::lesen(B::GSETTINGS);
@@ -1055,6 +1084,83 @@ mod tests {
             fehler.len(),
             fehler.join("\n")
         );
+    }
+
+    /// 0.1.6 (Startsession, Status-Session (1), (2), (6)): „Dunkle Darstellung
+    /// bevorzugen“ umschalten und zurückstellen über denselben Schreibweg wie
+    /// „Übernehmen“. Ausgangslagen: heller Querencia-Rahmen, dunkler,
+    /// fremder Rahmen (hell und dunkel), ohne installiertes dunkles Thema.
+    /// rc.xml ist danach byte-gleich (Summe vorher = nachher), keine eigene
+    /// Sicherung bleibt, die fremde des Starters bleibt.
+    #[test]
+    fn dunkelrahmen_umschalten_und_zurueck_byte_gleich() {
+        use crate::erscheinungsbild::Erscheinungsbild;
+        use crate::fensterdesign::{DUNKEL_VORHANDEN, RAHMEN_DUNKEL, RAHMEN_HELL};
+        let hell = VORGABE_2E134C6.to_owned();
+        assert_eq!(
+            lx::wert(&hell, lx::THEMA, "name").as_deref(),
+            Some(RAHMEN_HELL)
+        );
+        let dunkel = lx::setzen(&hell, lx::THEMA, "name", RAHMEN_DUNKEL).unwrap();
+        let fremd = lx::setzen(&hell, lx::THEMA, "name", "Anders").unwrap();
+        // (Fall, rc.xml am Anfang, dunkel am Anfang, dunkles Thema da, Name dazwischen)
+        let faelle: [(&str, &str, bool, bool, &str); 6] = [
+            ("hell", &hell, false, true, RAHMEN_DUNKEL),
+            ("dunkel", &dunkel, true, true, RAHMEN_HELL),
+            ("fremd hell", &fremd, false, true, "Anders"),
+            ("fremd dunkel", &fremd, true, true, "Anders"),
+            ("ohne Thema", &hell, false, false, RAHMEN_HELL),
+            ("dunkel ohne Thema", &dunkel, true, false, RAHMEN_HELL),
+        ];
+        for (i, (fall, start, start_dunkel, vorhanden, mitte)) in faelle.into_iter().enumerate() {
+            DUNKEL_VORHANDEN.with(|c| c.set(Some(vorhanden)));
+            let w = ordner(&format!("dunkelrahmen-{i}"));
+            let o = orte(&w, VORGABE_2E134C6, true);
+            std::fs::write(o.rc(), start).unwrap();
+            let vorher = dateien(&o);
+            let st = lk::lesen(&o);
+            let mut alt = Erscheinungsbild::lesen(&st);
+            alt.dunkel = start_dunkel;
+            let mut neu = alt.clone();
+            neu.dunkel = !start_dunkel;
+            dateien_schreiben::<Erscheinungsbild>(&o, &st, &neu, &alt, "1").unwrap();
+            let zwischen = std::fs::read_to_string(o.rc()).unwrap();
+            assert_eq!(
+                lx::wert(&zwischen, lx::THEMA, "name").as_deref(),
+                Some(mitte),
+                "{fall}: Name nach dem Umschalten"
+            );
+            if mitte == lx::wert(start, lx::THEMA, "name").as_deref().unwrap() {
+                assert_eq!(zwischen, start, "{fall}: nichts geschrieben");
+            }
+            let st2 = lk::lesen(&o);
+            dateien_schreiben::<Erscheinungsbild>(&o, &st2, &alt, &neu, "2").unwrap();
+            // der Rückweg nach „dunkel“ braucht das Thema; ohne es bleibt hell
+            if vorhanden || !start_dunkel {
+                assert_eq!(
+                    std::fs::read_to_string(o.rc()).unwrap(),
+                    start,
+                    "{fall}: rc.xml byte-gleich"
+                );
+                assert_eq!(
+                    dateien(&o),
+                    vorher,
+                    "{fall}: keine Sicherung, keine Datei mehr"
+                );
+            } else {
+                assert_eq!(
+                    std::fs::read_to_string(o.rc()).unwrap(),
+                    hell,
+                    "{fall}: hell geblieben"
+                );
+            }
+            assert_eq!(
+                std::fs::read_to_string(o.benutzer.join("rc.xml.vorher-20261020-112812")).unwrap(),
+                "Starter"
+            );
+            std::fs::remove_dir_all(&w).unwrap();
+        }
+        DUNKEL_VORHANDEN.with(|c| c.set(None));
     }
 
     #[test]

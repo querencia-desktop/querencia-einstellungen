@@ -129,7 +129,7 @@ msgstr "Reload"
 msgid "Apply"
 msgstr "Apply"
 
-#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:256
+#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:264
 msgid "Close"
 msgstr "Close"
 
@@ -282,23 +282,23 @@ msgstr "Wayland query failed: {error}"
 msgid "the compositor does not respond (5 s)"
 msgstr "the compositor does not respond (5 s)"
 
-#: src/ausgaben.rs:149
+#: src/ausgaben.rs:173
 msgid "no zwlr_output_manager_v1"
 msgstr "no zwlr_output_manager_v1"
 
-#: src/ausgaben.rs:200
+#: src/ausgaben.rs:224
 msgid "the compositor rejects this setting (test failed)"
 msgstr "the compositor rejects this setting (test failed)"
 
-#: src/ausgaben.rs:202
+#: src/ausgaben.rs:226
 msgid "the compositor could not apply the setting"
 msgstr "the compositor could not apply the setting"
 
-#: src/ausgaben.rs:204
+#: src/ausgaben.rs:228
 msgid "the outputs have changed in the meantime; please try again"
 msgstr "the outputs have changed in the meantime; please try again"
 
-#: src/bereiche.rs:28 src/erscheinungsbild.rs:253
+#: src/bereiche.rs:28 src/erscheinungsbild.rs:272
 msgid "Appearance"
 msgstr "Appearance"
 
@@ -306,7 +306,7 @@ msgstr "Appearance"
 msgid "Background Image"
 msgstr "Background Image"
 
-#: src/bereiche.rs:43 src/fensterdesign.rs:85
+#: src/bereiche.rs:43 src/fensterdesign.rs:139
 msgid "Window Design"
 msgstr "Window Design"
 
@@ -467,105 +467,105 @@ msgid ""
 msgstr ""
 "the compositor (labwc); saved in ~/.config/querencia/bildschirm.toml and applied at login with “querencia-einstellungen --bildschirm-anwenden”."
 
-#: src/bildschirm.rs:248
+#: src/bildschirm.rs:256
 msgid "Reset"
 msgstr "Reset"
 
-#: src/bildschirm.rs:249
+#: src/bildschirm.rs:257
 msgctxt "screen settings"
 msgid "Apply"
 msgstr "Apply"
 
-#: src/bildschirm.rs:307
+#: src/bildschirm.rs:315
 #, no-c-format
 msgid "The screen cannot be managed: {error}"
 msgstr "The screen cannot be managed: {error}"
 
-#: src/bildschirm.rs:328
+#: src/bildschirm.rs:336
 #, no-c-format
 msgid "{n} monitor found. Changes take effect only after “Apply”."
 msgid_plural "{n} monitors found. Changes take effect only after “Apply”."
 msgstr[0] "{n} monitor found. Changes take effect only after “Apply”."
 msgstr[1] "{n} monitors found. Changes take effect only after “Apply”."
 
-#: src/bildschirm.rs:403
+#: src/bildschirm.rs:411
 #, no-c-format
 msgid "{name} – primary monitor"
 msgstr "{name} – primary monitor"
 
-#: src/bildschirm.rs:406
+#: src/bildschirm.rs:414
 #, no-c-format
 msgid "{name} (off)"
 msgstr "{name} (off)"
 
-#: src/bildschirm.rs:459
+#: src/bildschirm.rs:467
 #, no-c-format
 msgid "{size} (preferred)"
 msgstr "{size} (preferred)"
 
-#: src/bildschirm.rs:514
+#: src/bildschirm.rs:522
 #, no-c-format
 msgid ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 msgstr ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 
-#: src/bildschirm.rs:537
+#: src/bildschirm.rs:545
 msgid "no list (free sizes, e.g. virtual output)"
 msgstr "no list (free sizes, e.g. virtual output)"
 
-#: src/bildschirm.rs:551
+#: src/bildschirm.rs:559
 #, no-c-format
 msgid " · serial number {serial}"
 msgstr " · serial number {serial}"
 
-#: src/bildschirm.rs:603
+#: src/bildschirm.rs:611
 msgid ""
 "Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact."
 msgstr ""
 "Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact."
 
-#: src/bildschirm.rs:638 src/bildschirm.rs:769
+#: src/bildschirm.rs:646 src/bildschirm.rs:778
 msgid "no connection"
 msgstr "no connection"
 
-#: src/bildschirm.rs:658
+#: src/bildschirm.rs:666
 msgid "No change compared to the current state."
 msgstr "No change compared to the current state."
 
-#: src/bildschirm.rs:665
+#: src/bildschirm.rs:673
 msgid "no connection to the compositor"
 msgstr "no connection to the compositor"
 
-#: src/bildschirm.rs:675
+#: src/bildschirm.rs:684
 #, no-c-format
 msgid "Not applied – {error}"
 msgstr "Not applied – {error}"
 
-#: src/bildschirm.rs:689
+#: src/bildschirm.rs:698
 #, no-c-format
 msgid ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 msgstr ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 
-#: src/bildschirm.rs:706
+#: src/bildschirm.rs:715
 msgid "Keep These Settings?"
 msgstr "Keep These Settings?"
 
-#: src/bildschirm.rs:719
+#: src/bildschirm.rs:728
 msgid "The new screen settings are active. Do you want to keep them?"
 msgstr "The new screen settings are active. Do you want to keep them?"
 
-#: src/bildschirm.rs:729
+#: src/bildschirm.rs:738
 msgid "Restore Previous Settings"
 msgstr "Restore Previous Settings"
 
-#: src/bildschirm.rs:730
+#: src/bildschirm.rs:739
 msgid "Keep Settings"
 msgstr "Keep Settings"
 
-#: src/bildschirm.rs:741 src/i18n.rs:175
+#: src/bildschirm.rs:750 src/i18n.rs:175
 #, no-c-format
 msgid "Without confirmation the previous settings are restored in {n} second."
 msgid_plural ""
@@ -574,34 +574,34 @@ msgstr[0] "Without confirmation the previous settings are restored in {n} second
 msgstr[1] ""
 "Without confirmation the previous settings are restored in {n} seconds."
 
-#: src/bildschirm.rs:780
+#: src/bildschirm.rs:789
 msgid "Previous screen settings restored; nothing saved."
 msgstr "Previous screen settings restored; nothing saved."
 
-#: src/bildschirm.rs:784
+#: src/bildschirm.rs:793
 #, no-c-format
 msgid "Restoring failed – {error}. The new state remains, nothing saved."
 msgstr "Restoring failed – {error}. The new state remains, nothing saved."
 
-#: src/bildschirm.rs:858
+#: src/bildschirm.rs:867
 #, no-c-format
 msgid "Screen settings kept and saved in {file}."
 msgstr "Screen settings kept and saved in {file}."
 
-#: src/bildschirm.rs:863
+#: src/bildschirm.rs:872
 #, no-c-format
 msgid "Settings active, but not saved: {error}"
 msgstr "Settings active, but not saved: {error}"
 
-#: src/bildschirm.rs:923
+#: src/bildschirm.rs:932
 msgid "No output switched on"
 msgstr "No output switched on"
 
-#: src/bildschirm.rs:1132
+#: src/bildschirm.rs:1152
 msgid "Reset to the current state of the compositor."
 msgstr "Reset to the current state of the compositor."
 
-#: src/bildschirm.rs:1136
+#: src/bildschirm.rs:1156
 #, no-c-format
 msgid "Reading failed – {error}"
 msgstr "Reading failed – {error}"
@@ -649,88 +649,94 @@ msgstr "Very large (48)"
 msgid "GTK default (built-in)"
 msgstr "GTK default (built-in)"
 
-#: src/erscheinungsbild.rs:188 src/fensterdesign.rs:199
+#: src/erscheinungsbild.rs:188 src/fensterdesign.rs:266
 #, no-c-format
 msgid "{theme} (not installed)"
 msgstr "{theme} (not installed)"
 
-#: src/erscheinungsbild.rs:210
+#: src/erscheinungsbild.rs:217
+msgid ""
+"The dark window frame Querencia-Klassisch-Dunkel is not installed, so window frames stay light."
+msgstr ""
+"The dark window frame Querencia-Klassisch-Dunkel is not installed, so window frames stay light."
+
+#: src/erscheinungsbild.rs:229
 msgid ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
 msgstr ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
 
-#: src/erscheinungsbild.rs:214
+#: src/erscheinungsbild.rs:233
 msgid ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
 msgstr ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
 
-#: src/erscheinungsbild.rs:255
+#: src/erscheinungsbild.rs:274
 msgid ""
-"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
+"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) and rc.xml <theme><name> (the Querencia window frame follows the color scheme). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
 msgstr ""
-"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
+"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) and rc.xml <theme><name> (the Querencia window frame follows the color scheme). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
 
-#: src/erscheinungsbild.rs:315
+#: src/erscheinungsbild.rs:345
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
 msgstr ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
 
-#: src/erscheinungsbild.rs:318
+#: src/erscheinungsbild.rs:348
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
 msgstr ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
 
-#: src/erscheinungsbild.rs:327
+#: src/erscheinungsbild.rs:358
 msgid "Icons"
 msgstr "Icons"
 
-#: src/erscheinungsbild.rs:334 src/hintergrund.rs:269
+#: src/erscheinungsbild.rs:365 src/hintergrund.rs:269
 msgid "Preview:"
 msgstr "Preview:"
 
-#: src/erscheinungsbild.rs:339
+#: src/erscheinungsbild.rs:370
 msgid "Controls (GTK Theme)"
 msgstr "Controls (GTK Theme)"
 
-#: src/erscheinungsbild.rs:344
+#: src/erscheinungsbild.rs:375
 msgid "Prefer dark appearance"
 msgstr "Prefer dark appearance"
 
-#: src/erscheinungsbild.rs:350 src/maus.rs:242
+#: src/erscheinungsbild.rs:381 src/maus.rs:242
 msgid "Mouse Pointer"
 msgstr "Mouse Pointer"
 
-#: src/erscheinungsbild.rs:352 src/maus.rs:244
+#: src/erscheinungsbild.rs:383 src/maus.rs:244
 msgid "Theme:"
 msgstr "Theme:"
 
-#: src/erscheinungsbild.rs:363 src/maus.rs:255
+#: src/erscheinungsbild.rs:394 src/maus.rs:255
 msgid "Size:"
 msgstr "Size:"
 
-#: src/erscheinungsbild.rs:364
+#: src/erscheinungsbild.rs:395
 msgid ""
 "The same pointer is in the “Mouse” section; both sections write the same values."
 msgstr ""
 "The same pointer is in the “Mouse” section; both sections write the same values."
 
-#: src/erscheinungsbild.rs:370
+#: src/erscheinungsbild.rs:401
 msgid ""
 "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
 msgstr ""
 "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
 
-#: src/erscheinungsbild.rs:514
+#: src/erscheinungsbild.rs:545
 msgid ""
 "With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
 msgstr ""
 "With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
 
-#: src/erscheinungsbild.rs:516
+#: src/erscheinungsbild.rs:547
 msgid ""
 "Panel, desktop and programs show this theme; missing icons come from the themes it builds on."
 msgstr ""
@@ -754,47 +760,53 @@ msgstr "Close, minimize, maximize on the left"
 msgid "Close only"
 msgstr "Close only"
 
-#: src/fensterdesign.rs:87
+#: src/fensterdesign.rs:141
 msgid ""
 "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes."
 msgstr ""
 "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes."
 
-#: src/fensterdesign.rs:137
+#: src/fensterdesign.rs:151
+msgid ""
+"Dark appearance is on: the Querencia window frame follows the color scheme (Querencia-Klassisch-Dunkel when dark, Querencia-Klassisch when light); other frames stay as chosen."
+msgstr ""
+"Dark appearance is on: the Querencia window frame follows the color scheme (Querencia-Klassisch-Dunkel when dark, Querencia-Klassisch when light); other frames stay as chosen."
+
+#: src/fensterdesign.rs:204
 msgid "Window Frame Theme"
 msgstr "Window Frame Theme"
 
-#: src/fensterdesign.rs:142
+#: src/fensterdesign.rs:209
 msgid "Shape"
 msgstr "Shape"
 
-#: src/fensterdesign.rs:145
+#: src/fensterdesign.rs:212
 msgid "Top corner radius (pixels):"
 msgstr "Top corner radius (pixels):"
 
-#: src/fensterdesign.rs:148
+#: src/fensterdesign.rs:215
 msgid "Shadows behind windows"
 msgstr "Shadows behind windows"
 
-#: src/fensterdesign.rs:152
+#: src/fensterdesign.rs:219
 msgid "Title Bar Buttons"
 msgstr "Title Bar Buttons"
 
-#: src/fensterdesign.rs:157 src/fensterdesign.rs:160
+#: src/fensterdesign.rs:224 src/fensterdesign.rs:227
 msgid "Title Bar Font"
 msgstr "Title Bar Font"
 
-#: src/fensterdesign.rs:166
+#: src/fensterdesign.rs:233
 msgid ""
 "For active and inactive windows. The other fonts are in the “Fonts” section."
 msgstr ""
 "For active and inactive windows. The other fonts are in the “Fonts” section."
 
-#: src/fensterdesign.rs:197
+#: src/fensterdesign.rs:264
 msgid "Built-in labwc theme"
 msgstr "Built-in labwc theme"
 
-#: src/fensterdesign.rs:224
+#: src/fensterdesign.rs:291
 #, no-c-format
 msgid "Custom arrangement: {layout}"
 msgstr "Custom arrangement: {layout}"
@@ -1255,7 +1267,7 @@ msgstr "rc.xml: root is <{root}>, not <labwc_config>"
 msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr "rc.xml contains changes outside the settings – please merge by hand"
 
-#: src/main.rs:177 src/main.rs:190
+#: src/main.rs:179 src/main.rs:192
 msgid "Querencia Settings"
 msgstr "Querencia Settings"
 
