@@ -13,3 +13,8 @@ Categories=Settings;
 Keywords=settings;preferences;control center;background;screen;resolution;monitor;scaling;keyboard;mouse;language;region;
 StartupNotify=true
 StartupWMClass=org.querencia.Einstellungen
+Actions=netzwerk;
+
+[Desktop Action netzwerk]
+Name=Network Settings
+Exec=querencia-einstellungen --netzwerk

@@ -1,0 +1,6 @@
+extent 1024 768
+wait 4000
+mark seite informationen
+shot 01-informationen.png
+move 152 644
+wait 500

@@ -287,7 +287,7 @@ pub fn seite() -> gtk4::Widget {
     s.append(&status);
 
     let mut herkunft = gettext_f(
-        "GIO: {file} (user file; if it is missing, the system default applies). Only this file is written.",
+        "{file} (user file; if it is missing, the system default applies). Only this file is written.",
         &[("file", &mimeapps_pfad().display().to_string())],
     );
     for p in vorrangige_listen() {

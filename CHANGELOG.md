@@ -12,6 +12,33 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.5] – 2026-10-22
+
+### Hinzugefügt
+- „Informationen über Querencia“ zeigt die Ausgabe von Querencia Desktop
+  (z. B. „Querencia Desktop Alpha 2.1“) aus `/usr/share/querencia/release`,
+  sonst aus `/usr/share/querencia/version`; ohne beide Dateien steht nur
+  „Querencia Desktop“ da. Dazu die Website, die Lizenz (GPL-3.0-or-later)
+  und die Knöpfe „Online-Hilfe“ und „Fehler melden“, die den Browser öffnen.
+  Die Adressen kommen aus derselben Datei, sonst gelten
+  querencialinux.org, die Hilfe in der Sprache der Oberfläche und die
+  Fehlerseite des Projekts auf GitHub.
+- Neue Seite „Netzwerk“: erklärt, dass Verbindungen über das Netzwerksymbol
+  im Panel eingerichtet werden. `querencia-einstellungen --netzwerk` und die
+  Aktion „Netzwerkeinstellungen“ der Desktop-Datei öffnen das
+  Kontrollzentrum auf dieser Seite; damit hat der Eintrag
+  „Netzwerkeinstellungen …“ im Panel ein Ziel.
+- `querencia-einstellungen --seite <name>` öffnet das Kontrollzentrum auf
+  einer beliebigen Seite (z. B. `sprache`, `maus`).
+
+### Geändert
+- Die Zeile „Quelle: …“ am Ende der Seiten (wo die Werte gespeichert sind)
+  ist auf allen Seiten gleich: klein, grau, letzte Zeile über den Knöpfen.
+- „Informationen über Querencia“ nennt keinen Pfad der Entwicklungsumgebung
+  mehr; die falsche Angabe zum Panel-Dialog ist entfernt.
+- Die Quellzeilen von „Arbeitsflächen“ und „Standardanwendungen“ kommen
+  ohne Fachbegriffe der Entwicklung aus.
+
 ## [0.1.4] – 2026-10-21
 
 ### Hinzugefügt

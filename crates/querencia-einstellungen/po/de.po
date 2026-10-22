@@ -40,6 +40,11 @@ msgid ""
 msgstr ""
 "Einstellungen;Systemeinstellungen;Kontrollzentrum;Hintergrund;Bildschirm;Auflösung;Monitor;Skalierung;Tastatur;Maus;Sprache;Region;"
 
+#. TRANSLATORS: Desktop-Datei, Schlüssel Name
+#: data/org.querencia.Einstellungen.desktop.in:19
+msgid "Network Settings"
+msgstr "Netzwerkeinstellungen"
+
 #: src/arbeitsflaeche.rs:25
 msgid "Desktop Icons"
 msgstr "Symbole der Arbeitsfläche"
@@ -107,35 +112,35 @@ msgstr "interne Festplatten und Partitionen"
 
 #: src/arbeitsflaeche.rs:173
 msgid ""
-"Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
+"~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
 msgstr ""
-"Quelle: ~/.config/querencia/desktop.ini [Icons] und [Volumes]; Querencia Desktop übernimmt Änderungen sofort."
+"~/.config/querencia/desktop.ini [Icons] und [Volumes]; Querencia Desktop übernimmt Änderungen sofort."
 
-#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:282 src/labwc_seite.rs:274
+#: src/arbeitsflaeche.rs:188 src/hintergrund.rs:282 src/labwc_seite.rs:274
 msgid "Restore Defaults"
 msgstr "Standard wiederherstellen"
 
-#: src/arbeitsflaeche.rs:193 src/labwc_seite.rs:275
+#: src/arbeitsflaeche.rs:189 src/labwc_seite.rs:275
 msgid "Reload"
 msgstr "Neu laden"
 
-#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
+#: src/arbeitsflaeche.rs:190 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
 msgid "Apply"
 msgstr "Übernehmen"
 
-#: src/arbeitsflaeche.rs:202 src/bildschirm.rs:236
+#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:236
 msgid "Close"
 msgstr "Schließen"
 
-#: src/arbeitsflaeche.rs:260 src/labwc_seite.rs:325
+#: src/arbeitsflaeche.rs:256 src/labwc_seite.rs:322
 msgid "Reloaded."
 msgstr "Neu geladen."
 
-#: src/arbeitsflaeche.rs:289 src/labwc_seite.rs:403
+#: src/arbeitsflaeche.rs:285 src/labwc_seite.rs:400
 msgid "Changes take effect only after “Apply”."
 msgstr "Änderungen gelten erst nach „Übernehmen“."
 
-#: src/arbeitsflaeche.rs:291
+#: src/arbeitsflaeche.rs:287
 #, no-c-format
 msgid ""
 "Note: {n} entry in desktop.ini was ignored (see the log); the default applies."
@@ -146,55 +151,55 @@ msgstr[0] ""
 msgstr[1] ""
 "Hinweis: {n} Eintrag/Einträge in desktop.ini wurden ignoriert (siehe Protokoll); es gilt der Standard."
 
-#: src/arbeitsflaeche.rs:341
+#: src/arbeitsflaeche.rs:337
 msgid "Changed – “Apply” writes desktop.ini."
 msgstr "Geändert – „Übernehmen“ schreibt desktop.ini."
 
-#: src/arbeitsflaeche.rs:343
+#: src/arbeitsflaeche.rs:339
 msgid "No change compared to desktop.ini."
 msgstr "Keine Änderung gegenüber desktop.ini."
 
-#: src/arbeitsflaeche.rs:354
+#: src/arbeitsflaeche.rs:350
 msgid "the drive types"
 msgstr "die Laufwerkstypen"
 
-#: src/arbeitsflaeche.rs:357
+#: src/arbeitsflaeche.rs:353
 msgid "showing and hiding Computer, Home Folder and Trash"
 msgstr ""
 "das Ein- und Ausblenden von Rechner, Persönlichem Ordner und Papierkorb"
 
-#: src/arbeitsflaeche.rs:362
+#: src/arbeitsflaeche.rs:358
 msgid "the icon size"
 msgstr "die Symbolgröße"
 
-#: src/arbeitsflaeche.rs:370
+#: src/arbeitsflaeche.rs:366
 msgid "these settings"
 msgstr "diese Einstellungen"
 
-#: src/arbeitsflaeche.rs:374
+#: src/arbeitsflaeche.rs:370
 #, no-c-format
 msgid ""
 "Note: The running desktop does not evaluate {what} yet. They are saved anyway and take effect as soon as a newer Querencia Desktop is running."
 msgstr ""
 "Hinweis: Der laufende Desktop wertet {what} noch nicht aus. Sie werden trotzdem gespeichert und gelten, sobald ein neuerer Querencia Desktop läuft."
 
-#: src/arbeitsflaeche.rs:390
+#: src/arbeitsflaeche.rs:386
 msgid ""
 "The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 "Die Symbol-Einstellungen in desktop.ini wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand."
 
-#: src/arbeitsflaeche.rs:404 src/hintergrund.rs:959
+#: src/arbeitsflaeche.rs:400 src/hintergrund.rs:959
 #, no-c-format
 msgid "Applied at {time}. Previous setting saved as {name}."
 msgstr "Übernommen um {time}. Vorherige Einstellung gesichert als {name}."
 
-#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:971 src/labwc_seite.rs:466
+#: src/arbeitsflaeche.rs:412 src/hintergrund.rs:971 src/labwc_seite.rs:463
 #, no-c-format
 msgid "Applied at {time}."
 msgstr "Übernommen um {time}."
 
-#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:541
+#: src/arbeitsflaeche.rs:420 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:538
 #, no-c-format
 msgid "Not saved: {error}"
 msgstr "Nicht gespeichert: {error}"
@@ -215,45 +220,45 @@ msgstr "Groß (72 Pixel)"
 msgid "Very large (96 pixels)"
 msgstr "Sehr groß (96 Pixel)"
 
-#: src/arbeitsflaechen.rs:70 src/bereiche.rs:72
+#: src/arbeitsflaechen.rs:70 src/bereiche.rs:73
 msgid "Workspaces"
 msgstr "Arbeitsflächen"
 
-#: src/arbeitsflaechen.rs:72
+#: src/arbeitsflaechen.rs:73
 msgid ""
-"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); the switcher in the panel follows ext-workspace."
+"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names)."
 msgstr ""
-"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); der Umschalter im Panel folgt ext-workspace."
+"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names)."
 
-#: src/arbeitsflaechen.rs:126
+#: src/arbeitsflaechen.rs:125
 msgid "Number of workspaces:"
 msgstr "Anzahl der Arbeitsflächen:"
 
-#: src/arbeitsflaechen.rs:127
+#: src/arbeitsflaechen.rs:126
 msgid "Windows on removed workspaces move to the first one."
 msgstr "Fenster auf wegfallenden Arbeitsflächen kommen auf die erste."
 
-#: src/arbeitsflaechen.rs:131
+#: src/arbeitsflaechen.rs:130
 msgid "Names"
 msgstr "Namen"
 
-#: src/arbeitsflaechen.rs:140
+#: src/arbeitsflaechen.rs:139
 msgid "Leave empty for the default name."
 msgstr "Leer lassen für den Standardnamen."
 
-#: src/arbeitsflaechen.rs:143
+#: src/arbeitsflaechen.rs:142
 msgid "When Switching"
 msgstr "Beim Wechsel"
 
-#: src/arbeitsflaechen.rs:144
+#: src/arbeitsflaechen.rs:143
 msgid "Briefly show the workspace name"
 msgstr "Namen der Arbeitsfläche kurz einblenden"
 
-#: src/arbeitsflaechen.rs:147
+#: src/arbeitsflaechen.rs:146
 msgid "Duration (milliseconds):"
 msgstr "Dauer (Millisekunden):"
 
-#: src/arbeitsflaechen.rs:148
+#: src/arbeitsflaechen.rs:147
 msgid ""
 "The switcher in the panel always shows the switch; the overlay comes from labwc."
 msgstr ""
@@ -293,78 +298,114 @@ msgstr "der Compositor konnte die Einstellung nicht setzen"
 msgid "the outputs have changed in the meantime; please try again"
 msgstr "die Ausgaben haben sich inzwischen geändert; bitte erneut versuchen"
 
-#: src/bereiche.rs:27 src/erscheinungsbild.rs:253
+#: src/bereiche.rs:28 src/erscheinungsbild.rs:253
 msgid "Appearance"
 msgstr "Erscheinungsbild"
 
-#: src/bereiche.rs:32 src/hintergrund_seite.rs:61
+#: src/bereiche.rs:33 src/hintergrund_seite.rs:61
 msgid "Background Image"
 msgstr "Hintergrundbild"
 
-#: src/bereiche.rs:42 src/fensterdesign.rs:85
+#: src/bereiche.rs:43 src/fensterdesign.rs:85
 msgid "Window Design"
 msgstr "Fensterdesign"
 
-#: src/bereiche.rs:47 src/schriften.rs:89
+#: src/bereiche.rs:48 src/schriften.rs:89
 msgid "Fonts"
 msgstr "Schriften"
 
-#: src/bereiche.rs:52 src/panels.rs:180
+#: src/bereiche.rs:53 src/panels.rs:180
 msgid "Panels"
 msgstr "Panels"
 
-#: src/bereiche.rs:57 src/tastatur.rs:233
+#: src/bereiche.rs:58 src/tastatur.rs:233
 msgid "Keyboard"
 msgstr "Tastatur"
 
-#: src/bereiche.rs:62 src/maus.rs:86
+#: src/bereiche.rs:63 src/maus.rs:86
 msgid "Mouse"
 msgstr "Maus"
 
-#: src/bereiche.rs:67 src/bildschirm.rs:136
+#: src/bereiche.rs:68 src/bildschirm.rs:136
 msgid "Screen"
 msgstr "Bildschirm"
 
-#: src/bereiche.rs:87 src/bereiche.rs:142
+#: src/bereiche.rs:83 src/bereiche.rs:284 src/panels.rs:27
+msgid "Network"
+msgstr "Netzwerk"
+
+#: src/bereiche.rs:93 src/bereiche.rs:178
 msgid "About Querencia"
 msgstr "Informationen über Querencia"
 
-#: src/bereiche.rs:132 src/labwc_seite.rs:288
+#: src/bereiche.rs:143
 #, no-c-format
 msgid "Source: {source}"
 msgstr "Quelle: {source}"
 
-#: src/bereiche.rs:151
+#: src/bereiche.rs:164
+#, no-c-format
+msgid "Could not open {address}: {error}"
+msgstr "{address} lässt sich nicht öffnen: {error}"
+
+#: src/bereiche.rs:196
+msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
+msgstr "Ein klassischer Desktop im Stil von GNOME 2 für Wayland und labwc"
+
+#: src/bereiche.rs:197
 #, no-c-format
 msgid "Querencia Settings {version}"
 msgstr "Querencia Einstellungen {version}"
 
-#: src/bereiche.rs:155
-msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
-msgstr "Ein klassischer Desktop im Stil von GNOME 2 für Wayland und labwc"
-
-#: src/bereiche.rs:156
-#, no-c-format
-msgid "License: {license}"
-msgstr "Lizenz: {license}"
-
-#: src/bereiche.rs:177
+#: src/bereiche.rs:218
 msgid "System:"
 msgstr "System:"
 
-#: src/bereiche.rs:178
+#: src/bereiche.rs:219
 msgid "Compositor:"
 msgstr "Compositor:"
 
-#: src/bereiche.rs:180
+#: src/bereiche.rs:221
 msgid "Desktop:"
 msgstr "Desktop:"
 
-#: src/bereiche.rs:193
+#: src/bereiche.rs:233
+msgid "License:"
+msgstr "Lizenz:"
+
+#: src/bereiche.rs:243
+msgid "Website:"
+msgstr "Webseite:"
+
+#: src/bereiche.rs:263
+msgid "Online Help"
+msgstr "Online-Hilfe"
+
+#: src/bereiche.rs:265
+msgid "Report a Problem"
+msgstr "Fehler melden"
+
+#: src/bereiche.rs:287
 msgid ""
-"Component versions: ~/opt/querencia/protokoll.txt; the panel dialog “About Querencia” (System menu) shows the same lines."
+"Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
 msgstr ""
-"Versionen der Komponenten: ~/opt/querencia/protokoll.txt; der Panel-Dialog „Informationen über Querencia“ (System-Menü) zeigt dieselben Zeilen."
+"Netzwerkverbindungen richten Sie im Panel ein: Ein Klick auf das Netzwerksymbol zeigt die Kabelverbindungen und die WLANs in Reichweite. Ein Klick auf ein Netz verbindet damit; bei geschützten Netzen fragt das Panel nach dem Passwort."
+
+#: src/bereiche.rs:290
+msgid ""
+"The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
+msgstr "Dasselbe Menü schaltet WLAN und Flugmodus ein und aus. „Verbindungsinformationen …“ zeigt die Adresse und weitere Angaben der aktiven Verbindung."
+
+#: src/bereiche.rs:293
+msgid ""
+"If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
+msgstr "Fehlt das Netzwerksymbol: Rechtsklick auf eine freie Stelle im Panel → „Zum Panel hinzufügen …“ → Netzwerk."
+
+#: src/bereiche.rs:303
+msgid ""
+"Without NetworkManager the panel only shows the state of the network. Settings for addresses, VPN and proxy are not part of Querencia yet."
+msgstr ""
+"Ohne NetworkManager zeigt das Panel nur den Zustand des Netzwerks. Einstellungen für Adressen, VPN und Proxy gibt es in Querencia noch nicht."
 
 #: src/bildschirm.rs:23
 msgid "Querencia – Screen"
@@ -1119,71 +1160,71 @@ msgstr ""
 msgid "Adopt New Default"
 msgstr "Neue Vorgabe übernehmen"
 
-#: src/labwc_seite.rs:366
+#: src/labwc_seite.rs:363
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
 msgstr ""
 "Achtung: {error}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt nichts, bis die Datei lesbar ist."
 
-#: src/labwc_seite.rs:374
+#: src/labwc_seite.rs:371
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
 msgstr ""
 "Achtung: {error}. Angezeigt werden labwcs Standardwerte; „Übernehmen“ schreibt rc.xml nicht, bis die Datei repariert ist (Belegung und Zeiger werden trotzdem gespeichert)."
 
-#: src/labwc_seite.rs:413
+#: src/labwc_seite.rs:410
 msgid "Changed – “Apply” saves."
 msgstr "Geändert – „Übernehmen“ speichert."
 
-#: src/labwc_seite.rs:415
+#: src/labwc_seite.rs:412
 msgid "No change."
 msgstr "Keine Änderung."
 
-#: src/labwc_seite.rs:441
+#: src/labwc_seite.rs:438
 msgid ""
 "The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 "Die Einstellungen wurden inzwischen von anderer Stelle geändert – nicht überschrieben. „Neu laden“ zeigt den aktuellen Stand."
 
-#: src/labwc_seite.rs:457
+#: src/labwc_seite.rs:454
 #, no-c-format
 msgid "{error} (labwc configuration is already saved)"
 msgstr "{error} (labwc-Konfiguration ist schon gespeichert)"
 
-#: src/labwc_seite.rs:469
+#: src/labwc_seite.rs:466
 msgid "GTK programs, panel and desktop pick it up immediately."
 msgstr "GTK-Programme, Panel und Desktop übernehmen es sofort."
 
-#: src/labwc_seite.rs:478
+#: src/labwc_seite.rs:475
 msgid "labwc has reloaded its configuration."
 msgstr "labwc hat die Konfiguration neu geladen."
 
-#: src/labwc_seite.rs:481
+#: src/labwc_seite.rs:478
 #, no-c-format
 msgid "Reloading failed: {error}."
 msgstr "Neu laden fehlgeschlagen: {error}."
 
-#: src/labwc_seite.rs:483
+#: src/labwc_seite.rs:480
 msgid "Saved in ~/.config/querencia/labwc; effective from the next login."
 msgstr ""
 "Gespeichert in ~/.config/querencia/labwc; wirksam ab der nächsten Anmeldung."
 
-#: src/labwc_seite.rs:494 src/labwc_seite.rs:521
+#: src/labwc_seite.rs:491 src/labwc_seite.rs:518
 #, no-c-format
 msgid "Previously saved as {names}."
 msgstr "Vorher gesichert als {names}."
 
-#: src/labwc_seite.rs:514
+#: src/labwc_seite.rs:511
 msgid "New default adopted, your settings remain."
 msgstr "Neue Vorgabe übernommen, Ihre Einstellungen bleiben."
 
-#: src/labwc_seite.rs:517
+#: src/labwc_seite.rs:514
 msgid "labwc has reloaded."
 msgstr "labwc hat neu geladen."
 
-#: src/labwc_seite.rs:532
+#: src/labwc_seite.rs:529
 #, no-c-format
 msgid "New default not adopted: {error}"
 msgstr "Neue Vorgabe nicht übernommen: {error}"
@@ -1203,7 +1244,7 @@ msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr ""
 "rc.xml enthält Änderungen außerhalb der Einstellungen – bitte von Hand zusammenführen"
 
-#: src/main.rs:152 src/main.rs:165
+#: src/main.rs:177 src/main.rs:190
 msgid "Querencia Settings"
 msgstr "Querencia Einstellungen"
 
@@ -1374,10 +1415,6 @@ msgstr "Uhr"
 msgid "Volume"
 msgstr "Lautstärke"
 
-#: src/panels.rs:27
-msgid "Network"
-msgstr "Netzwerk"
-
 #: src/panels.rs:31 src/xkb.rs:71
 msgid "left"
 msgstr "links"
@@ -1482,6 +1519,11 @@ msgstr ""
 #, no-c-format
 msgid "{file} (format version 1), written by the panel"
 msgstr "{file} (Formatversion 1), geschrieben vom Panel"
+
+#. TRANSLATORS: address of the online help in your language; only change “/en/” if querencialinux.org has docs in your language
+#: src/produkt.rs:27
+msgid "https://querencialinux.org/en/docs/"
+msgstr "https://querencialinux.org/de/docs/"
 
 #: src/schriften.rs:91
 msgid ""
@@ -1652,9 +1694,9 @@ msgstr ""
 #: src/standardanwendungen.rs:289
 #, no-c-format
 msgid ""
-"GIO: {file} (user file; if it is missing, the system default applies). Only this file is written."
+"{file} (user file; if it is missing, the system default applies). Only this file is written."
 msgstr ""
-"GIO: {file} (Benutzerdatei; fehlt sie, gilt der Systemstandard). Nur diese Datei wird geschrieben."
+"{file} (Benutzerdatei; fehlt sie, gilt der Systemstandard). Nur diese Datei wird geschrieben."
 
 #: src/standardanwendungen.rs:295
 #, no-c-format

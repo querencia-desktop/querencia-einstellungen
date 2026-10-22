@@ -213,6 +213,10 @@ if [ -n "${QE_THEMA_ORDNER:-}" ]; then
     mkdir -p "$HEIM/.local/share/themes"
     ln -s "$(readlink -f "$QE_THEMA_ORDNER")" "$HEIM/.local/share/themes/Querencia-Klassisch"
 fi
+# 0.1.5: QE_HEIM_DATEIEN=<ordner> – dessen Inhalt zusätzlich ins Profil-HOME
+# (z. B. ein Starter unter .local/share/applications, der Adressen nur
+# protokolliert, statt einen Browser zu öffnen).
+if [ -n "${QE_HEIM_DATEIEN:-}" ]; then cp -a "$QE_HEIM_DATEIEN/." "$HEIM/"; fi
 echo "HOME=$HEIM Thema=$(readlink -f "$HEIM/.local/share/themes/Querencia-Klassisch")" > "$N/heim.txt"
 # 0.1.2: QE_PROFIL_STABIL=<verweis> – die Sitzung sieht das Profil unter einem
 # festen Verweis statt unter nachweis/<lauf>/profil, damit angezeigte Pfade

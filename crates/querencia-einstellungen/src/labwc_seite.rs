@@ -285,10 +285,7 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     });
     let (bereich, inhalt) = B::bauen(geaendert);
     aussen.append(&inhalt);
-    aussen.append(&grau(&gettext_f(
-        "Source: {source}",
-        &[("source", &gettext(B::QUELLE))],
-    )));
+    aussen.append(&crate::bereiche::quelle(&gettext(B::QUELLE)));
 
     let fuss = gtk4::Box::new(gtk4::Orientation::Vertical, 8);
     fuss.set_margin_start(14);

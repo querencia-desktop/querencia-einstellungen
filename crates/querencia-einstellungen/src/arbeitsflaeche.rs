@@ -170,13 +170,9 @@ fn seite_teile(mit_schliessen: bool) -> (gtk4::Box, gtk4::Box) {
     hinweis.set_max_width_chars(70);
     hinweis.set_visible(false);
     aussen.append(&hinweis);
-    let quelle = gtk4::Label::new(Some(&gettext(
-        "Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately.",
+    aussen.append(&crate::bereiche::quelle(&gettext(
+        "~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately.",
     )));
-    quelle.set_xalign(0.0);
-    quelle.set_wrap(true);
-    quelle.add_css_class("dim-label");
-    aussen.append(&quelle);
 
     // Fuß: Statuszeile und Schaltflächen
     let fuss = gtk4::Box::new(gtk4::Orientation::Vertical, 8);
