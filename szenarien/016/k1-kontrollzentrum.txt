@@ -1,0 +1,23 @@
+extent 3200 1080
+wait 4000
+move 1000 450
+wait 300
+scroll 10
+wait 800
+move 660 289
+click
+wait 900
+move 590 385
+click
+wait 900
+shot 01-skalierung-2.png
+move 1006 645
+click
+wait 2500
+extent 2240 720
+shot 02-dialog.png
+move 887 417
+click
+wait 1500
+shot 03-beibehalten.png
+wait 500

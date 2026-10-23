@@ -1,0 +1,33 @@
+# Fotolauf 1920: das Fenster liegt auf HEADLESS-2 (0,0)
+version = 1
+
+[[ausgabe]]
+name = "HEADLESS-2"
+hersteller = ""
+modell = ""
+seriennummer = ""
+aktiv = true
+breite = 1920
+hoehe = 1080
+wiederholrate_mhz = 0
+x = 0
+y = 0
+drehung = 0
+skalierung = 1.0
+primaer = true
+
+[[ausgabe]]
+name = "HEADLESS-1"
+hersteller = ""
+modell = ""
+seriennummer = ""
+aktiv = true
+breite = 1280
+hoehe = 720
+wiederholrate_mhz = 0
+x = 1920
+y = 0
+drehung = 0
+skalierung = 1.0
+primaer = false
+

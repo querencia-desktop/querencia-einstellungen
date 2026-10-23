@@ -24,16 +24,20 @@ Alpha software; the user interface is available in English and German
   Erscheinungsbild, Hintergrundbild (eigenes Bild, Farbe oder Galerie der
   eingebauten Hintergründe), Symbole der Arbeitsfläche, Fensterdesign,
   Schriften, Panels, Tastatur (auch mehrere Belegungen mit Umschalttaste),
-  Maus, Bildschirm (Auflösung und Anordnung über `wlr-output-management`),
+  Maus, Bildschirm (Auflösung, Wiederholrate, Skalierung und Anordnung über
+  `wlr-output-management`, gespeichert in `~/.config/querencia/bildschirm.toml`),
   Arbeitsflächen, Standardanwendungen, Sprache und Region, Informationen
-  über Querencia.
+  über Querencia (Ausgabe von Querencia Desktop, Webseite, Online-Hilfe,
+  Fehler melden). Die Seite „Netzwerk“ verweist auf das Netzwerksymbol im
+  Panel (`querencia-einstellungen --netzwerk`).
 - Schreibt nur die eigenen Einstellungen: `~/.config/querencia/desktop.ini`
   (nur die eigene Gruppe), die labwc-Benutzerkopie unter
   `~/.config/querencia/labwc/` (gezielt geänderte Werte in `rc.xml`, eigene
   Umgebungsdatei `environment.d/zz-querencia-einstellungen.env`, Sicherung
   vor jedem Ersetzen, `labwc --reconfigure`), gsettings
   `org.gnome.desktop.interface`, MIME-Zuordnungen über GIO.
-- Bewusst **nicht** Teil dieses Programms: Netzwerk, Lautstärke, Benutzer und
+- Bewusst **nicht** Teil dieses Programms: Netzwerkverbindungen (dafür das
+  Netzwerksymbol im Panel), Lautstärke, Benutzer und
   Software (eigene Programme von Querencia Desktop), Bereiche anderer
   Desktopumgebungen.
 
@@ -53,9 +57,9 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.1.4 (Tag `einstellungen/0.1.4`) |
-| Letzte Prüfung | 21.10.2026: Unit-Tests, fmt, Clippy; isolierte GUI-Läufe Deutsch und Englisch bei 1920×1080 und 1024×768, hell und dunkel (beim Start und beim Wechsel); Regression gegen 0.1.1 |
-| Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung |
+| Version | 0.1.6 (Tag `einstellungen/0.1.6`) |
+| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 (Zahlen im Bericht der Entwicklungs-VM) |
+| Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; gespeicherte Bildschirmeinstellungen setzt die Sitzung erst, wenn ihr Autostart `--bildschirm-anwenden` aufruft |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
 | Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
 

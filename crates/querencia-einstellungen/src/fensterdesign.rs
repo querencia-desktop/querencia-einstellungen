@@ -9,7 +9,7 @@ use gtk4::prelude::*;
 use gtk4::{glib, pango};
 
 use crate::i18n::{gettext, gettext_f, gettext_noop};
-use crate::labwc_konfig::Stand;
+use crate::labwc_konfig::{Stand, Wirkung};
 use crate::labwc_seite::{self as ls, Bereich};
 use crate::labwc_xml::{self as lx, Fehler};
 use crate::tastatur::ja;
@@ -69,6 +69,60 @@ pub fn themen() -> Vec<String> {
     liste
 }
 
+/// Der Querencia-Rahmen folgt dem Farbschema (0.1.6, Entscheidung der
+/// Startsession): Schaltet „Erscheinungsbild“ die dunkle Darstellung um,
+/// wechselt `<theme><name>` zwischen diesen beiden Namen – aber nur, wenn
+/// rc.xml gerade einen davon nennt. Einen anderen Rahmen lässt die
+/// Umschaltung stehen; ein Kennzeichen „vom Benutzer gewählt“ gibt es nicht.
+pub const RAHMEN_HELL: &str = "Querencia-Klassisch";
+pub const RAHMEN_DUNKEL: &str = "Querencia-Klassisch-Dunkel";
+
+/// Neuer Rahmenname für `ist` (Wert von `<theme><name>`) nach dem
+/// Umschalten auf `dunkel`; `None` = nichts ändern. Ohne installiertes
+/// dunkles Thema bleibt der helle Name (labwc fiele sonst auf sein
+/// eingebautes Thema zurück).
+pub fn rahmen_fuer(
+    ist: Option<&str>,
+    dunkel: bool,
+    dunkel_vorhanden: bool,
+) -> Option<&'static str> {
+    match ist.map(str::trim) {
+        Some(RAHMEN_HELL) if dunkel && dunkel_vorhanden => Some(RAHMEN_DUNKEL),
+        Some(RAHMEN_DUNKEL) if !dunkel => Some(RAHMEN_HELL),
+        _ => None,
+    }
+}
+
+/// rc.xml nach dem Umschalten auf `dunkel` (nur der Rahmenname, siehe
+/// [`rahmen_fuer`]); das Zurückstellen gleicht danach
+/// [`lx::angleichen`] byte-genau an die Basis an.
+pub fn rahmen_umstellen(rc: &str, dunkel: bool, dunkel_vorhanden: bool) -> Result<String, Fehler> {
+    match rahmen_fuer(
+        lx::wert(rc, lx::THEMA, "name").as_deref(),
+        dunkel,
+        dunkel_vorhanden,
+    ) {
+        Some(name) => lx::setzen(rc, lx::THEMA, "name", name),
+        None => Ok(rc.to_owned()),
+    }
+}
+
+#[cfg(test)]
+thread_local! {
+    /// Prüfungen: ob [`dunkler_rahmen_vorhanden`] das dunkle Thema findet.
+    pub static DUNKEL_VORHANDEN: std::cell::Cell<Option<bool>> = const { std::cell::Cell::new(None) };
+}
+
+/// Ist [`RAHMEN_DUNKEL`] als labwc-Thema installiert (dieselben Ordner wie
+/// [`themen`]: ~/.local/share/themes, ~/.themes, die Systemordner)?
+pub fn dunkler_rahmen_vorhanden() -> bool {
+    #[cfg(test)]
+    if let Some(v) = DUNKEL_VORHANDEN.with(std::cell::Cell::get) {
+        return v;
+    }
+    themen().iter().any(|t| t == RAHMEN_DUNKEL)
+}
+
 pub struct Fensterdesign {
     themen_kasten: gtk4::Box,
     themen: RefCell<Vec<(String, gtk4::CheckButton)>>,
@@ -87,6 +141,19 @@ impl Bereich for Fensterdesign {
     const QUELLE: &'static str = gettext_noop(
         "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes.",
     );
+
+    const GSETTINGS: &'static [&'static str] = &[crate::gsettings::FARBSCHEMA];
+
+    fn hinweis(w: &Wirkung, st: &Stand) -> Option<String> {
+        let mut t = crate::labwc_konfig::wirkung_text(w, st);
+        if st.gs.get(crate::gsettings::FARBSCHEMA).map(String::as_str) == Some("prefer-dark") {
+            t.push(' ');
+            t.push_str(&gettext(
+                "Dark appearance is on: the Querencia window frame follows the color scheme (Querencia-Klassisch-Dunkel when dark, Querencia-Klassisch when light); other frames stay as chosen.",
+            ));
+        }
+        Some(t)
+    }
 
     fn lesen(st: &Stand) -> Werte {
         let t = |k: &str| lx::wert(&st.rc, lx::THEMA, k);
@@ -332,5 +399,37 @@ mod tests {
         )
         .unwrap();
         assert_eq!(rc2, st.rc);
+    }
+}
+
+#[cfg(test)]
+mod rahmen_tests {
+    use super::*;
+
+    #[test]
+    fn rahmen_folgt_nur_den_querencia_namen() {
+        // hell → dunkel nur mit installiertem dunklem Thema
+        assert_eq!(
+            rahmen_fuer(Some(RAHMEN_HELL), true, true),
+            Some(RAHMEN_DUNKEL)
+        );
+        assert_eq!(rahmen_fuer(Some(RAHMEN_HELL), true, false), None);
+        assert_eq!(rahmen_fuer(Some(RAHMEN_HELL), false, true), None);
+        // dunkel → hell immer (auch ohne dunkles Thema)
+        assert_eq!(
+            rahmen_fuer(Some(RAHMEN_DUNKEL), false, false),
+            Some(RAHMEN_HELL)
+        );
+        assert_eq!(rahmen_fuer(Some(RAHMEN_DUNKEL), true, true), None);
+        assert_eq!(
+            rahmen_fuer(Some(" Querencia-Klassisch "), true, true),
+            Some(RAHMEN_DUNKEL)
+        );
+        // fremde Rahmen und labwcs eingebautes Thema bleiben
+        for ist in [Some("Anders"), Some("querencia-klassisch"), None] {
+            for (d, v) in [(true, true), (false, true), (true, false)] {
+                assert_eq!(rahmen_fuer(ist, d, v), None, "{ist:?} {d} {v}");
+            }
+        }
     }
 }

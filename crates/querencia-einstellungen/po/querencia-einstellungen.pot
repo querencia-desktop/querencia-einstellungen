@@ -39,6 +39,11 @@ msgid ""
 "settings;preferences;control center;background;screen;resolution;monitor;scaling;keyboard;mouse;language;region;"
 msgstr ""
 
+#. TRANSLATORS: Desktop-Datei, Schlüssel Name
+#: data/org.querencia.Einstellungen.desktop.in:19
+msgid "Network Settings"
+msgstr ""
+
 #: src/arbeitsflaeche.rs:25
 msgid "Desktop Icons"
 msgstr ""
@@ -106,34 +111,34 @@ msgstr ""
 
 #: src/arbeitsflaeche.rs:173
 msgid ""
-"Source: ~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
+"~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:192 src/hintergrund.rs:282 src/labwc_seite.rs:274
+#: src/arbeitsflaeche.rs:188 src/hintergrund.rs:282 src/labwc_seite.rs:274
 msgid "Restore Defaults"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:193 src/labwc_seite.rs:275
+#: src/arbeitsflaeche.rs:189 src/labwc_seite.rs:275
 msgid "Reload"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:194 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
+#: src/arbeitsflaeche.rs:190 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
 msgid "Apply"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:202 src/bildschirm.rs:236
+#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:264
 msgid "Close"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:260 src/labwc_seite.rs:325
+#: src/arbeitsflaeche.rs:256 src/labwc_seite.rs:322
 msgid "Reloaded."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:289 src/labwc_seite.rs:403
+#: src/arbeitsflaeche.rs:285 src/labwc_seite.rs:400
 msgid "Changes take effect only after “Apply”."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:291
+#: src/arbeitsflaeche.rs:287
 #, no-c-format
 msgid ""
 "Note: {n} entry in desktop.ini was ignored (see the log); the default applies."
@@ -142,52 +147,52 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/arbeitsflaeche.rs:341
+#: src/arbeitsflaeche.rs:337
 msgid "Changed – “Apply” writes desktop.ini."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:343
+#: src/arbeitsflaeche.rs:339
 msgid "No change compared to desktop.ini."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:354
+#: src/arbeitsflaeche.rs:350
 msgid "the drive types"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:357
+#: src/arbeitsflaeche.rs:353
 msgid "showing and hiding Computer, Home Folder and Trash"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:362
+#: src/arbeitsflaeche.rs:358
 msgid "the icon size"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:370
+#: src/arbeitsflaeche.rs:366
 msgid "these settings"
 msgstr ""
 
-#: src/arbeitsflaeche.rs:374
+#: src/arbeitsflaeche.rs:370
 #, no-c-format
 msgid ""
 "Note: The running desktop does not evaluate {what} yet. They are saved anyway and take effect as soon as a newer Querencia Desktop is running."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:390
+#: src/arbeitsflaeche.rs:386
 msgid ""
 "The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:404 src/hintergrund.rs:959
+#: src/arbeitsflaeche.rs:400 src/hintergrund.rs:959
 #, no-c-format
 msgid "Applied at {time}. Previous setting saved as {name}."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:416 src/hintergrund.rs:971 src/labwc_seite.rs:466
+#: src/arbeitsflaeche.rs:412 src/hintergrund.rs:971 src/labwc_seite.rs:463
 #, no-c-format
 msgid "Applied at {time}."
 msgstr ""
 
-#: src/arbeitsflaeche.rs:424 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:541
+#: src/arbeitsflaeche.rs:420 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:538
 #, no-c-format
 msgid "Not saved: {error}"
 msgstr ""
@@ -208,44 +213,44 @@ msgstr ""
 msgid "Very large (96 pixels)"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:70 src/bereiche.rs:72
+#: src/arbeitsflaechen.rs:70 src/bereiche.rs:73
 msgid "Workspaces"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:72
+#: src/arbeitsflaechen.rs:73
 msgid ""
-"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names); the switcher in the panel follows ext-workspace."
+"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names)."
 msgstr ""
 
-#: src/arbeitsflaechen.rs:126
+#: src/arbeitsflaechen.rs:125
 msgid "Number of workspaces:"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:127
+#: src/arbeitsflaechen.rs:126
 msgid "Windows on removed workspaces move to the first one."
 msgstr ""
 
-#: src/arbeitsflaechen.rs:131
+#: src/arbeitsflaechen.rs:130
 msgid "Names"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:140
+#: src/arbeitsflaechen.rs:139
 msgid "Leave empty for the default name."
 msgstr ""
 
-#: src/arbeitsflaechen.rs:143
+#: src/arbeitsflaechen.rs:142
 msgid "When Switching"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:144
+#: src/arbeitsflaechen.rs:143
 msgid "Briefly show the workspace name"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:147
+#: src/arbeitsflaechen.rs:146
 msgid "Duration (milliseconds):"
 msgstr ""
 
-#: src/arbeitsflaechen.rs:148
+#: src/arbeitsflaechen.rs:147
 msgid ""
 "The switcher in the panel always shows the switch; the overlay comes from labwc."
 msgstr ""
@@ -268,232 +273,280 @@ msgstr ""
 msgid "the compositor does not respond (5 s)"
 msgstr ""
 
-#: src/ausgaben.rs:149
+#: src/ausgaben.rs:173
 msgid "no zwlr_output_manager_v1"
 msgstr ""
 
-#: src/ausgaben.rs:200
+#: src/ausgaben.rs:224
 msgid "the compositor rejects this setting (test failed)"
 msgstr ""
 
-#: src/ausgaben.rs:202
+#: src/ausgaben.rs:226
 msgid "the compositor could not apply the setting"
 msgstr ""
 
-#: src/ausgaben.rs:204
+#: src/ausgaben.rs:228
 msgid "the outputs have changed in the meantime; please try again"
 msgstr ""
 
-#: src/bereiche.rs:27 src/erscheinungsbild.rs:253
+#: src/bereiche.rs:28 src/erscheinungsbild.rs:272
 msgid "Appearance"
 msgstr ""
 
-#: src/bereiche.rs:32 src/hintergrund_seite.rs:61
+#: src/bereiche.rs:33 src/hintergrund_seite.rs:61
 msgid "Background Image"
 msgstr ""
 
-#: src/bereiche.rs:42 src/fensterdesign.rs:85
+#: src/bereiche.rs:43 src/fensterdesign.rs:139
 msgid "Window Design"
 msgstr ""
 
-#: src/bereiche.rs:47 src/schriften.rs:89
+#: src/bereiche.rs:48 src/schriften.rs:89
 msgid "Fonts"
 msgstr ""
 
-#: src/bereiche.rs:52 src/panels.rs:180
+#: src/bereiche.rs:53 src/panels.rs:180
 msgid "Panels"
 msgstr ""
 
-#: src/bereiche.rs:57 src/tastatur.rs:233
+#: src/bereiche.rs:58 src/tastatur.rs:233
 msgid "Keyboard"
 msgstr ""
 
-#: src/bereiche.rs:62 src/maus.rs:86
+#: src/bereiche.rs:63 src/maus.rs:86
 msgid "Mouse"
 msgstr ""
 
-#: src/bereiche.rs:67 src/bildschirm.rs:136
+#: src/bereiche.rs:68 src/bildschirm.rs:139
 msgid "Screen"
 msgstr ""
 
-#: src/bereiche.rs:87 src/bereiche.rs:142
+#: src/bereiche.rs:83 src/bereiche.rs:284 src/panels.rs:27
+msgid "Network"
+msgstr ""
+
+#: src/bereiche.rs:93 src/bereiche.rs:178
 msgid "About Querencia"
 msgstr ""
 
-#: src/bereiche.rs:132 src/labwc_seite.rs:288
+#: src/bereiche.rs:143
 #, no-c-format
 msgid "Source: {source}"
 msgstr ""
 
-#: src/bereiche.rs:151
+#: src/bereiche.rs:164
+#, no-c-format
+msgid "Could not open {address}: {error}"
+msgstr ""
+
+#: src/bereiche.rs:196
+msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
+msgstr ""
+
+#: src/bereiche.rs:197
 #, no-c-format
 msgid "Querencia Settings {version}"
 msgstr ""
 
-#: src/bereiche.rs:155
-msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
-msgstr ""
-
-#: src/bereiche.rs:156
-#, no-c-format
-msgid "License: {license}"
-msgstr ""
-
-#: src/bereiche.rs:177
+#: src/bereiche.rs:218
 msgid "System:"
 msgstr ""
 
-#: src/bereiche.rs:178
+#: src/bereiche.rs:219
 msgid "Compositor:"
 msgstr ""
 
-#: src/bereiche.rs:180
+#: src/bereiche.rs:221
 msgid "Desktop:"
 msgstr ""
 
-#: src/bereiche.rs:193
-msgid ""
-"Component versions: ~/opt/querencia/protokoll.txt; the panel dialog “About Querencia” (System menu) shows the same lines."
+#: src/bereiche.rs:233
+msgid "License:"
 msgstr ""
 
-#: src/bildschirm.rs:23
+#: src/bereiche.rs:243
+msgid "Website:"
+msgstr ""
+
+#: src/bereiche.rs:263
+msgid "Online Help"
+msgstr ""
+
+#: src/bereiche.rs:265
+msgid "Report a Problem"
+msgstr ""
+
+#: src/bereiche.rs:287
+msgid ""
+"Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
+msgstr ""
+
+#: src/bereiche.rs:290
+msgid ""
+"The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
+msgstr ""
+
+#: src/bereiche.rs:293
+msgid ""
+"If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
+msgstr ""
+
+#: src/bereiche.rs:303
+msgid ""
+"Without NetworkManager the panel only shows the state of the network. Settings for addresses, VPN and proxy are not part of Querencia yet."
+msgstr ""
+
+#: src/bildschirm.rs:24
 msgid "Querencia – Screen"
 msgstr ""
 
-#: src/bildschirm.rs:142
+#: src/bildschirm.rs:145
 msgid "Monitor Arrangement (drag to move)"
 msgstr ""
 
-#: src/bildschirm.rs:156
+#: src/bildschirm.rs:159
 msgid "Monitor"
 msgstr ""
 
-#: src/bildschirm.rs:171
+#: src/bildschirm.rs:174
 msgid "On"
 msgstr ""
 
-#: src/bildschirm.rs:189
-msgid "Use as Primary Monitor"
-msgstr ""
-
-#: src/bildschirm.rs:194
-msgid "Monitor:"
-msgstr ""
-
-#: src/bildschirm.rs:198
-msgid "Resolution:"
-msgstr ""
-
-#: src/bildschirm.rs:200
-msgid "Refresh rate:"
+#: src/bildschirm.rs:192
+msgid ""
+"This monitor did not report its data (EDID), so only basic resolutions such as 1024 × 768 are offered. With a graphics card passed through to a virtual machine this can happen after starting; unplugging and plugging in the monitor cable usually helps."
 msgstr ""
 
 #: src/bildschirm.rs:202
+msgid "Use as Primary Monitor"
+msgstr ""
+
+#: src/bildschirm.rs:203
+msgid ""
+"labwc has no primary monitor of its own: the primary monitor is placed at the top left, the others next to it."
+msgstr ""
+
+#: src/bildschirm.rs:210
+msgid "Monitor:"
+msgstr ""
+
+#: src/bildschirm.rs:214
+msgid "Resolution:"
+msgstr ""
+
+#: src/bildschirm.rs:216
+msgid "Refresh rate:"
+msgstr ""
+
+#: src/bildschirm.rs:218
 msgid "Rotation:"
 msgstr ""
 
-#: src/bildschirm.rs:204
+#: src/bildschirm.rs:220
 msgid "Scale:"
 msgstr ""
 
-#: src/bildschirm.rs:228
+#: src/bildschirm.rs:236
+msgid ""
+"the compositor (labwc); saved in ~/.config/querencia/bildschirm.toml and applied at login with “querencia-einstellungen --bildschirm-anwenden”."
+msgstr ""
+
+#: src/bildschirm.rs:256
 msgid "Reset"
 msgstr ""
 
-#: src/bildschirm.rs:229
+#: src/bildschirm.rs:257
 msgctxt "screen settings"
 msgid "Apply"
 msgstr ""
 
-#: src/bildschirm.rs:286
+#: src/bildschirm.rs:315
 #, no-c-format
 msgid "The screen cannot be managed: {error}"
 msgstr ""
 
-#: src/bildschirm.rs:307
+#: src/bildschirm.rs:336
 #, no-c-format
-msgid ""
-"{n} output reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
-msgid_plural ""
-"{n} outputs reported (wlr-output-management, labwc). Changes take effect only after “Apply”."
+msgid "{n} monitor found. Changes take effect only after “Apply”."
+msgid_plural "{n} monitors found. Changes take effect only after “Apply”."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/bildschirm.rs:382
+#: src/bildschirm.rs:411
 #, no-c-format
 msgid "{name} – primary monitor"
 msgstr ""
 
-#: src/bildschirm.rs:385
+#: src/bildschirm.rs:414
 #, no-c-format
 msgid "{name} (off)"
 msgstr ""
 
-#: src/bildschirm.rs:438
+#: src/bildschirm.rs:467
 #, no-c-format
 msgid "{size} (preferred)"
 msgstr ""
 
-#: src/bildschirm.rs:489
+#: src/bildschirm.rs:522
 #, no-c-format
 msgid ""
 "{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
 msgstr ""
 
-#: src/bildschirm.rs:512
+#: src/bildschirm.rs:545
 msgid "no list (free sizes, e.g. virtual output)"
 msgstr ""
 
-#: src/bildschirm.rs:526
+#: src/bildschirm.rs:559
 #, no-c-format
 msgid " · serial number {serial}"
 msgstr ""
 
-#: src/bildschirm.rs:577
+#: src/bildschirm.rs:611
 msgid ""
-"Fractional scaling: GTK 4.10 draws with the next whole factor and scales down; the desktop then shows “Centered” and “Tiled” at ¾ of the pixel size. Whole factors (1 ×, 2 ×) are pixel-exact."
+"Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact."
 msgstr ""
 
-#: src/bildschirm.rs:612 src/bildschirm.rs:743
+#: src/bildschirm.rs:646 src/bildschirm.rs:778
 msgid "no connection"
 msgstr ""
 
-#: src/bildschirm.rs:632
+#: src/bildschirm.rs:666
 msgid "No change compared to the current state."
 msgstr ""
 
-#: src/bildschirm.rs:639
+#: src/bildschirm.rs:673
 msgid "no connection to the compositor"
 msgstr ""
 
-#: src/bildschirm.rs:649
+#: src/bildschirm.rs:684
 #, no-c-format
 msgid "Not applied – {error}"
 msgstr ""
 
-#: src/bildschirm.rs:663
+#: src/bildschirm.rs:698
 #, no-c-format
 msgid ""
 "Applied. Confirm within {seconds} s, otherwise the previous state is restored."
 msgstr ""
 
-#: src/bildschirm.rs:680
-msgid "Keep Screen Settings?"
+#: src/bildschirm.rs:715
+msgid "Keep These Settings?"
 msgstr ""
 
-#: src/bildschirm.rs:693
+#: src/bildschirm.rs:728
 msgid "The new screen settings are active. Do you want to keep them?"
 msgstr ""
 
-#: src/bildschirm.rs:703
+#: src/bildschirm.rs:738
 msgid "Restore Previous Settings"
 msgstr ""
 
-#: src/bildschirm.rs:704
+#: src/bildschirm.rs:739
 msgid "Keep Settings"
 msgstr ""
 
-#: src/bildschirm.rs:715 src/i18n.rs:175
+#: src/bildschirm.rs:750 src/i18n.rs:175
 #, no-c-format
 msgid "Without confirmation the previous settings are restored in {n} second."
 msgid_plural ""
@@ -501,62 +554,61 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/bildschirm.rs:754
+#: src/bildschirm.rs:789
 msgid "Previous screen settings restored; nothing saved."
 msgstr ""
 
-#: src/bildschirm.rs:758
+#: src/bildschirm.rs:793
 #, no-c-format
 msgid "Restoring failed – {error}. The new state remains, nothing saved."
 msgstr ""
 
-#: src/bildschirm.rs:832
+#: src/bildschirm.rs:867
 #, no-c-format
-msgid ""
-"Screen settings kept and saved in {file}. They are applied again at session start."
+msgid "Screen settings kept and saved in {file}."
 msgstr ""
 
-#: src/bildschirm.rs:837
+#: src/bildschirm.rs:872
 #, no-c-format
 msgid "Settings active, but not saved: {error}"
 msgstr ""
 
-#: src/bildschirm.rs:897
+#: src/bildschirm.rs:932
 msgid "No output switched on"
 msgstr ""
 
-#: src/bildschirm.rs:1106
+#: src/bildschirm.rs:1152
 msgid "Reset to the current state of the compositor."
 msgstr ""
 
-#: src/bildschirm.rs:1110
+#: src/bildschirm.rs:1156
 #, no-c-format
 msgid "Reading failed – {error}"
 msgstr ""
 
-#: src/bildschirm_modell.rs:34
+#: src/bildschirm_modell.rs:35
 msgid "automatic"
 msgstr ""
 
-#: src/bildschirm_modell.rs:101
+#: src/bildschirm_modell.rs:102
 msgid "Normal"
 msgstr ""
 
-#: src/bildschirm_modell.rs:102
+#: src/bildschirm_modell.rs:103
 msgid "90° (right)"
 msgstr ""
 
-#: src/bildschirm_modell.rs:103
+#: src/bildschirm_modell.rs:104
 msgid "180° (upside down)"
 msgstr ""
 
-#: src/bildschirm_modell.rs:104
+#: src/bildschirm_modell.rs:105
 msgid "270° (left)"
 msgstr ""
 
 #. TRANSLATORS: decimal separator of refresh rates and scale factors (59.95 Hz, 1.25 ×)
 #. TRANSLATORS: decimal separator of the pointer speed (+0.25)
-#: src/bildschirm_modell.rs:145 src/maus.rs:213
+#: src/bildschirm_modell.rs:146 src/maus.rs:213
 msgctxt "decimal separator"
 msgid "."
 msgstr ""
@@ -577,80 +629,85 @@ msgstr ""
 msgid "GTK default (built-in)"
 msgstr ""
 
-#: src/erscheinungsbild.rs:188 src/fensterdesign.rs:199
+#: src/erscheinungsbild.rs:188 src/fensterdesign.rs:266
 #, no-c-format
 msgid "{theme} (not installed)"
 msgstr ""
 
-#: src/erscheinungsbild.rs:210
+#: src/erscheinungsbild.rs:217
+msgid ""
+"The dark window frame Querencia-Klassisch-Dunkel is not installed, so window frames stay light."
+msgstr ""
+
+#: src/erscheinungsbild.rs:229
 msgid ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
 msgstr ""
 
-#: src/erscheinungsbild.rs:214
+#: src/erscheinungsbild.rs:233
 msgid ""
 "Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
 msgstr ""
 
-#: src/erscheinungsbild.rs:255
+#: src/erscheinungsbild.rs:274
 msgid ""
-"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
+"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) and rc.xml <theme><name> (the Querencia window frame follows the color scheme). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
 msgstr ""
 
-#: src/erscheinungsbild.rs:315
+#: src/erscheinungsbild.rs:345
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
 msgstr ""
 
-#: src/erscheinungsbild.rs:318
+#: src/erscheinungsbild.rs:348
 msgid ""
 "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
 msgstr ""
 
-#: src/erscheinungsbild.rs:327
+#: src/erscheinungsbild.rs:358
 msgid "Icons"
 msgstr ""
 
-#: src/erscheinungsbild.rs:334 src/hintergrund.rs:269
+#: src/erscheinungsbild.rs:365 src/hintergrund.rs:269
 msgid "Preview:"
 msgstr ""
 
-#: src/erscheinungsbild.rs:339
+#: src/erscheinungsbild.rs:370
 msgid "Controls (GTK Theme)"
 msgstr ""
 
-#: src/erscheinungsbild.rs:344
+#: src/erscheinungsbild.rs:375
 msgid "Prefer dark appearance"
 msgstr ""
 
-#: src/erscheinungsbild.rs:350 src/maus.rs:242
+#: src/erscheinungsbild.rs:381 src/maus.rs:242
 msgid "Mouse Pointer"
 msgstr ""
 
-#: src/erscheinungsbild.rs:352 src/maus.rs:244
+#: src/erscheinungsbild.rs:383 src/maus.rs:244
 msgid "Theme:"
 msgstr ""
 
-#: src/erscheinungsbild.rs:363 src/maus.rs:255
+#: src/erscheinungsbild.rs:394 src/maus.rs:255
 msgid "Size:"
 msgstr ""
 
-#: src/erscheinungsbild.rs:364
+#: src/erscheinungsbild.rs:395
 msgid ""
 "The same pointer is in the “Mouse” section; both sections write the same values."
 msgstr ""
 
-#: src/erscheinungsbild.rs:370
+#: src/erscheinungsbild.rs:401
 msgid ""
 "Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
 msgstr ""
 
-#: src/erscheinungsbild.rs:514
+#: src/erscheinungsbild.rs:545
 msgid ""
 "With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
 msgstr ""
 
-#: src/erscheinungsbild.rs:516
+#: src/erscheinungsbild.rs:547
 msgid ""
 "Panel, desktop and programs show this theme; missing icons come from the themes it builds on."
 msgstr ""
@@ -672,45 +729,50 @@ msgstr ""
 msgid "Close only"
 msgstr ""
 
-#: src/fensterdesign.rs:87
+#: src/fensterdesign.rs:141
 msgid ""
 "~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes."
 msgstr ""
 
-#: src/fensterdesign.rs:137
+#: src/fensterdesign.rs:151
+msgid ""
+"Dark appearance is on: the Querencia window frame follows the color scheme (Querencia-Klassisch-Dunkel when dark, Querencia-Klassisch when light); other frames stay as chosen."
+msgstr ""
+
+#: src/fensterdesign.rs:204
 msgid "Window Frame Theme"
 msgstr ""
 
-#: src/fensterdesign.rs:142
+#: src/fensterdesign.rs:209
 msgid "Shape"
 msgstr ""
 
-#: src/fensterdesign.rs:145
+#: src/fensterdesign.rs:212
 msgid "Top corner radius (pixels):"
 msgstr ""
 
-#: src/fensterdesign.rs:148
+#: src/fensterdesign.rs:215
 msgid "Shadows behind windows"
 msgstr ""
 
-#: src/fensterdesign.rs:152
+#: src/fensterdesign.rs:219
 msgid "Title Bar Buttons"
 msgstr ""
 
-#: src/fensterdesign.rs:157 src/fensterdesign.rs:160
+#: src/fensterdesign.rs:224 src/fensterdesign.rs:227
 msgid "Title Bar Font"
 msgstr ""
 
-#: src/fensterdesign.rs:166
+#: src/fensterdesign.rs:233
 msgid ""
 "For active and inactive windows. The other fonts are in the “Fonts” section."
 msgstr ""
 
-#: src/fensterdesign.rs:197
+#: src/fensterdesign.rs:264
 msgid "Built-in labwc theme"
 msgstr ""
 
-#: src/fensterdesign.rs:224
+#: src/fensterdesign.rs:291
 #, no-c-format
 msgid "Custom arrangement: {layout}"
 msgstr ""
@@ -1027,35 +1089,40 @@ msgstr ""
 msgid "Applied at {time}; the desktop shows the image immediately."
 msgstr ""
 
-#: src/labwc_konfig.rs:198
+#: src/labwc_konfig.rs:255
 #, no-c-format
 msgid "{file} not readable ({error})"
 msgstr ""
 
-#: src/labwc_konfig.rs:386
+#: src/labwc_konfig.rs:443
 msgid "an empty rc.xml is not written"
 msgstr ""
 
-#: src/labwc_konfig.rs:527
+#: src/labwc_konfig.rs:584
 msgid "labwc does not read the user copy"
 msgstr ""
 
-#: src/labwc_konfig.rs:537
+#: src/labwc_konfig.rs:594
 #, no-c-format
 msgid "{program} cannot be started: {error}"
 msgstr ""
 
-#: src/labwc_konfig.rs:577
+#: src/labwc_konfig.rs:634
 msgid ""
 "Changes take effect immediately after “Apply” (labwc reloads its configuration)."
 msgstr ""
 
-#: src/labwc_konfig.rs:580
+#: src/labwc_konfig.rs:637
 msgid ""
 "Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there."
 msgstr ""
 
-#: src/labwc_konfig.rs:583
+#: src/labwc_konfig.rs:640
+msgid ""
+"No Querencia default for labwc was found, labwc’s built-in values are shown. “Apply” creates ~/.config/querencia/labwc; labwc reads it from the next login."
+msgstr ""
+
+#: src/labwc_konfig.rs:643
 msgid ""
 "Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login."
 msgstr ""
@@ -1073,67 +1140,67 @@ msgstr ""
 msgid "Adopt New Default"
 msgstr ""
 
-#: src/labwc_seite.rs:366
+#: src/labwc_seite.rs:363
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
 msgstr ""
 
-#: src/labwc_seite.rs:374
+#: src/labwc_seite.rs:371
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
 msgstr ""
 
-#: src/labwc_seite.rs:413
+#: src/labwc_seite.rs:410
 msgid "Changed – “Apply” saves."
 msgstr ""
 
-#: src/labwc_seite.rs:415
+#: src/labwc_seite.rs:412
 msgid "No change."
 msgstr ""
 
-#: src/labwc_seite.rs:441
+#: src/labwc_seite.rs:438
 msgid ""
 "The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 
-#: src/labwc_seite.rs:457
+#: src/labwc_seite.rs:454
 #, no-c-format
 msgid "{error} (labwc configuration is already saved)"
 msgstr ""
 
-#: src/labwc_seite.rs:469
+#: src/labwc_seite.rs:466
 msgid "GTK programs, panel and desktop pick it up immediately."
 msgstr ""
 
-#: src/labwc_seite.rs:478
+#: src/labwc_seite.rs:475
 msgid "labwc has reloaded its configuration."
 msgstr ""
 
-#: src/labwc_seite.rs:481
+#: src/labwc_seite.rs:478
 #, no-c-format
 msgid "Reloading failed: {error}."
 msgstr ""
 
-#: src/labwc_seite.rs:483
+#: src/labwc_seite.rs:480
 msgid "Saved in ~/.config/querencia/labwc; effective from the next login."
 msgstr ""
 
-#: src/labwc_seite.rs:494 src/labwc_seite.rs:521
+#: src/labwc_seite.rs:491 src/labwc_seite.rs:518
 #, no-c-format
 msgid "Previously saved as {names}."
 msgstr ""
 
-#: src/labwc_seite.rs:514
+#: src/labwc_seite.rs:511
 msgid "New default adopted, your settings remain."
 msgstr ""
 
-#: src/labwc_seite.rs:517
+#: src/labwc_seite.rs:514
 msgid "labwc has reloaded."
 msgstr ""
 
-#: src/labwc_seite.rs:532
+#: src/labwc_seite.rs:529
 #, no-c-format
 msgid "New default not adopted: {error}"
 msgstr ""
@@ -1152,7 +1219,7 @@ msgstr ""
 msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr ""
 
-#: src/main.rs:152 src/main.rs:165
+#: src/main.rs:179 src/main.rs:192
 msgid "Querencia Settings"
 msgstr ""
 
@@ -1318,10 +1385,6 @@ msgstr ""
 msgid "Volume"
 msgstr ""
 
-#: src/panels.rs:27
-msgid "Network"
-msgstr ""
-
 #: src/panels.rs:31 src/xkb.rs:71
 msgid "left"
 msgstr ""
@@ -1419,6 +1482,11 @@ msgstr ""
 #: src/panels.rs:242
 #, no-c-format
 msgid "{file} (format version 1), written by the panel"
+msgstr ""
+
+#. TRANSLATORS: address of the online help in your language; only change “/en/” if querencialinux.org has docs in your language
+#: src/produkt.rs:27
+msgid "https://querencialinux.org/en/docs/"
 msgstr ""
 
 #: src/schriften.rs:91
@@ -1578,7 +1646,7 @@ msgstr ""
 #: src/standardanwendungen.rs:289
 #, no-c-format
 msgid ""
-"GIO: {file} (user file; if it is missing, the system default applies). Only this file is written."
+"{file} (user file; if it is missing, the system default applies). Only this file is written."
 msgstr ""
 
 #: src/standardanwendungen.rs:295

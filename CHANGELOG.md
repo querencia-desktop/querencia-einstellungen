@@ -12,6 +12,82 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.6] – 2026-10-22
+
+### Hinzugefügt
+- Bildschirm: Die Einstellungen werden in `~/.config/querencia/bildschirm.toml`
+  gespeichert, je Monitor mit Name, Hersteller, Modell und Seriennummer.
+  Eine `bildschirm.ini` älterer Fassungen wird weiter gelesen, bis das erste
+  „Beibehalten“ die neue Datei anlegt; sie bleibt unverändert liegen.
+- Bildschirm: Meldet ein Monitor keine Daten (EDID), erklärt ein Hinweis,
+  warum nur Grundauflösungen wie 1024 × 768 zur Wahl stehen und dass Kabel
+  ab- und wieder anstecken meist hilft.
+- Bildschirm: Fußzeile „Quelle“ wie auf den anderen Seiten (Compositor,
+  Datei, Befehl für die Anmeldung); der Knopf „Als Hauptmonitor verwenden“
+  erklärt im Tooltip, was das unter labwc bedeutet.
+- labwc-Seiten: Gibt es keine Querencia-Vorgabe für labwc, sagen die Seiten
+  das und zeigen labwcs eingebaute Werte.
+- Erscheinungsbild: „Dunkle Darstellung bevorzugen“ stellt beim Übernehmen
+  auch den Fensterrahmen um (Querencia-Klassisch ↔ Querencia-Klassisch-Dunkel),
+  wenn gerade einer der beiden eingestellt ist; ein anderer Rahmen bleibt.
+  Fehlt der dunkle Rahmen, bleiben die Rahmen hell und die Seite sagt es.
+  Das Fensterdesign nennt bei dunkler Darstellung den Zusammenhang.
+
+### Geändert
+- Die Rückfrage nach „Anwenden“ heißt „Einstellungen beibehalten?“, der Knopf
+  „Beibehalten“.
+- Die Vorgabe der labwc-Konfiguration wird jetzt auch neben dem Programm
+  (`share/querencia/labwc` der Ablage bzw. unter dem Installationspräfix),
+  unter `/etc/querencia/labwc` und unter `/usr/share/querencia/labwc`
+  gesucht (vorher nur Checkout, Starter-Stand und `/etc`).
+- Bildschirm: Statuszeile und Skalierungshinweis ohne Fachbegriffe der
+  Entwicklung.
+- Die Seiten mit labwc-Einstellungen lesen ihren Stand neu, wenn man sie
+  öffnet und sich inzwischen etwas geändert hat (z. B. der Fensterrahmen nach
+  dem Umschalten im Erscheinungsbild).
+
+### Behoben
+- Ändern und Zurückstellen der Namen der Arbeitsflächen ließ `rc.xml` nicht
+  byte-gleich zurück, wenn die Datei an anderer Stelle eigene Werte hatte
+  (`<desktops … />` blieb aufgeklappt). Jetzt bekommt jeder veränderte
+  Behälter, der danach der Vorgabe gleicht, deren Form zurück.
+- Bildschirm: Wurde ein Monitor verschoben, legte labwc einen nie
+  verschobenen Monitor manchmal an eine andere Stelle als gewählt (z. B.
+  beim Untereinanderlegen). Die Einstellungen setzen die Anordnung dann ein
+  zweites Mal; danach liegt jeder Monitor wie gewählt.
+
+### Bekannte Einschränkungen
+- Gespeicherte Bildschirmeinstellungen gelten nach der Anmeldung erst, wenn
+  der Autostart der Sitzung `querencia-einstellungen --bildschirm-anwenden`
+  aufruft (folgt in einer eigenen Änderung der Sitzung).
+
+## [0.1.5] – 2026-10-22
+
+### Hinzugefügt
+- „Informationen über Querencia“ zeigt die Ausgabe von Querencia Desktop
+  (z. B. „Querencia Desktop Alpha 2.1“) aus `/usr/share/querencia/release`,
+  sonst aus `/usr/share/querencia/version`; ohne beide Dateien steht nur
+  „Querencia Desktop“ da. Dazu die Website, die Lizenz (GPL-3.0-or-later)
+  und die Knöpfe „Online-Hilfe“ und „Fehler melden“, die den Browser öffnen.
+  Die Adressen kommen aus derselben Datei, sonst gelten
+  querencialinux.org, die Hilfe in der Sprache der Oberfläche und die
+  Fehlerseite des Projekts auf GitHub.
+- Neue Seite „Netzwerk“: erklärt, dass Verbindungen über das Netzwerksymbol
+  im Panel eingerichtet werden. `querencia-einstellungen --netzwerk` und die
+  Aktion „Netzwerkeinstellungen“ der Desktop-Datei öffnen das
+  Kontrollzentrum auf dieser Seite; damit hat der Eintrag
+  „Netzwerkeinstellungen …“ im Panel ein Ziel.
+- `querencia-einstellungen --seite <name>` öffnet das Kontrollzentrum auf
+  einer beliebigen Seite (z. B. `sprache`, `maus`).
+
+### Geändert
+- Die Zeile „Quelle: …“ am Ende der Seiten (wo die Werte gespeichert sind)
+  ist auf allen Seiten gleich: klein, grau, letzte Zeile über den Knöpfen.
+- „Informationen über Querencia“ nennt keinen Pfad der Entwicklungsumgebung
+  mehr; die falsche Angabe zum Panel-Dialog ist entfernt.
+- Die Quellzeilen von „Arbeitsflächen“ und „Standardanwendungen“ kommen
+  ohne Fachbegriffe der Entwicklung aus.
+
 ## [0.1.4] – 2026-10-21
 
 ### Hinzugefügt

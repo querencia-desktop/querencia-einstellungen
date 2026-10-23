@@ -204,6 +204,25 @@ pub fn gtk_thema_mit_dunkel(name: &str) -> bool {
             .is_some_and(|d| d.join("gtk-dark.css").is_file())
 }
 
+/// Satz zum Fensterrahmen (0.1.6): Ist die dunkle Darstellung an, nennt
+/// rc.xml den hellen Querencia-Rahmen und ist der dunkle nicht installiert,
+/// bleiben die Rahmen hell – das sagt die Seite statt eines Fehlers.
+fn rahmen_hinweis(st: &Stand) -> String {
+    use crate::fensterdesign as fd;
+    let dunkel = st.gs.get(FARBSCHEMA).map(String::as_str) == Some("prefer-dark");
+    let name = crate::labwc_xml::wert(&st.rc, crate::labwc_xml::THEMA, "name");
+    if dunkel && name.as_deref() == Some(fd::RAHMEN_HELL) && !fd::dunkler_rahmen_vorhanden() {
+        format!(
+            " {}",
+            gettext(
+                "The dark window frame Querencia-Klassisch-Dunkel is not installed, so window frames stay light.",
+            )
+        )
+    } else {
+        String::new()
+    }
+}
+
 /// Hinweis unter „Dunkle Darstellung bevorzugen“ für das gewählte GTK-Thema.
 fn dunkel_hinweis(mit_dunkel: bool) -> String {
     if mit_dunkel {
@@ -253,7 +272,7 @@ impl Bereich for Erscheinungsbild {
     const NAME: &'static str = gettext_noop("Appearance");
     const PROTOKOLL: &'static str = "Erscheinungsbild";
     const QUELLE: &'static str = gettext_noop(
-        "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes.",
+        "gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) and rc.xml <theme><name> (the Querencia window frame follows the color scheme). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes.",
     );
     const GSETTINGS: &'static [&'static str] = &[
         SYMBOLTHEMA,
@@ -283,8 +302,17 @@ impl Bereich for Erscheinungsbild {
         }
     }
 
-    fn rc_aendern(_neu: &Werte, _alt: &Werte, rc: &str) -> Result<String, Fehler> {
-        Ok(rc.to_owned())
+    /// 0.1.6: Mit der dunklen Darstellung wechselt der Querencia-Rahmen
+    /// (`crate::fensterdesign::rahmen_umstellen`).
+    fn rc_aendern(neu: &Werte, alt: &Werte, rc: &str) -> Result<String, Fehler> {
+        if neu.dunkel == alt.dunkel {
+            return Ok(rc.to_owned());
+        }
+        crate::fensterdesign::rahmen_umstellen(
+            rc,
+            neu.dunkel,
+            crate::fensterdesign::dunkler_rahmen_vorhanden(),
+        )
     }
 
     fn env_aenderungen(
@@ -310,15 +338,18 @@ impl Bereich for Erscheinungsbild {
         gs::unterschiede(&neu.gs_liste(), &alt.gs_liste())
     }
 
-    fn hinweis(w: &Wirkung, _st: &Stand) -> Option<String> {
-        Some(match w {
-            Wirkung::Sofort { .. } => gettext(
-                "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login.",
-            ),
-            Wirkung::NaechsteAnmeldung { .. } => gettext(
-                "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login.",
-            ),
-        })
+    fn hinweis(w: &Wirkung, st: &Stand) -> Option<String> {
+        let rahmen = rahmen_hinweis(st);
+        Some(
+            match w {
+                Wirkung::Sofort { .. } => gettext(
+                    "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login.",
+                ),
+                Wirkung::NaechsteAnmeldung { .. } => gettext(
+                    "Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login.",
+                ),
+            } + &rahmen,
+        )
     }
 
     fn bauen(geaendert: Rc<dyn Fn()>) -> (Self, gtk4::Box) {

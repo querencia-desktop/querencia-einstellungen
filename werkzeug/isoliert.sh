@@ -74,6 +74,8 @@ sed "s#@WURZEL@#$P#g" "$SZENARIO_QUELLE" > "$SZENARIO"
 if [ -n "$INI" ]; then sed "s#@WURZEL@#$P#g" "$INI" > "$PROFIL/config/querencia/desktop.ini"; fi
 # G2-G: gespeicherte Bildschirmkonfiguration ins Profil (für --bildschirm-anwenden)
 if [ -n "${QE_BILDSCHIRM_INI:-}" ]; then cp "$QE_BILDSCHIRM_INI" "$PROFIL/config/querencia/bildschirm.ini"; fi
+# 0.1.6: dasselbe für die neue Datei bildschirm.toml
+if [ -n "${QE_BILDSCHIRM_TOML:-}" ]; then cp "$QE_BILDSCHIRM_TOML" "$PROFIL/config/querencia/bildschirm.toml"; fi
 # G2-Z: mimeapps.list ins Profil (GIO liest und schreibt $XDG_CONFIG_HOME/mimeapps.list);
 # ohne Variable gibt es dort keine Datei. Die Starter liest GIO weiter (nur lesend)
 # aus ~/.local/share/applications, weil XDG_DATA_HOME ungesetzt bleibt.
@@ -177,6 +179,7 @@ if [ "\$("$APP" --version 2>/dev/null)" != "querencia-einstellungen 0.0.1" ]; th
     timeout 10 "$APP" --bildschirm-zeigen > logs/ausgaben-ende.txt 2>>logs/ausgaben.log || true
 fi
 cp "\$XDG_CONFIG_HOME/querencia/bildschirm.ini" bildschirm.ini.nachher 2>/dev/null || true
+cp "\$XDG_CONFIG_HOME/querencia/bildschirm.toml" bildschirm.toml.nachher 2>/dev/null || true
 gsettings list-recursively org.gnome.desktop.interface > gsettings-ende.txt 2>&1
 kill -TERM \$PPID_ \$DPID \$PORTAL 2>/dev/null || true
 sleep 1
@@ -212,6 +215,16 @@ if [ -n "${QE_THEMA_ORDNER:-}" ]; then
     rm -rf "${HEIM:?}/.local/share/themes/Querencia-Klassisch"
     mkdir -p "$HEIM/.local/share/themes"
     ln -s "$(readlink -f "$QE_THEMA_ORDNER")" "$HEIM/.local/share/themes/Querencia-Klassisch"
+fi
+# 0.1.5: QE_HEIM_DATEIEN=<ordner> – dessen Inhalt zusätzlich ins Profil-HOME
+# (z. B. ein Starter unter .local/share/applications, der Adressen nur
+# protokolliert, statt einen Browser zu öffnen).
+if [ -n "${QE_HEIM_DATEIEN:-}" ]; then cp -a "$QE_HEIM_DATEIEN/." "$HEIM/"; fi
+# 0.1.6: QE_THEMEN_WEG=<name>[:<name>…] – diese Themen fehlen im Profil-HOME
+# (z. B. der dunkle Fensterrahmen, um „nicht installiert“ zu prüfen).
+if [ -n "${QE_THEMEN_WEG:-}" ]; then
+    IFS=: read -ra weg_themen <<<"$QE_THEMEN_WEG"
+    for t in "${weg_themen[@]}"; do rm -rf "${HEIM:?}/.local/share/themes/${t:?}"; done
 fi
 echo "HOME=$HEIM Thema=$(readlink -f "$HEIM/.local/share/themes/Querencia-Klassisch")" > "$N/heim.txt"
 # 0.1.2: QE_PROFIL_STABIL=<verweis> – die Sitzung sieht das Profil unter einem

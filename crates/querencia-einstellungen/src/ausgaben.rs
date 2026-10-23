@@ -138,6 +138,30 @@ impl Verbindung {
         self.sammler.manager_version
     }
 
+    /// Setzt die Wahl und prüft danach die Lage. labwc 0.9.8 verschiebt eine
+    /// Ausgabe nur, wenn die verlangte Position von der jetzigen abweicht
+    /// (`output_config_apply`). Eine Ausgabe, die nie verschoben wurde,
+    /// bleibt in wlroots „automatisch platziert“ und wird neu angelegt,
+    /// sobald eine andere verschoben wird (rechts neben die äußerste). Weicht
+    /// die Lage danach ab, wird dieselbe Wahl ein zweites Mal gesetzt; dann
+    /// liegt jede Ausgabe fest. Liefert die Namen, die danach noch abweichen.
+    pub fn setzen(&mut self, wahlen: &[Wahl]) -> Result<Vec<String>, String> {
+        self.anwenden(wahlen, false)?;
+        let abweichend = crate::bildschirm_modell::abweichende_lage(wahlen, &self.lesen()?);
+        if abweichend.is_empty() {
+            return Ok(abweichend);
+        }
+        eprintln!(
+            "querencia-einstellungen: Bildschirm: Lage von {} weicht ab, setze ein zweites Mal",
+            abweichend.join(", ")
+        );
+        self.anwenden(wahlen, false)?;
+        Ok(crate::bildschirm_modell::abweichende_lage(
+            wahlen,
+            &self.lesen()?,
+        ))
+    }
+
     /// Prüft (`nur_test`) oder setzt die Wahl. Jede Ausgabe wird genannt;
     /// Ausgaben, für die keine Wahl vorliegt, bleiben wie sie sind.
     pub fn anwenden(&mut self, wahlen: &[Wahl], nur_test: bool) -> Result<(), String> {

@@ -285,10 +285,7 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     });
     let (bereich, inhalt) = B::bauen(geaendert);
     aussen.append(&inhalt);
-    aussen.append(&grau(&gettext_f(
-        "Source: {source}",
-        &[("source", &gettext(B::QUELLE))],
-    )));
+    aussen.append(&crate::bereiche::quelle(&gettext(B::QUELLE)));
 
     let fuss = gtk4::Box::new(gtk4::Orientation::Vertical, 8);
     fuss.set_margin_start(14);
@@ -341,10 +338,39 @@ pub fn seite<B: Bereich>() -> gtk4::Widget {
     ganz.append(&gtk4::Separator::new(gtk4::Orientation::Horizontal));
     fuss.set_margin_top(8);
     ganz.append(&fuss);
+    // 0.1.6: Eine andere Seite kann denselben Stand ändern (Erscheinungsbild
+    // stellt den Fensterrahmen um). Wird die Seite sichtbar, liest sie neu,
+    // falls sich etwas geändert hat und hier nichts Ungespeichertes offen ist.
+    let schwach = Rc::downgrade(&s);
+    ganz.connect_map(move |_| {
+        if let Some(s) = schwach.upgrade() {
+            s.auffrischen();
+        }
+    });
     ganz.upcast()
 }
 
 impl<B: Bereich> Seite<B> {
+    /// Neu lesen, wenn sich rc.xml, Umgebung oder gsettings seit dem letzten
+    /// Laden geändert haben und keine Änderung auf „Übernehmen“ wartet.
+    fn auffrischen(&self) {
+        if self.uebernehmen.is_sensitive() {
+            return;
+        }
+        let neu = self.stand_lesen();
+        let anders = self.stand.borrow().as_ref().is_none_or(|alt| {
+            alt.rc != neu.rc
+                || alt.env != neu.env
+                || alt.gs != neu.gs
+                || alt.rc_vorgabe != neu.rc_vorgabe
+                || alt.vorgabe_neu != neu.vorgabe_neu
+                || alt.fehler != neu.fehler
+        });
+        if anders {
+            self.laden();
+        }
+    }
+
     fn stand_lesen(&self) -> Stand {
         let mut st = lk::lesen(&self.orte);
         st.gs = gsettings::lesen(B::GSETTINGS);
@@ -787,6 +813,354 @@ mod tests {
         assert!(rc <= lk::SICHERUNGEN && env <= lk::SICHERUNGEN, "{s:?}");
         assert!(rc > 0 && env > 0, "{s:?}");
         std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    /// Ändern, übernehmen, zurückstellen, übernehmen in einem Bereich; danach
+    /// muss rc.xml byte-gleich `start` sein (0.1.6). Abweichungen landen als
+    /// Zeilenvergleich in `fehler`.
+    fn rund<B: Bereich>(
+        name: &str,
+        basis: &str,
+        start: &str,
+        aendern: &dyn Fn(&mut B::Werte),
+        fehler: &mut Vec<String>,
+    ) {
+        let w = ordner(&format!("rund-{}", fehler.len()));
+        let o = orte(&w, basis, true);
+        std::fs::write(o.rc(), start).unwrap();
+        let st = lk::lesen(&o);
+        let alt = B::lesen(&st);
+        let mut neu = alt.clone();
+        aendern(&mut neu);
+        if neu == alt {
+            fehler.push(format!("{name}: keine Änderung"));
+            std::fs::remove_dir_all(&w).unwrap();
+            return;
+        }
+        dateien_schreiben::<B>(&o, &st, &neu, &alt, "1").unwrap();
+        let st2 = lk::lesen(&o);
+        let ist = B::lesen(&st2);
+        dateien_schreiben::<B>(&o, &st2, &alt, &ist, "2").unwrap();
+        let ende = std::fs::read_to_string(o.rc()).unwrap();
+        if ende != start {
+            let d: Vec<String> = diff_zeilen(start, &ende);
+            fehler.push(format!("{name}:\n{}", d.join("\n")));
+        }
+        std::fs::remove_dir_all(&w).unwrap();
+    }
+
+    fn diff_zeilen(a: &str, b: &str) -> Vec<String> {
+        let az: Vec<&str> = a.lines().collect();
+        let bz: Vec<&str> = b.lines().collect();
+        let mut v = Vec::new();
+        let anfang = az.iter().zip(&bz).take_while(|(x, y)| x == y).count();
+        let ende = az[anfang..]
+            .iter()
+            .rev()
+            .zip(bz[anfang..].iter().rev())
+            .take_while(|(x, y)| x == y)
+            .count();
+        for z in &az[anfang..az.len() - ende] {
+            v.push(format!("  - {z:?}"));
+        }
+        for z in &bz[anfang..bz.len() - ende] {
+            v.push(format!("  + {z:?}"));
+        }
+        if v.is_empty() {
+            v.push(format!(
+                "  (nur Zeilenende/Leerraum, {} ↔ {} Bytes)",
+                a.len(),
+                b.len()
+            ));
+        }
+        v
+    }
+
+    /// Runtime `main` 2e134c6, `session/querencia/labwc/rc.xml` (live seit 21.10.)
+    const VORGABE_2E134C6: &str = include_str!("../testdaten/rc-vorgabe-2e134c6.xml");
+
+    /// Ändern und Zurückstellen in allen fünf Bereichen mit rc.xml, je Wert,
+    /// gegen zehn Ausgangslagen: Vorgabe = Benutzerkopie, ältere Vorgaben,
+    /// eigene Werte an anderer Stelle, Namen der Arbeitsflächen in der
+    /// Vorgabe (mehrzeilig, einzeilig) und als eigener Wert. Bis 0.1.5 blieb
+    /// nach dem Zurückstellen der Namen `<desktops …>`/`</desktops>` statt
+    /// `<desktops … />` stehen, sobald die Datei sonst von der Vorgabe abwich.
+    #[test]
+    fn aendern_und_zurueckstellen_byte_gleich_alle_bereiche() {
+        use crate::arbeitsflaechen::Werte as AW;
+        use crate::schriften::Schriften;
+        let eigen = {
+            let t = lx::setzen(VORGABE_2E134C6, lx::TASTATUR, "repeatRate", "40").unwrap();
+            lx::setzen(&t, lx::THEMA, "dropShadows", "yes").unwrap()
+        };
+        let mit_namen = VORGABE_2E134C6.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\">\n    <names>\n      <name>Büro</name>\n      <name>Netz</name>\n    </names>\n  </desktops>",
+        );
+        let einzeilig = VORGABE_2E134C6.replace(
+            "prefix=\"Arbeitsfläche\" />",
+            "prefix=\"Arbeitsfläche\"><names><name>Büro</name></names></desktops>",
+        );
+        let eigene_namen = lx::namen_setzen(VORGABE_2E134C6, &["A".into(), "B".into()]).unwrap();
+        let v = VORGABE_2E134C6.to_owned();
+        let starts: Vec<(&str, String, String)> = vec![
+            ("2e134c6", v.clone(), v.clone()),
+            ("548483c", v.clone(), VORGABE.to_owned()),
+            ("bb90803", v.clone(), VORGABE_BB90803.to_owned()),
+            ("eigen", v.clone(), eigen),
+            ("mit_namen", mit_namen.clone(), mit_namen.clone()),
+            ("einzeilig", einzeilig.clone(), einzeilig.clone()),
+            ("eigene_namen", v.clone(), eigene_namen.clone()),
+            (
+                "eigene_anzahl",
+                v.clone(),
+                lx::setzen(&v, lx::ARBEITSFLAECHEN, "number", "5").unwrap(),
+            ),
+            (
+                "einzeilig_eigen",
+                einzeilig.clone(),
+                lx::setzen(&einzeilig, lx::TASTATUR, "repeatRate", "40").unwrap(),
+            ),
+            (
+                "namen_eigen",
+                mit_namen.clone(),
+                lx::setzen(&mit_namen, lx::TASTATUR, "repeatRate", "40").unwrap(),
+            ),
+        ];
+        let mut fehler = Vec::new();
+        let mut faelle = 0;
+        for (sn, b, s) in &starts {
+            faelle += 22;
+            let f = &mut fehler;
+            rund::<Tastatur>(&format!("{sn} tastatur rate"), b, s, &|v| v.rate = 31, f);
+            rund::<Tastatur>(
+                &format!("{sn} tastatur verz"),
+                b,
+                s,
+                &|v| v.verzoegerung = 610,
+                f,
+            );
+            rund::<Tastatur>(
+                &format!("{sn} tastatur num"),
+                b,
+                s,
+                &|v| v.numlock = !v.numlock,
+                f,
+            );
+            rund::<Maus>(&format!("{sn} maus dk"), b, s, &|v| v.doppelklick = 410, f);
+            rund::<Maus>(
+                &format!("{sn} maus gesch"),
+                b,
+                s,
+                &|v| v.geschwindigkeit = 50,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus beschl"),
+                b,
+                s,
+                &|v| v.beschleunigung = !v.beschleunigung,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus links"),
+                b,
+                s,
+                &|v| v.linkshaendig = !v.linkshaendig,
+                f,
+            );
+            rund::<Maus>(
+                &format!("{sn} maus nat"),
+                b,
+                s,
+                &|v| v.natuerlich = !v.natuerlich,
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd thema"),
+                b,
+                s,
+                &|v| v.thema = "Anders".into(),
+                f,
+            );
+            rund::<Fensterdesign>(&format!("{sn} fd ecken"), b, s, &|v| v.eckenradius = 3, f);
+            rund::<Fensterdesign>(
+                &format!("{sn} fd schatten"),
+                b,
+                s,
+                &|v| v.schatten = !v.schatten,
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd knoepfe"),
+                b,
+                s,
+                &|v| v.knoepfe = "icon:close".into(),
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd schrift"),
+                b,
+                s,
+                &|v| v.schrift = "Sans".into(),
+                f,
+            );
+            rund::<Fensterdesign>(
+                &format!("{sn} fd groesse"),
+                b,
+                s,
+                &|v| v.schriftgroesse = 13,
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch name"),
+                b,
+                s,
+                &|v| v.titel_schrift = "Sans".into(),
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch groesse"),
+                b,
+                s,
+                &|v| v.titel_groesse = 13,
+                f,
+            );
+            rund::<Schriften>(
+                &format!("{sn} sch fett"),
+                b,
+                s,
+                &|v| v.titel_fett = !v.titel_fett,
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af anzahl"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzahl += 1;
+                    v.namen.push(String::new());
+                },
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af weniger"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzahl -= 1;
+                    v.namen.pop();
+                },
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af name"),
+                b,
+                s,
+                &|v: &mut AW| v.namen[0] = "Eins".into(),
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af anzeige"),
+                b,
+                s,
+                &|v: &mut AW| v.anzeige = !v.anzeige,
+                f,
+            );
+            rund::<Arbeitsflaechen>(
+                &format!("{sn} af dauer"),
+                b,
+                s,
+                &|v: &mut AW| {
+                    v.anzeige = true;
+                    v.dauer = 1234;
+                },
+                f,
+            );
+        }
+        assert!(
+            fehler.is_empty(),
+            "{} von {faelle} Fällen:\n{}",
+            fehler.len(),
+            fehler.join("\n")
+        );
+    }
+
+    /// 0.1.6 (Startsession, Status-Session (1), (2), (6)): „Dunkle Darstellung
+    /// bevorzugen“ umschalten und zurückstellen über denselben Schreibweg wie
+    /// „Übernehmen“. Ausgangslagen: heller Querencia-Rahmen, dunkler,
+    /// fremder Rahmen (hell und dunkel), ohne installiertes dunkles Thema.
+    /// rc.xml ist danach byte-gleich (Summe vorher = nachher), keine eigene
+    /// Sicherung bleibt, die fremde des Starters bleibt.
+    #[test]
+    fn dunkelrahmen_umschalten_und_zurueck_byte_gleich() {
+        use crate::erscheinungsbild::Erscheinungsbild;
+        use crate::fensterdesign::{DUNKEL_VORHANDEN, RAHMEN_DUNKEL, RAHMEN_HELL};
+        let hell = VORGABE_2E134C6.to_owned();
+        assert_eq!(
+            lx::wert(&hell, lx::THEMA, "name").as_deref(),
+            Some(RAHMEN_HELL)
+        );
+        let dunkel = lx::setzen(&hell, lx::THEMA, "name", RAHMEN_DUNKEL).unwrap();
+        let fremd = lx::setzen(&hell, lx::THEMA, "name", "Anders").unwrap();
+        // (Fall, rc.xml am Anfang, dunkel am Anfang, dunkles Thema da, Name dazwischen)
+        let faelle: [(&str, &str, bool, bool, &str); 6] = [
+            ("hell", &hell, false, true, RAHMEN_DUNKEL),
+            ("dunkel", &dunkel, true, true, RAHMEN_HELL),
+            ("fremd hell", &fremd, false, true, "Anders"),
+            ("fremd dunkel", &fremd, true, true, "Anders"),
+            ("ohne Thema", &hell, false, false, RAHMEN_HELL),
+            ("dunkel ohne Thema", &dunkel, true, false, RAHMEN_HELL),
+        ];
+        for (i, (fall, start, start_dunkel, vorhanden, mitte)) in faelle.into_iter().enumerate() {
+            DUNKEL_VORHANDEN.with(|c| c.set(Some(vorhanden)));
+            let w = ordner(&format!("dunkelrahmen-{i}"));
+            let o = orte(&w, VORGABE_2E134C6, true);
+            std::fs::write(o.rc(), start).unwrap();
+            let vorher = dateien(&o);
+            let st = lk::lesen(&o);
+            let mut alt = Erscheinungsbild::lesen(&st);
+            alt.dunkel = start_dunkel;
+            let mut neu = alt.clone();
+            neu.dunkel = !start_dunkel;
+            dateien_schreiben::<Erscheinungsbild>(&o, &st, &neu, &alt, "1").unwrap();
+            let zwischen = std::fs::read_to_string(o.rc()).unwrap();
+            assert_eq!(
+                lx::wert(&zwischen, lx::THEMA, "name").as_deref(),
+                Some(mitte),
+                "{fall}: Name nach dem Umschalten"
+            );
+            if mitte == lx::wert(start, lx::THEMA, "name").as_deref().unwrap() {
+                assert_eq!(zwischen, start, "{fall}: nichts geschrieben");
+            }
+            let st2 = lk::lesen(&o);
+            dateien_schreiben::<Erscheinungsbild>(&o, &st2, &alt, &neu, "2").unwrap();
+            // der Rückweg nach „dunkel“ braucht das Thema; ohne es bleibt hell
+            if vorhanden || !start_dunkel {
+                assert_eq!(
+                    std::fs::read_to_string(o.rc()).unwrap(),
+                    start,
+                    "{fall}: rc.xml byte-gleich"
+                );
+                assert_eq!(
+                    dateien(&o),
+                    vorher,
+                    "{fall}: keine Sicherung, keine Datei mehr"
+                );
+            } else {
+                assert_eq!(
+                    std::fs::read_to_string(o.rc()).unwrap(),
+                    hell,
+                    "{fall}: hell geblieben"
+                );
+            }
+            assert_eq!(
+                std::fs::read_to_string(o.benutzer.join("rc.xml.vorher-20261020-112812")).unwrap(),
+                "Starter"
+            );
+            std::fs::remove_dir_all(&w).unwrap();
+        }
+        DUNKEL_VORHANDEN.with(|c| c.set(None));
     }
 
     #[test]

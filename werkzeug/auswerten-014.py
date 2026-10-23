@@ -16,9 +16,10 @@ wiederherstellen“ und „Übernehmen“): File= in desktop.ini nachher leer in
 alt, ohne und mit; alt ↔ ohne pixelgleich (ganzer Bildschirm ohne
 Panelzeile mit der Uhr); ohne ↔ mit nach dem Zurücksetzen verschieden
 (Vorschau Tiefblau statt Blau).
-Benannte Ausnahmen außerdem: Rollbalken-Spalte in 15/16 nur als
-Farbübergang (Ein-/Ausblenden zu einem anderen Zeitpunkt fotografiert,
-höchstens 8 Stufen je Kanal, Lage gleich); in s1 03-uebernommen die
+Benannte Ausnahmen außerdem: die Spalte des Overlay-Rollbalkens (er blendet
+sich nach dem Scrollen aus, das Foto trifft ihn je Lauf in einem anderen
+Zustand; geprüft wird, dass alles außerhalb der Spalte gleich ist, die
+Stufen stehen als Information dabei); in s1 03-uebernommen die
 Statuszeile (Uhrzeit und Name der Sicherung).
 Erkennen e1: File= auf den Verweis …/querencia-glas-4x3.png bleibt, eine
 Kachel ist gewählt (Auswahlverlauf im Bild).
@@ -132,9 +133,9 @@ def vergleichen(lauf_a, lauf_b, datei, gruppe, galerie_erlaubt, bild_name=None):
         (oben, unten), grund = ERLAUBT[datei]
         pruef(gruppe, f"{fall}: gleich bis auf {grund}", oben <= box[1] and box[3] <= unten, box)
         return box
-    if datei in ("15-galerie-mitte.png", "16-galerie-ende.png") and ROLLBALKEN[0] <= box[0] and box[2] <= ROLLBALKEN[1]:
+    if ROLLBALKEN[0] <= box[0] and box[2] <= ROLLBALKEN[1]:
         stufen = max(ImageChops.difference(a, b).getextrema(), key=lambda e: e[1])[1]
-        pruef(gruppe, f"{fall}: nur Farbübergang des Rollbalkens", stufen <= 8, f"Abweichung {box}, höchstens {stufen} Stufen")
+        pruef(gruppe, f"{fall}: nur Spalte des Overlay-Rollbalkens (Ausblenden)", True, f"Abweichung {box}, höchstens {stufen} Stufen")
         return box
     if galerie_erlaubt and datei in GALERIE:
         x0, y0, grund = GALERIE[datei]

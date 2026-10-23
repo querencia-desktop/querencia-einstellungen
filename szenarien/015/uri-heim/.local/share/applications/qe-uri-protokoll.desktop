@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Adressen protokollieren (Prüfung)
+Exec=sh -c "echo \\$1 >> \\$XDG_STATE_HOME/uri-protokoll.txt" qe %u
+MimeType=x-scheme-handler/http;x-scheme-handler/https;
+NoDisplay=true

@@ -1,0 +1,27 @@
+extent 1920 1080
+wait 4000
+run sh -c 'echo LABWC_PID=$LABWC_PID XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR; echo exe=$(readlink /proc/$LABWC_PID/exe); echo cmdline=$(tr "\\000" " " </proc/$LABWC_PID/cmdline)' > umgebung.txt
+shot 01-start.png
+move 798 688
+click
+wait 500
+move 1318 824
+click
+wait 3000
+run cp "$XDG_CONFIG_HOME/querencia/labwc/rc.xml" rc-zwischen.xml
+shot 02-umgeschaltet.png
+move 590 400
+click
+wait 1500
+shot 03-fensterdesign.png
+move 602 316
+click
+wait 1500
+move 798 703
+click
+wait 500
+move 1318 824
+click
+wait 3000
+shot 04-zurueck.png
+wait 500

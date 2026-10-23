@@ -1,0 +1,6 @@
+NAME="Querencia Desktop"
+VERSION="Alpha 2.1"
+VERSION_ID="0.1.0~alpha2.1"
+HOME_URL="https://querencialinux.org"
+BUG_REPORT_URL="https://github.com/querencia-desktop/querencia/issues"
+DOCUMENTATION_URL="https://querencialinux.org/de/docs/"

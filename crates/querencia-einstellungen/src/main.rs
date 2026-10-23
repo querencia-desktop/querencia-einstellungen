@@ -1,12 +1,19 @@
 //! Querencia Einstellungen – Kontrollzentrum im Stil von GNOME 2.
 //!
 //!   querencia-einstellungen                 Kontrollzentrum
+//!   querencia-einstellungen --seite <name>  Kontrollzentrum auf dieser Seite
+//!                                           (Name der Stapelseite, z. B. sprache)
+//!   querencia-einstellungen --netzwerk      dasselbe mit der Seite „Netzwerk“
+//!                                           (Aktion netzwerk der Desktop-Datei,
+//!                                           Ziel des Netzwerksymbols im Panel)
 //!   querencia-einstellungen --hintergrund   nur der Dialog „Querencia – Hintergrund“
 //!                                           (für den Desktop-Menüpunkt)
 //!   querencia-einstellungen --bildschirm    nur „Querencia – Bildschirm“ (G2-G)
 //!   querencia-einstellungen --bildschirm-anwenden   gespeicherte Bildschirm-
 //!                                           einstellungen setzen (Sitzungsstart,
-//!                                           ohne Fenster)
+//!                                           ohne Fenster; ~/.config/querencia/
+//!                                           bildschirm.toml, sonst die alte
+//!                                           bildschirm.ini)
 //!   querencia-einstellungen --bildschirm-zeigen     Ausgaben als Text (Prüfung)
 //!   querencia-einstellungen --arbeitsflaeche   nur „Querencia – Symbole der Arbeitsfläche“
 //!                                           (G2-X: Symbole und Laufwerke)
@@ -43,6 +50,7 @@ mod logo;
 mod maus;
 mod modell;
 mod panels;
+mod produkt;
 mod schriften;
 mod sprache;
 mod standardanwendungen;
@@ -116,6 +124,7 @@ fn main() -> glib::ExitCode {
     let nur_bildschirm = args.iter().any(|a| a == "--bildschirm");
     let nur_arbeitsflaeche = args.iter().any(|a| a == "--arbeitsflaeche");
     let nur_standardanwendungen = args.iter().any(|a| a == "--standardanwendungen");
+    let startseite = startseite(&args);
     let app = gtk4::Application::builder()
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
@@ -139,14 +148,32 @@ fn main() -> glib::ExitCode {
         } else if nur_standardanwendungen {
             standardanwendungen::oeffnen(app).present();
         } else {
-            kontrollzentrum(app).present();
+            kontrollzentrum(app, startseite.as_deref()).present();
         }
     });
     app.run_with_args::<&str>(&[])
 }
 
+/// Seite, mit der das Kontrollzentrum öffnet: `--seite <name>`,
+/// `--seite=<name>` oder `--netzwerk`.
+fn startseite(args: &[String]) -> Option<String> {
+    let mut it = args.iter().skip(1);
+    while let Some(a) = it.next() {
+        if a == "--netzwerk" {
+            return Some("netzwerk".into());
+        }
+        if a == "--seite" {
+            return it.next().cloned();
+        }
+        if let Some(name) = a.strip_prefix("--seite=") {
+            return Some(name.into());
+        }
+    }
+    None
+}
+
 /// Links die Bereiche, rechts die Seite; oben Logo und Name.
-fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
+fn kontrollzentrum(app: &gtk4::Application, startseite: Option<&str>) -> gtk4::Window {
     let fenster = gtk4::Window::builder()
         .application(app)
         .title(gettext("Querencia Settings"))
@@ -174,6 +201,13 @@ fn kontrollzentrum(app: &gtk4::Application) -> gtk4::Window {
         rollbar.set_policy(gtk4::PolicyType::Never, gtk4::PolicyType::Automatic);
         rollbar.set_child(Some(&b.seite));
         stapel.add_titled(&rollbar, Some(b.id), &b.name);
+    }
+    if let Some(name) = startseite {
+        if stapel.child_by_name(name).is_some() {
+            stapel.set_visible_child_name(name);
+        } else {
+            eprintln!("querencia-einstellungen: unbekannte Seite „{name}“");
+        }
     }
     let liste = gtk4::StackSidebar::new();
     liste.set_stack(&stapel);
@@ -215,6 +249,25 @@ fn vollstaendig_zeichnen() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn startseite_aus_argumenten() {
+        let a = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        assert_eq!(startseite(&a(&["q"])), None);
+        assert_eq!(
+            startseite(&a(&["q", "--netzwerk"])).as_deref(),
+            Some("netzwerk")
+        );
+        assert_eq!(
+            startseite(&a(&["q", "--seite", "maus"])).as_deref(),
+            Some("maus")
+        );
+        assert_eq!(
+            startseite(&a(&["q", "--seite=sprache"])).as_deref(),
+            Some("sprache")
+        );
+        assert_eq!(startseite(&a(&["q", "--seite"])), None);
+    }
 
     /// Die eingecheckte GResource enthält das Zahnrad byte-gleich zum SVG im
     /// Repo (sonst `werkzeug/ressourcen.sh` vergessen).
