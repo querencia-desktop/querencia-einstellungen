@@ -58,7 +58,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 | | |
 |---|---|
 | Version | 0.1.6 (Tag `einstellungen/0.1.6`) |
-| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 (Zahlen im Bericht der Entwicklungs-VM) |
+| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; gespeicherte Bildschirmeinstellungen setzt die Sitzung erst, wenn ihr Autostart `--bildschirm-anwenden` aufruft |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
 | Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
