@@ -63,7 +63,8 @@ Quelltext `tastatur.rs`, Hilfen in `xkb.rs`.
 
 ## Übersetzung (gettext)
 
-- msgid englisch, Deutsch aus `po/de.po`; `po/en.po` ist der Katalog der
+- msgid englisch, Deutsch aus `po/de.po`, seit 0.1.7 Italienisch, Spanisch und
+  Französisch aus `po/it.po`, `po/es.po`, `po/fr.po`; `po/en.po` ist der Katalog der
   Quellsprache (msgstr = msgid). Er sorgt dafür, dass `LANGUAGE=en:de`
   englisch bleibt – ohne `en.mo` fiele gettext auf `de.mo` zurück.
 - Kataloge: `QUERENCIA_EINSTELLUNGEN_LOCALEDIR`, sonst neben der Binary

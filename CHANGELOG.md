@@ -12,6 +12,16 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.1.7] – 2026-10-26
+
+### Hinzugefügt
+- Oberfläche auf Italienisch, Spanisch und Französisch (`po/it.po`, `po/es.po`,
+  `po/fr.po`, je 448 Texte) samt Desktop-Datei. Wortwahl nach den
+  GNOME-Einstellungen der jeweiligen Sprache und der gemeinsamen
+  Querencia-Begriffstabelle; Texte so gewählt, dass das Fenster bei 1024 × 768
+  ganz auf den Bildschirm passt. Die Seite „Sprache und Region“ bietet die neuen
+  Sprachen an, sobald die passende Locale installiert ist.
+
 ## [0.1.6] – 2026-10-22
 
 ### Hinzugefügt
