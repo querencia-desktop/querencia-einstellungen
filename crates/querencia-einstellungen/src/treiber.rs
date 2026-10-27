@@ -319,8 +319,8 @@ impl Seite {
             gettext("OpenGL renderer:"),
             match &b.renderer {
                 Ok(r) => r.renderer.clone(),
-                Err(e) if e.is_empty() => gettext("not measured"),
-                Err(e) => gettext_f("not measured ({reason})", &[("reason", e)]),
+                // der Grund (Ausgabe von querencia-sitzung) steht im Protokoll
+                Err(_) => gettext("not measured"),
             },
         );
         setzen(
@@ -333,6 +333,8 @@ impl Seite {
                 .is_ok_and(|r| modell::ist_zink_auf_nvk(&r.renderer))
             {
                 gettext("OpenGL on the graphics card through zink on NVK")
+            } else if b.renderer.is_err() {
+                gettext("unknown")
             } else {
                 gettext("OpenGL on the graphics card")
             },

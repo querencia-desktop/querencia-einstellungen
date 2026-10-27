@@ -200,13 +200,13 @@ def funktion():
         pruef(g, f"{lauf}/{d}", os.path.exists(os.path.join(N, lauf, d)), "")
     a, z = (os.path.join(N, lauf, d) for d in ("00-start.png", "02-zurueck.png"))
     if os.path.exists(a) and os.path.exists(z):
-        d = ImageChops.difference(Image.open(a).convert("RGB"), Image.open(z).convert("RGB"))
-        d.paste((0, 0, 0), (0, 0, 1920, 32))  # Panel mit Uhr
-        d.paste((0, 0, 0), (0, 1040, 1920, 1080))  # Fensterliste
+        # Nur der Seiteninhalt rechts der Seitenleiste bis vor den
+        # Overlay-Rollbalken: Fokus (Seitenleiste, Fenstertitel) und der nach
+        # einem Klick eingeblendete Rollbalken gehören nicht zur Auswahl.
+        box = (764, 298, 1374, 853)
+        d = ImageChops.difference(Image.open(a).convert("RGB").crop(box), Image.open(z).convert("RGB").crop(box))
         bb = d.getbbox()
-        # Zeiger-Hover über „Zurücksetzen“ ausgenommen (Knopf hervorgehoben)
-        pruef(g, f"{lauf}: nach „Zurücksetzen“ wie am Anfang (bis auf den Knopf unter dem Zeiger)",
-              bb is None or (bb[2] - bb[0] <= 140 and bb[3] - bb[1] <= 40), bb)
+        pruef(g, f"{lauf}: nach „Zurücksetzen“ Seiteninhalt wie am Anfang (pixelgleich)", bb is None, bb)
 
 
 def fenster(lauf, datei):

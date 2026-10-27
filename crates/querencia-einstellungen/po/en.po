@@ -242,7 +242,7 @@ msgstr "Large (72 pixels)"
 msgid "Very large (96 pixels)"
 msgstr "Very large (96 pixels)"
 
-#: src/arbeitsflaechen.rs:70 src/bereiche.rs:73
+#: src/arbeitsflaechen.rs:70 src/bereiche.rs:74
 msgid "Workspaces"
 msgstr "Workspaces"
 
@@ -320,112 +320,112 @@ msgstr "the compositor could not apply the setting"
 msgid "the outputs have changed in the meantime; please try again"
 msgstr "the outputs have changed in the meantime; please try again"
 
-#: src/bereiche.rs:28 src/erscheinungsbild.rs:272
+#: src/bereiche.rs:29 src/erscheinungsbild.rs:272
 msgid "Appearance"
 msgstr "Appearance"
 
-#: src/bereiche.rs:33 src/hintergrund_seite.rs:61
+#: src/bereiche.rs:34 src/hintergrund_seite.rs:61
 msgid "Background Image"
 msgstr "Background Image"
 
-#: src/bereiche.rs:43 src/fensterdesign.rs:139
+#: src/bereiche.rs:44 src/fensterdesign.rs:139
 msgid "Window Design"
 msgstr "Window Design"
 
-#: src/bereiche.rs:48 src/schriften.rs:89
+#: src/bereiche.rs:49 src/schriften.rs:89
 msgid "Fonts"
 msgstr "Fonts"
 
-#: src/bereiche.rs:53 src/panels.rs:180
+#: src/bereiche.rs:54 src/panels.rs:180
 msgid "Panels"
 msgstr "Panels"
 
-#: src/bereiche.rs:58 src/tastatur.rs:233
+#: src/bereiche.rs:59 src/tastatur.rs:233
 msgid "Keyboard"
 msgstr "Keyboard"
 
-#: src/bereiche.rs:63 src/maus.rs:86
+#: src/bereiche.rs:64 src/maus.rs:86
 msgid "Mouse"
 msgstr "Mouse"
 
-#: src/bereiche.rs:68 src/bildschirm.rs:139
+#: src/bereiche.rs:69 src/bildschirm.rs:139
 msgid "Screen"
 msgstr "Screen"
 
-#: src/bereiche.rs:83 src/bereiche.rs:289 src/panels.rs:27
+#: src/bereiche.rs:84 src/bereiche.rs:290 src/panels.rs:27
 msgid "Network"
 msgstr "Network"
 
-#: src/bereiche.rs:98 src/bereiche.rs:183
+#: src/bereiche.rs:99 src/bereiche.rs:184
 msgid "About Querencia"
 msgstr "About Querencia"
 
-#: src/bereiche.rs:148
+#: src/bereiche.rs:149
 #, no-c-format
 msgid "Source: {source}"
 msgstr "Source: {source}"
 
-#: src/bereiche.rs:169
+#: src/bereiche.rs:170
 #, no-c-format
 msgid "Could not open {address}: {error}"
 msgstr "Could not open {address}: {error}"
 
-#: src/bereiche.rs:201
+#: src/bereiche.rs:202
 msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
 msgstr "A classic desktop in the style of GNOME 2 for Wayland and labwc"
 
-#: src/bereiche.rs:202
+#: src/bereiche.rs:203
 #, no-c-format
 msgid "Querencia Settings {version}"
 msgstr "Querencia Settings {version}"
 
-#: src/bereiche.rs:223
+#: src/bereiche.rs:224
 msgid "System:"
 msgstr "System:"
 
-#: src/bereiche.rs:224
+#: src/bereiche.rs:225
 msgid "Compositor:"
 msgstr "Compositor:"
 
-#: src/bereiche.rs:226
+#: src/bereiche.rs:227
 msgid "Desktop:"
 msgstr "Desktop:"
 
-#: src/bereiche.rs:238
+#: src/bereiche.rs:239
 msgid "License:"
 msgstr "License:"
 
-#: src/bereiche.rs:248
+#: src/bereiche.rs:249
 msgid "Website:"
 msgstr "Website:"
 
-#: src/bereiche.rs:268
+#: src/bereiche.rs:269
 msgid "Online Help"
 msgstr "Online Help"
 
-#: src/bereiche.rs:270
+#: src/bereiche.rs:271
 msgid "Report a Problem"
 msgstr "Report a Problem"
 
-#: src/bereiche.rs:292
+#: src/bereiche.rs:293
 msgid ""
 "Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
 msgstr ""
 "Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
 
-#: src/bereiche.rs:295
+#: src/bereiche.rs:296
 msgid ""
 "The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
 msgstr ""
 "The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
 
-#: src/bereiche.rs:298
+#: src/bereiche.rs:299
 msgid ""
 "If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
 msgstr ""
 "If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
 
-#: src/bereiche.rs:308
+#: src/bereiche.rs:309
 msgid ""
 "Without NetworkManager the panel only shows the state of the network. Settings for addresses, VPN and proxy are not part of Querencia yet."
 msgstr ""
@@ -904,7 +904,7 @@ msgstr "Color value:"
 msgid "Custom:"
 msgstr "Custom:"
 
-#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478 src/treiber.rs:60 src/treiber.rs:577
+#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478 src/treiber.rs:63 src/treiber.rs:595
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -1289,7 +1289,7 @@ msgstr "rc.xml: root is <{root}>, not <labwc_config>"
 msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr "rc.xml contains changes outside the settings – please merge by hand"
 
-#: src/main.rs:181 src/main.rs:194
+#: src/main.rs:182 src/main.rs:195
 msgid "Querencia Settings"
 msgstr "Querencia Settings"
 
@@ -1932,353 +1932,352 @@ msgstr "Search, e.g. German, Switzerland, Dvorak"
 msgid "Select"
 msgstr "Select"
 
-#: src/treiber.rs:66
+#: src/treiber.rs:69
 msgid "Restart the computer to load the new driver."
 msgstr "Restart the computer to load the new driver."
 
-#: src/treiber.rs:72
+#: src/treiber.rs:75
 msgid "Restart …"
 msgstr "Restart …"
 
-#: src/treiber.rs:73
+#: src/treiber.rs:76
 msgid ""
 "Opens the restart question of the session; nothing restarts without your confirmation."
 msgstr ""
 "Opens the restart question of the session; nothing restarts without your confirmation."
 
-#: src/treiber.rs:85
+#: src/treiber.rs:91
 msgid ""
 "ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; changes through PackageKit"
 msgstr ""
 "ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; changes through PackageKit"
 
-#: src/treiber.rs:148
+#: src/treiber.rs:156
 #, no-c-format
 msgid "NVIDIA driver {version} with open kernel modules"
 msgstr "NVIDIA driver {version} with open kernel modules"
 
-#: src/treiber.rs:149
+#: src/treiber.rs:157
 #, no-c-format
 msgid "NVIDIA driver {version}"
 msgstr "NVIDIA driver {version}"
 
-#: src/treiber.rs:150
+#: src/treiber.rs:158
 #, no-c-format
 msgid "NVIDIA server driver {version} with open kernel modules"
 msgstr "NVIDIA server driver {version} with open kernel modules"
 
-#: src/treiber.rs:154
+#: src/treiber.rs:162
 #, no-c-format
 msgid "NVIDIA server driver {version}"
 msgstr "NVIDIA server driver {version}"
 
-#: src/treiber.rs:158
+#: src/treiber.rs:166
 msgid "Free driver nouveau (Querencia default)"
 msgstr "Free driver nouveau (Querencia default)"
 
-#: src/treiber.rs:159
+#: src/treiber.rs:167
 #, no-c-format
 msgid "Free driver {module}"
 msgstr "Free driver {module}"
 
-#: src/treiber.rs:167
+#: src/treiber.rs:175
 #, no-c-format
 msgid "package {package}"
 msgstr "package {package}"
 
-#: src/treiber.rs:169
+#: src/treiber.rs:177
 msgid "free"
 msgstr "free"
 
-#: src/treiber.rs:171
+#: src/treiber.rs:179
 msgid "proprietary"
 msgstr "proprietary"
 
-#: src/treiber.rs:175
+#: src/treiber.rs:183
 msgid "recommended by Ubuntu"
 msgstr "recommended by Ubuntu"
 
-#: src/treiber.rs:178
+#: src/treiber.rs:186
 msgid "third-party source"
 msgstr "third-party source"
 
-#: src/treiber.rs:181
+#: src/treiber.rs:189
 msgid "in use"
 msgstr "in use"
 
-#: src/treiber.rs:182
+#: src/treiber.rs:190
 msgid "installed, in use after a restart"
 msgstr "installed, in use after a restart"
 
-#: src/treiber.rs:183
+#: src/treiber.rs:191
 msgid "available"
 msgstr "available"
 
-#: src/treiber.rs:184
+#: src/treiber.rs:192
 msgid "not installed"
 msgstr "not installed"
 
-#: src/treiber.rs:192
+#: src/treiber.rs:200
 msgid "Not authorized: the password was not accepted."
 msgstr "Not authorized: the password was not accepted."
 
-#: src/treiber.rs:193
+#: src/treiber.rs:201
 msgid ""
 "The password dialog of the session (polkit agent) is not running. Log out and in again."
 msgstr ""
 "The password dialog of the session (polkit agent) is not running. Log out and in again."
 
-#: src/treiber.rs:196
+#: src/treiber.rs:204
 msgid ""
 "Another program is installing software right now. Try again when it has finished."
 msgstr ""
 "Another program is installing software right now. Try again when it has finished."
 
-#: src/treiber.rs:199
+#: src/treiber.rs:207
 msgid "No network connection."
 msgstr "No network connection."
 
-#: src/treiber.rs:201
+#: src/treiber.rs:209
 #, no-c-format
 msgid "Package not found: {details}"
 msgstr "Package not found: {details}"
 
-#: src/treiber.rs:204
+#: src/treiber.rs:212
 #, no-c-format
 msgid "Packages conflict: {details}"
 msgstr "Packages conflict: {details}"
 
-#: src/treiber.rs:206
+#: src/treiber.rs:214
 msgid "The package management (PackageKit) stopped."
 msgstr "The package management (PackageKit) stopped."
 
-#: src/treiber.rs:207
+#: src/treiber.rs:215
 msgid "Cancelled."
 msgstr "Cancelled."
 
-#: src/treiber.rs:208
+#: src/treiber.rs:216
 #, no-c-format
 msgid "Package management error: {code} {details}"
 msgstr "Package management error: {code} {details}"
 
-#: src/treiber.rs:227
+#: src/treiber.rs:235
 msgid "Looking for graphics cards and drivers …"
 msgstr "Looking for graphics cards and drivers …"
 
-#: src/treiber.rs:244
+#: src/treiber.rs:259
 msgid "The search for drivers failed."
 msgstr "The search for drivers failed."
 
-#: src/treiber.rs:256
+#: src/treiber.rs:271
 msgid "Graphics"
 msgstr "Graphics"
 
-#: src/treiber.rs:274 src/treiber.rs:286
+#: src/treiber.rs:289 src/treiber.rs:301
 msgid "Graphics card:"
 msgstr "Graphics card:"
 
-#: src/treiber.rs:274
+#: src/treiber.rs:289
 msgid "none found"
 msgstr "none found"
 
-#: src/treiber.rs:293
+#: src/treiber.rs:308
 msgid "Kernel driver:"
 msgstr "Kernel driver:"
 
-#: src/treiber.rs:296
+#: src/treiber.rs:311
 #, no-c-format
 msgid "{module} (free)"
 msgstr "{module} (free)"
 
-#: src/treiber.rs:298
+#: src/treiber.rs:313
 #, no-c-format
 msgid "{module} (proprietary)"
 msgstr "{module} (proprietary)"
 
-#: src/treiber.rs:299
+#: src/treiber.rs:314
 msgid "none loaded"
 msgstr "none loaded"
 
-#: src/treiber.rs:304
+#: src/treiber.rs:319
 msgid "OpenGL renderer:"
 msgstr "OpenGL renderer:"
 
-#: src/treiber.rs:307
+#: src/treiber.rs:323
 msgid "not measured"
 msgstr "not measured"
 
-#: src/treiber.rs:308
-#, no-c-format
-msgid "not measured ({reason})"
-msgstr "not measured ({reason})"
-
-#: src/treiber.rs:312
+#: src/treiber.rs:327
 msgid "This session:"
 msgstr "This session:"
 
-#: src/treiber.rs:314
+#: src/treiber.rs:329
 msgid "software OpenGL (llvmpipe), set by the session at login"
 msgstr "software OpenGL (llvmpipe), set by the session at login"
 
-#: src/treiber.rs:320
+#: src/treiber.rs:335
 msgid "OpenGL on the graphics card through zink on NVK"
 msgstr "OpenGL on the graphics card through zink on NVK"
 
-#: src/treiber.rs:322
+#: src/treiber.rs:337
+msgid "unknown"
+msgstr "unknown"
+
+#: src/treiber.rs:339
 msgid "OpenGL on the graphics card"
 msgstr "OpenGL on the graphics card"
 
-#: src/treiber.rs:330
+#: src/treiber.rs:347
 msgid "Available Drivers"
 msgstr "Available Drivers"
 
-#: src/treiber.rs:331
+#: src/treiber.rs:348
 msgid ""
 "Querencia default: the free driver. Choose the NVIDIA driver only if you need it."
 msgstr ""
 "Querencia default: the free driver. Choose the NVIDIA driver only if you need it."
 
-#: src/treiber.rs:336
+#: src/treiber.rs:353
 msgid ""
 "The list of drivers comes from the program ubuntu-drivers (package ubuntu-drivers-common), which is not installed."
 msgstr ""
 "The list of drivers comes from the program ubuntu-drivers (package ubuntu-drivers-common), which is not installed."
 
-#: src/treiber.rs:339
+#: src/treiber.rs:356
 msgid "Install ubuntu-drivers-common …"
 msgstr "Install ubuntu-drivers-common …"
 
-#: src/treiber.rs:354
+#: src/treiber.rs:371
 #, no-c-format
 msgid "ubuntu-drivers did not answer: {error}"
 msgstr "ubuntu-drivers did not answer: {error}"
 
-#: src/treiber.rs:364
+#: src/treiber.rs:381
 msgid "This computer needs no additional drivers."
 msgstr "This computer needs no additional drivers."
 
-#: src/treiber.rs:424
+#: src/treiber.rs:442
 msgid "Search Again"
 msgstr "Search Again"
 
-#: src/treiber.rs:436
+#: src/treiber.rs:454
 msgid "Revert"
 msgstr "Revert"
 
-#: src/treiber.rs:437
+#: src/treiber.rs:455
 msgid "Apply Changes"
 msgstr "Apply Changes"
 
-#: src/treiber.rs:457
+#: src/treiber.rs:475
 msgid "Software OpenGL in the session"
 msgstr "Software OpenGL in the session"
 
-#: src/treiber.rs:459
+#: src/treiber.rs:477
 msgid ""
 "With the free nouveau driver, programs draw OpenGL through Mesa zink on the Vulkan driver NVK. On NVIDIA cards this made web pages in Messages and Firefox crash or freeze. That is why the session switches OpenGL to software (llvmpipe) at login when it finds zink on NVK. Vulkan stays on the graphics card."
 msgstr ""
 "With the free nouveau driver, programs draw OpenGL through Mesa zink on the Vulkan driver NVK. On NVIDIA cards this made web pages in Messages and Firefox crash or freeze. That is why the session switches OpenGL to software (llvmpipe) at login when it finds zink on NVK. Vulkan stays on the graphics card."
 
-#: src/treiber.rs:462
+#: src/treiber.rs:480
 msgid ""
 "Everything keeps working, but OpenGL is drawn by the processor: video, 3D and web pages with WebGL are slower and need more memory."
 msgstr ""
 "Everything keeps working, but OpenGL is drawn by the processor: video, 3D and web pages with WebGL are slower and need more memory."
 
-#: src/treiber.rs:465
+#: src/treiber.rs:483
 msgid ""
 "The NVIDIA driver makes the fallback unnecessary: OpenGL then runs on the graphics card, and the session notices this at the next login by itself."
 msgstr ""
 "The NVIDIA driver makes the fallback unnecessary: OpenGL then runs on the graphics card, and the session notices this at the next login by itself."
 
-#: src/treiber.rs:472
+#: src/treiber.rs:490
 msgid ""
 "~/.config/querencia/grafik.ini switches software OpenGL on for every login (Software-OpenGL=an)."
 msgstr ""
 "~/.config/querencia/grafik.ini switches software OpenGL on for every login (Software-OpenGL=an)."
 
-#: src/treiber.rs:475
+#: src/treiber.rs:493
 msgid ""
 "~/.config/querencia/grafik.ini switches software OpenGL off for every login (Software-OpenGL=aus)."
 msgstr ""
 "~/.config/querencia/grafik.ini switches software OpenGL off for every login (Software-OpenGL=aus)."
 
-#: src/treiber.rs:478
+#: src/treiber.rs:496
 msgid ""
 "The session decides at every login (automatic). It can be fixed in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an or aus."
 msgstr ""
 "The session decides at every login (automatic). It can be fixed in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an or aus."
 
-#: src/treiber.rs:544
+#: src/treiber.rs:562
 msgid "Change Driver?"
 msgstr "Change Driver?"
 
-#: src/treiber.rs:558
+#: src/treiber.rs:576
 msgid "These packages will be removed:"
 msgstr "These packages will be removed:"
 
-#: src/treiber.rs:560
+#: src/treiber.rs:578
 msgid "These packages will be installed:"
 msgstr "These packages will be installed:"
 
-#: src/treiber.rs:572
+#: src/treiber.rs:590
 msgid ""
 "Your password is needed. The new driver is loaded after a restart of the computer."
 msgstr ""
 "Your password is needed. The new driver is loaded after a restart of the computer."
 
-#: src/treiber.rs:578
+#: src/treiber.rs:596
 msgid "Change Driver"
 msgstr "Change Driver"
 
-#: src/treiber.rs:627
+#: src/treiber.rs:645
 msgid "Connecting to the package management …"
 msgstr "Connecting to the package management …"
 
-#: src/treiber.rs:638
+#: src/treiber.rs:656
 msgid "The driver was changed."
 msgstr "The driver was changed."
 
-#: src/treiber.rs:641
+#: src/treiber.rs:660
 msgid "Installed."
 msgstr "Installed."
 
-#: src/treiber.rs:706
+#: src/treiber.rs:725
 msgid "Removing packages …"
 msgstr "Removing packages …"
 
-#: src/treiber.rs:707
+#: src/treiber.rs:726
 msgid "Downloading and installing packages …"
 msgstr "Downloading and installing packages …"
 
-#: src/treiber.rs:722
+#: src/treiber.rs:741
 msgid "Waiting for another program that installs software …"
 msgstr "Waiting for another program that installs software …"
 
-#: src/treiber.rs:742
+#: src/treiber.rs:761
 #, no-c-format
 msgid "Could not open the restart question: {error}"
 msgstr "Could not open the restart question: {error}"
 
-#: src/treiber.rs:761
+#: src/treiber.rs:823
 #, no-c-format
 msgid "{driver} is installed and is used after a restart."
 msgstr "{driver} is installed and is used after a restart."
 
-#: src/treiber.rs:765
+#: src/treiber.rs:827
 msgid "A free driver is in use."
 msgstr "A free driver is in use."
 
-#: src/treiber.rs:766
+#: src/treiber.rs:828
 msgid "A proprietary driver is in use."
 msgstr "A proprietary driver is in use."
 
-#: src/treiber.rs:768
+#: src/treiber.rs:830
 #, no-c-format
 msgid "The driver {module} stays loaded until the restart."
 msgstr "The driver {module} stays loaded until the restart."
 
-#: src/treiber.rs:772
+#: src/treiber.rs:834
 msgid "None of these drivers is loaded right now."
 msgstr "None of these drivers is loaded right now."
 
