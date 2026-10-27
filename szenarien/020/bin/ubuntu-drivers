@@ -1,0 +1,10 @@
+#!/bin/sh
+# Stub der Prüfung (Einstellungen 0.2.0): Ausgaben aus $QE_TREIBER_DATEN.
+sleep 1
+echo "$(date +%T) ubuntu-drivers $*" >> "$QE_TREIBER_ZUSTAND/aufrufe.log"
+echo "udevadm hwdb is deprecated. Use systemd-hwdb instead." >&2
+case $1 in
+devices) cat "$QE_TREIBER_DATEN/devices.txt" ;;
+list) cat "$QE_TREIBER_DATEN/list.txt" ;;
+*) echo "ubuntu-drivers (Stub): $1 nicht nachgebildet" >&2; exit 2 ;;
+esac

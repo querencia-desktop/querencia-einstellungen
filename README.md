@@ -7,10 +7,11 @@ klassischen Desktopumgebung im GNOME-2-Stil für Wayland (labwc, Rust, GTK 4).
 
 *English summary:* A GNOME-2-style control centre for Querencia Desktop
 (appearance, background, desktop icons, window design, fonts, keyboard,
-mouse, display, workspaces, default applications, language and region).
+mouse, display, workspaces, default applications, language and region,
+drivers).
 Part of Querencia Desktop, a classic GNOME-2-style desktop for Wayland.
-Alpha software; the user interface is available in English and German
-(GNU gettext), the documentation is in German.
+Alpha software; the user interface is available in English, German,
+Italian, Spanish and French (GNU gettext), the documentation is in German.
 
 > **Alpha.** Die Seite „Panels“ zeigt den Aufbau nur an (Einstellen direkt am
 > Panel); Lage und Höhe der Panels sind noch fest. Keine Sicherheits- oder
@@ -24,8 +25,10 @@ Alpha software; the user interface is available in English and German
   Schriften, Panels, Tastatur (auch mehrere Belegungen mit Umschalttaste),
   Maus, Bildschirm (Auflösung, Wiederholrate, Skalierung und Anordnung über
   `wlr-output-management`, gespeichert in `~/.config/querencia/bildschirm.toml`),
-  Arbeitsflächen, Standardanwendungen, Sprache und Region, Informationen
-  über Querencia (Ausgabe von Querencia Desktop, Webseite, Online-Hilfe,
+  Arbeitsflächen, Standardanwendungen, Sprache und Region, Treiber
+  (Grafiktreiber nach dem Muster „Zusätzliche Treiber“ von Ubuntu: freier
+  Treiber als Vorgabe, NVIDIA-Treiber zur Wahl, Wechsel über PackageKit),
+  Informationen über Querencia (Ausgabe von Querencia Desktop, Webseite, Online-Hilfe,
   Fehler melden). Die Seite „Netzwerk“ verweist auf das Netzwerksymbol im
   Panel (`querencia-einstellungen --netzwerk`).
 - Schreibt nur die eigenen Einstellungen: `~/.config/querencia/desktop.ini`
@@ -33,7 +36,8 @@ Alpha software; the user interface is available in English and German
   `~/.config/querencia/labwc/` (gezielt geänderte Werte in `rc.xml`, eigene
   Umgebungsdatei `environment.d/zz-querencia-einstellungen.env`, Sicherung
   vor jedem Ersetzen, `labwc --reconfigure`), gsettings
-  `org.gnome.desktop.interface`, MIME-Zuordnungen über GIO.
+  `org.gnome.desktop.interface`, MIME-Zuordnungen über GIO. Treiberpakete
+  installiert und entfernt PackageKit mit Passwortfrage (polkit).
 - Bewusst **nicht** Teil dieses Programms: Netzwerkverbindungen (dafür das
   Netzwerksymbol im Panel), Lautstärke, Benutzer und
   Software (eigene Programme von Querencia Desktop), Bereiche anderer
@@ -46,7 +50,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 |---|---|
 | `crates/querencia-einstellungen/src/` | Fenster und Bereiche, Modelle, `ini.rs`, labwc-Konfiguration (`labwc_konfig.rs`, `labwc_xml.rs`), Übersetzung (`i18n.rs`) |
 | `crates/querencia-einstellungen/po/` | Übersetzungen: Vorlage `querencia-einstellungen.pot`, `de.po`, `en.po`, `it.po`, `es.po`, `fr.po`, `LINGUAS` |
-| `crates/querencia-einstellungen/data/` | Programm- und Fenstersymbol (SVG), Querencia-Logo, eingebettete Ressource, Desktop-Datei (`.desktop.in` englisch, `.desktop` mit `[de]`) |
+| `crates/querencia-einstellungen/data/` | Programm-, Fenster- und Treibersymbol (SVG), Querencia-Logo, eingebettete Ressource, Desktop-Dateien (`.desktop.in` englisch, `.desktop` übersetzt; dazu der Menüeintrag „Treiber“) |
 | `szenarien/` | Eingabeszenarien und Testdaten der isolierten GUI-Läufe |
 | `werkzeug/` | isolierte GUI-Prüfung (`isoliert.sh`, `qe-eingabe.c`), GUI-Läufe und Auswertungen je Meilenstein, `i18n.py` (po-Pflege), `bauen-release.sh` |
 | `docs/` | Schnittstellen und Verhalten je Bereich (Doc-Map in Arbeitsregeln) |
@@ -55,11 +59,11 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.1.7 (Tag `einstellungen/0.1.7`): Italienisch, Spanisch, Französisch |
-| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 (Zahlen im Bericht der Entwicklungs-VM) |
+| Version | 0.2.0 (Tag `einstellungen/0.2.0`): Seite „Treiber“; 0.1.7: Italienisch, Spanisch, Französisch |
+| Letzte Prüfung | 27.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe der Seite „Treiber“ mit Attrappen (sysfs, ubuntu-drivers, PackageKit auf privatem Bus) deutsch und englisch in 1920×1080 und 1024×768; Vergleich der übrigen Seiten gegen 0.1.6-2 (Zahlen im Bericht der Entwicklungs-VM) |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; gespeicherte Bildschirmeinstellungen setzt die Sitzung erst, wenn ihr Autostart `--bildschirm-anwenden` aufruft |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
-| Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
+| Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware; echter Treiberwechsel und echte Ausgabe von `ubuntu-drivers` |
 
 ## Bauen
 
@@ -67,6 +71,13 @@ Voraussetzungen (Ubuntu 26.04):
 
 ```bash
 sudo apt install build-essential pkg-config rustc cargo libgtk-4-dev libwayland-dev gettext
+```
+
+Die PackageKit-Schicht von Querencia Software muss neben diesem Repo liegen
+(`../querencia-software-paketkit`, Tag `paketkit/0.1.0`):
+
+```bash
+git clone https://github.com/querencia-desktop/querencia-software-paketkit.git ../querencia-software-paketkit
 ```
 
 ```bash
@@ -97,7 +108,8 @@ Desktopsitzung: `werkzeug/isoliert.sh`, die Läufe je Meilenstein in
 
 Vorbild für Bedienung und Aussehen ist **das Kontrollzentrum von GNOME 2.30
 (gnome-control-center, „Erscheinungsbild“, gnome-display-properties,
-gnome-keyboard-properties)**. Querencia übernimmt davon die Bedienideen
+gnome-keyboard-properties)**, für die Seite „Treiber“ **„Zusätzliche
+Treiber“ von Ubuntu (software-properties-gtk)**. Querencia übernimmt davon die Bedienideen
 (Gliederung, Bezeichnungen, Anordnung), **keinen Quellcode, keine Texte,
 keine Grafiken**. Das Projekt ist mit GNOME und dessen Autoren weder
 verbunden noch von ihnen unterstützt.
@@ -110,9 +122,10 @@ Abweichungen vom Vorbild und Dinge, die bewusst fehlen:
   über GDM.
 
 Fremdbestandteile: Rust-Abhängigkeiten (gtk4-rs, gettext-rs, roxmltree,
-memchr, wayland-client, wayland-protocols-wlr und Umfeld) unter MIT, MIT OR
+memchr, wayland-client, wayland-protocols-wlr, zbus über qs_paketkit und Umfeld) unter MIT, MIT OR
 Apache-2.0 und verwandten freien Lizenzen; Liste mit `cargo metadata
---locked`. Dynamisch gelinkt: GTK 4, libwayland, gettext der glibc. In
+--locked`. Dynamisch gelinkt: GTK 4, libwayland, gettext der glibc; zur Laufzeit über D-Bus
+PackageKit und polkit, als Programme `ubuntu-drivers` und `dpkg-query`. In
 `werkzeug/` liegt eine gekürzte Fassung des wlroots-Protokolls
 `virtual-keyboard-unstable-v1.xml` mit eigenem Vermerk (MIT, siehe
 Dateikopf).

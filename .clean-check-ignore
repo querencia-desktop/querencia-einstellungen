@@ -22,3 +22,7 @@
 #      ist das ini-Beispiel der Moduldoku, kein auskommentierter Code.
 # S005 werkzeug/auswerten-010.py: Fachwörter (PASS, FAIL, TSV, maps) in
 #      deutschen Kommentaren, keine englischen Sätze (0.1.0).
+# Q001 crates/querencia-einstellungen/src/treiber.rs (Einstellungen 0.2.0):
+#      Oberflächentext „Your password is needed. …“ in der Rückfrage der
+#      Seite „Treiber“ trifft das Muster „your password“; kein Platzhalter,
+#      sondern der Hinweis auf die polkit-Passwortfrage.

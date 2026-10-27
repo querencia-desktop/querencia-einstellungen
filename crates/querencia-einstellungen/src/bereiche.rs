@@ -6,7 +6,8 @@
 //! „Maus“, „Arbeitsflächen“ (G2-AG, Baustein `labwc_konfig`) sowie
 //! „Erscheinungsbild“ und „Schriften“ (G2-AJ, gsettings und labwc). „Panels“
 //! zeigt den Aufbau und erklärt die Bedienung im Panel selbst, „Netzwerk“
-//! verweist auf das Netzwerksymbol im Panel.
+//! verweist auf das Netzwerksymbol im Panel. „Treiber“ (0.2.0, QD-170)
+//! wechselt Grafiktreiber über PackageKit (`treiber`).
 use gtk4::glib;
 use gtk4::prelude::*;
 
@@ -87,6 +88,11 @@ pub fn alle(app: &gtk4::Application) -> Vec<Bereich> {
             id: "sprache",
             name: gettext(<crate::sprache::Sprache as crate::labwc_seite::Bereich>::NAME),
             seite: crate::labwc_seite::seite::<crate::sprache::Sprache>(),
+        },
+        Bereich {
+            id: "treiber",
+            name: gettext(crate::treiber::NAME),
+            seite: crate::treiber::seite(),
         },
         Bereich {
             id: "informationen",

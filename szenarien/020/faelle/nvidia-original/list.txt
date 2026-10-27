@@ -1,0 +1,4 @@
+udevadm hwdb is deprecated. Use systemd-hwdb instead.
+nvidia-driver-615-open, (kernel modules provided by linux-modules-nvidia-615-open-generic)
+nvidia-driver-615, (kernel modules provided by linux-modules-nvidia-615-generic)
+nvidia-driver-580-server-open

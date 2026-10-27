@@ -220,6 +220,9 @@ fi
 # (z. B. ein Starter unter .local/share/applications, der Adressen nur
 # protokolliert, statt einen Browser zu öffnen).
 if [ -n "${QE_HEIM_DATEIEN:-}" ]; then cp -a "$QE_HEIM_DATEIEN/." "$HEIM/"; fi
+# 0.2.0: QE_PFAD_VORNE=<ordner>[:<ordner>…] steht im PATH der Sitzung direkt
+# hinter dem Profil (Stubs der Seite „Treiber“: ubuntu-drivers, dpkg-query,
+# querencia-sitzung).
 # 0.1.6: QE_THEMEN_WEG=<name>[:<name>…] – diese Themen fehlen im Profil-HOME
 # (z. B. der dunkle Fensterrahmen, um „nicht installiert“ zu prüfen).
 if [ -n "${QE_THEMEN_WEG:-}" ]; then
@@ -248,7 +251,7 @@ fi
   if [ -n "${QE_GSK_RENDERER:-}" ]; then export GSK_RENDERER=$QE_GSK_RENDERER; fi
   export XDG_CURRENT_DESKTOP=X-Querencia XDG_SESSION_TYPE=wayland LANG=en_US.UTF-8 LANGUAGE=de XKB_DEFAULT_LAYOUT=de
   if [ "${QE_PORTAL:-}" = settings ]; then export GTK_USE_PORTAL=0; else export GDK_DEBUG=no-portals GTK_USE_PORTAL=0; fi
-  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_GSETTINGS="${QE_GSETTINGS:+$(readlink -f "$QE_GSETTINGS")}" QE_PORTAL="${QE_PORTAL:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin:$PATH"
+  export QUERENCIA_STATE_DIR="$PROFIL/state/querencia" QE_APP="$APP" QE_APP_ARGS="${QE_APP_ARGS:-}" QE_GSETTINGS="${QE_GSETTINGS:+$(readlink -f "$QE_GSETTINGS")}" QE_PORTAL="${QE_PORTAL:-}" QE_APP_WAYLAND_DEBUG="${QE_APP_WAYLAND_DEBUG:-}" PATH="$PROFIL/bin${QE_PFAD_VORNE:+:$QE_PFAD_VORNE}:$PATH"
   export QE_LABWC_VORGABE="$PROFIL/vorgabe" HOME="$HEIM" GIO_USE_VFS=local
   unset WAYLAND_DISPLAY DISPLAY DBUS_SESSION_BUS_ADDRESS
   if [ -n "${QE_DATA_HOME:-}" ]; then export XDG_DATA_HOME="$PROFIL/share"; fi

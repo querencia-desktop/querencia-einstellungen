@@ -1,0 +1,8 @@
+bash	5.3-1ubuntu1	1	GNU Bourne Again SHell
+ubuntu-drivers-common	1:0.10.4	0	Detect and install additional Ubuntu driver packages
+xserver-xorg-video-nouveau	1:1.0.18-1	1	X.Org X server -- Nouveau display driver
+nvidia-driver-615-open	615.48.03-0ubuntu1	0	NVIDIA driver (open kernel) metapackage
+nvidia-driver-615	615.48.03-0ubuntu1	0	NVIDIA driver metapackage
+nvidia-driver-580-server-open	580.95.05-0ubuntu1	0	NVIDIA Server Driver (open kernel) metapackage
+linux-modules-nvidia-615-open-generic	6.20.0-11.11	0	Extra drivers for nvidia-615-open for the generic flavour
+linux-modules-nvidia-615-generic	6.20.0-11.11	0	Extra drivers for nvidia-615 for the generic flavour

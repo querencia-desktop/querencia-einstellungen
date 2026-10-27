@@ -1,0 +1,5 @@
+bash	ii 
+libdrm-nouveau2:amd64	ii 
+libnvidia-egl-wayland1:amd64	ii 
+mesa-vulkan-drivers:amd64	ii 
+xserver-xorg-video-nouveau	ii 

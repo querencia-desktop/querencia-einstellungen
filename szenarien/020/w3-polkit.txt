@@ -1,0 +1,13 @@
+extent 1920 1080
+wait 7000
+move 795 589
+click
+wait 500
+move 1284 767
+click
+wait 1500
+shot 01-dialog.png
+move 1114 621
+click
+wait 3500
+shot 02-fehler.png

@@ -18,6 +18,28 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. TRANSLATORS: Desktop-Datei, Schlüssel Name
+#: data/org.querencia.Einstellungen.Treiber.desktop.in:4
+msgid "Drivers"
+msgstr "Driver"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel GenericName
+#: data/org.querencia.Einstellungen.Treiber.desktop.in:5
+msgid "Additional Drivers"
+msgstr "Driver aggiuntivi"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Comment
+#: data/org.querencia.Einstellungen.Treiber.desktop.in:6
+msgid ""
+"Choose the driver for the graphics card: the free driver or the NVIDIA driver"
+msgstr ""
+"Scegliere il driver della scheda grafica: il driver libero o il driver NVIDIA"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Keywords (Liste, Einträge mit ; trennen und abschließen)
+#: data/org.querencia.Einstellungen.Treiber.desktop.in:13
+msgid "driver;drivers;graphics card;nvidia;nouveau;amd;intel;opengl;"
+msgstr "driver;scheda grafica;nvidia;nouveau;amd;intel;opengl;"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Name
 #: data/org.querencia.Einstellungen.desktop.in:4
 msgid "System Settings"
 msgstr "Impostazioni di sistema"
@@ -137,7 +159,7 @@ msgstr "Chiudi"
 msgid "Reloaded."
 msgstr "Ricaricato."
 
-#: src/arbeitsflaeche.rs:285 src/labwc_seite.rs:400
+#: src/arbeitsflaeche.rs:285 src/labwc_seite.rs:429
 msgid "Changes take effect only after “Apply”."
 msgstr "Le modifiche hanno effetto solo dopo «Applica»."
 
@@ -194,12 +216,12 @@ msgstr ""
 msgid "Applied at {time}. Previous setting saved as {name}."
 msgstr "Applicato alle {time}. Impostazione precedente salvata come {name}."
 
-#: src/arbeitsflaeche.rs:412 src/hintergrund.rs:971 src/labwc_seite.rs:463
+#: src/arbeitsflaeche.rs:412 src/hintergrund.rs:971 src/labwc_seite.rs:492
 #, no-c-format
 msgid "Applied at {time}."
 msgstr "Applicato alle {time}."
 
-#: src/arbeitsflaeche.rs:420 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:538
+#: src/arbeitsflaeche.rs:420 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:567
 #, no-c-format
 msgid "Not saved: {error}"
 msgstr "Non salvato: {error}"
@@ -330,80 +352,80 @@ msgstr "Mouse"
 msgid "Screen"
 msgstr "Schermo"
 
-#: src/bereiche.rs:83 src/bereiche.rs:284 src/panels.rs:27
+#: src/bereiche.rs:83 src/bereiche.rs:289 src/panels.rs:27
 msgid "Network"
 msgstr "Rete"
 
-#: src/bereiche.rs:93 src/bereiche.rs:178
+#: src/bereiche.rs:98 src/bereiche.rs:183
 msgid "About Querencia"
 msgstr "Informazioni su Querencia"
 
-#: src/bereiche.rs:143
+#: src/bereiche.rs:148
 #, no-c-format
 msgid "Source: {source}"
 msgstr "Fonte: {source}"
 
-#: src/bereiche.rs:164
+#: src/bereiche.rs:169
 #, no-c-format
 msgid "Could not open {address}: {error}"
 msgstr "Impossibile aprire {address}: {error}"
 
-#: src/bereiche.rs:196
+#: src/bereiche.rs:201
 msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
 msgstr "Un desktop classico in stile GNOME 2 per Wayland e labwc"
 
-#: src/bereiche.rs:197
+#: src/bereiche.rs:202
 #, no-c-format
 msgid "Querencia Settings {version}"
 msgstr "Impostazioni di Querencia {version}"
 
-#: src/bereiche.rs:218
+#: src/bereiche.rs:223
 msgid "System:"
 msgstr "Sistema:"
 
-#: src/bereiche.rs:219
+#: src/bereiche.rs:224
 msgid "Compositor:"
 msgstr "Compositor:"
 
-#: src/bereiche.rs:221
+#: src/bereiche.rs:226
 msgid "Desktop:"
 msgstr "Desktop:"
 
-#: src/bereiche.rs:233
+#: src/bereiche.rs:238
 msgid "License:"
 msgstr "Licenza:"
 
-#: src/bereiche.rs:243
+#: src/bereiche.rs:248
 msgid "Website:"
 msgstr "Sito web:"
 
-#: src/bereiche.rs:263
+#: src/bereiche.rs:268
 msgid "Online Help"
 msgstr "Aiuto in linea"
 
-#: src/bereiche.rs:265
+#: src/bereiche.rs:270
 msgid "Report a Problem"
 msgstr "Segnala un problema"
 
-#: src/bereiche.rs:287
+#: src/bereiche.rs:292
 msgid ""
 "Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
 msgstr ""
 "Le connessioni di rete si configurano nel pannello: un clic sull’icona di rete mostra le connessioni via cavo e le reti senza fili nelle vicinanze. Scegliendo lì una rete ci si connette; per le reti protette il pannello chiede la password."
 
-#: src/bereiche.rs:290
+#: src/bereiche.rs:295
 msgid ""
 "The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
 msgstr ""
 "Lo stesso menu attiva e disattiva la rete senza fili e la modalità aereo. «Informazioni connessione…» mostra l’indirizzo e altri dettagli della connessione attiva."
 
-#: src/bereiche.rs:293
+#: src/bereiche.rs:298
 msgid ""
 "If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
 msgstr ""
 "Se l’icona di rete manca: clic destro su un punto libero del pannello → «Aggiungi al pannello…» → Rete."
 
-#: src/bereiche.rs:303
+#: src/bereiche.rs:308
 msgid ""
 "Without NetworkManager the panel only shows the state of the network. Settings for addresses, VPN and proxy are not part of Querencia yet."
 msgstr ""
@@ -883,7 +905,7 @@ msgstr "Valore colore:"
 msgid "Custom:"
 msgstr "Personalizzato:"
 
-#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478
+#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478 src/treiber.rs:60 src/treiber.rs:577
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -1188,70 +1210,70 @@ msgstr ""
 msgid "Adopt New Default"
 msgstr "Adotta nuovo predefinito"
 
-#: src/labwc_seite.rs:363
+#: src/labwc_seite.rs:392
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
 msgstr ""
 "Attenzione: {error}. Vengono mostrati i valori predefiniti di labwc; «Applica» non scrive nulla finché il file non è leggibile."
 
-#: src/labwc_seite.rs:371
+#: src/labwc_seite.rs:400
 #, no-c-format
 msgid ""
 "Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
 msgstr ""
 "Attenzione: {error}. Vengono mostrati i valori predefiniti di labwc; «Applica» non scrive rc.xml finché il file non è riparato (disposizione e puntatore vengono comunque salvati)."
 
-#: src/labwc_seite.rs:410
+#: src/labwc_seite.rs:439
 msgid "Changed – “Apply” saves."
 msgstr "Modificato – «Applica» salva."
 
-#: src/labwc_seite.rs:412
+#: src/labwc_seite.rs:441
 msgid "No change."
 msgstr "Nessuna modifica."
 
-#: src/labwc_seite.rs:438
+#: src/labwc_seite.rs:467
 msgid ""
 "The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
 msgstr ""
 "Nel frattempo le impostazioni sono state modificate altrove – non sovrascritte. «Ricarica» mostra lo stato attuale."
 
-#: src/labwc_seite.rs:454
+#: src/labwc_seite.rs:483
 #, no-c-format
 msgid "{error} (labwc configuration is already saved)"
 msgstr "{error} (la configurazione di labwc è già salvata)"
 
-#: src/labwc_seite.rs:466
+#: src/labwc_seite.rs:495
 msgid "GTK programs, panel and desktop pick it up immediately."
 msgstr "I programmi GTK, il pannello e la scrivania lo applicano subito."
 
-#: src/labwc_seite.rs:475
+#: src/labwc_seite.rs:504
 msgid "labwc has reloaded its configuration."
 msgstr "labwc ha ricaricato la configurazione."
 
-#: src/labwc_seite.rs:478
+#: src/labwc_seite.rs:507
 #, no-c-format
 msgid "Reloading failed: {error}."
 msgstr "Ricaricamento non riuscito: {error}."
 
-#: src/labwc_seite.rs:480
+#: src/labwc_seite.rs:509
 msgid "Saved in ~/.config/querencia/labwc; effective from the next login."
 msgstr "Salvato in ~/.config/querencia/labwc; effettivo dal prossimo accesso."
 
-#: src/labwc_seite.rs:491 src/labwc_seite.rs:518
+#: src/labwc_seite.rs:520 src/labwc_seite.rs:547
 #, no-c-format
 msgid "Previously saved as {names}."
 msgstr "Salvato in precedenza come {names}."
 
-#: src/labwc_seite.rs:511
+#: src/labwc_seite.rs:540
 msgid "New default adopted, your settings remain."
 msgstr "Nuovo predefinito adottato, le impostazioni personali restano."
 
-#: src/labwc_seite.rs:514
+#: src/labwc_seite.rs:543
 msgid "labwc has reloaded."
 msgstr "labwc ha ricaricato."
 
-#: src/labwc_seite.rs:529
+#: src/labwc_seite.rs:558
 #, no-c-format
 msgid "New default not adopted: {error}"
 msgstr "Nuovo predefinito non adottato: {error}"
@@ -1271,7 +1293,7 @@ msgid "rc.xml contains changes outside the settings – please merge by hand"
 msgstr ""
 "rc.xml contiene modifiche al di fuori delle impostazioni – unirle a mano"
 
-#: src/main.rs:179 src/main.rs:192
+#: src/main.rs:181 src/main.rs:194
 msgid "Querencia Settings"
 msgstr "Impostazioni di Querencia"
 
@@ -1915,6 +1937,356 @@ msgstr "Cerca, ad es. italiano, Svizzera, Dvorak"
 #: src/tastatur.rs:479
 msgid "Select"
 msgstr "Seleziona"
+
+#: src/treiber.rs:66
+msgid "Restart the computer to load the new driver."
+msgstr "Riavviare il computer per caricare il nuovo driver."
+
+#: src/treiber.rs:72
+msgid "Restart …"
+msgstr "Riavvia …"
+
+#: src/treiber.rs:73
+msgid ""
+"Opens the restart question of the session; nothing restarts without your confirmation."
+msgstr ""
+"Apre la richiesta di riavvio della sessione; senza conferma non si riavvia nulla."
+
+#: src/treiber.rs:85
+msgid ""
+"ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; changes through PackageKit"
+msgstr ""
+"ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; modifiche tramite PackageKit"
+
+#: src/treiber.rs:148
+#, no-c-format
+msgid "NVIDIA driver {version} with open kernel modules"
+msgstr "Driver NVIDIA {version} con moduli kernel aperti"
+
+#: src/treiber.rs:149
+#, no-c-format
+msgid "NVIDIA driver {version}"
+msgstr "Driver NVIDIA {version}"
+
+#: src/treiber.rs:150
+#, no-c-format
+msgid "NVIDIA server driver {version} with open kernel modules"
+msgstr "Driver NVIDIA per server {version} con moduli kernel aperti"
+
+#: src/treiber.rs:154
+#, no-c-format
+msgid "NVIDIA server driver {version}"
+msgstr "Driver NVIDIA per server {version}"
+
+#: src/treiber.rs:158
+msgid "Free driver nouveau (Querencia default)"
+msgstr "Driver libero nouveau (predefinito di Querencia)"
+
+#: src/treiber.rs:159
+#, no-c-format
+msgid "Free driver {module}"
+msgstr "Driver libero {module}"
+
+#: src/treiber.rs:167
+#, no-c-format
+msgid "package {package}"
+msgstr "pacchetto {package}"
+
+#: src/treiber.rs:169
+msgid "free"
+msgstr "libero"
+
+#: src/treiber.rs:171
+msgid "proprietary"
+msgstr "proprietario"
+
+#: src/treiber.rs:175
+msgid "recommended by Ubuntu"
+msgstr "consigliato da Ubuntu"
+
+#: src/treiber.rs:178
+msgid "third-party source"
+msgstr "sorgente di terze parti"
+
+#: src/treiber.rs:181
+msgid "in use"
+msgstr "in uso"
+
+#: src/treiber.rs:182
+msgid "installed, in use after a restart"
+msgstr "installato, in uso dopo un riavvio"
+
+#: src/treiber.rs:183
+msgid "available"
+msgstr "disponibile"
+
+#: src/treiber.rs:184
+msgid "not installed"
+msgstr "non installato"
+
+#: src/treiber.rs:192
+msgid "Not authorized: the password was not accepted."
+msgstr "Non autorizzato: la password non è stata accettata."
+
+#: src/treiber.rs:193
+msgid ""
+"The password dialog of the session (polkit agent) is not running. Log out and in again."
+msgstr ""
+"La finestra della password della sessione (agente polkit) non è attiva. Uscire e accedere di nuovo."
+
+#: src/treiber.rs:196
+msgid ""
+"Another program is installing software right now. Try again when it has finished."
+msgstr ""
+"Un altro programma sta installando software. Riprovare quando ha finito."
+
+#: src/treiber.rs:199
+msgid "No network connection."
+msgstr "Nessuna connessione di rete."
+
+#: src/treiber.rs:201
+#, no-c-format
+msgid "Package not found: {details}"
+msgstr "Pacchetto non trovato: {details}"
+
+#: src/treiber.rs:204
+#, no-c-format
+msgid "Packages conflict: {details}"
+msgstr "Pacchetti in conflitto: {details}"
+
+#: src/treiber.rs:206
+msgid "The package management (PackageKit) stopped."
+msgstr "La gestione dei pacchetti (PackageKit) si è arrestata."
+
+#: src/treiber.rs:207
+msgid "Cancelled."
+msgstr "Annullato."
+
+#: src/treiber.rs:208
+#, no-c-format
+msgid "Package management error: {code} {details}"
+msgstr "Errore della gestione dei pacchetti: {code} {details}"
+
+#: src/treiber.rs:227
+msgid "Looking for graphics cards and drivers …"
+msgstr "Ricerca di schede grafiche e driver …"
+
+#: src/treiber.rs:244
+msgid "The search for drivers failed."
+msgstr "La ricerca dei driver non è riuscita."
+
+#: src/treiber.rs:256
+msgid "Graphics"
+msgstr "Grafica"
+
+#: src/treiber.rs:274 src/treiber.rs:286
+msgid "Graphics card:"
+msgstr "Scheda grafica:"
+
+#: src/treiber.rs:274
+msgid "none found"
+msgstr "nessuna trovata"
+
+#: src/treiber.rs:293
+msgid "Kernel driver:"
+msgstr "Driver del kernel:"
+
+#: src/treiber.rs:296
+#, no-c-format
+msgid "{module} (free)"
+msgstr "{module} (libero)"
+
+#: src/treiber.rs:298
+#, no-c-format
+msgid "{module} (proprietary)"
+msgstr "{module} (proprietario)"
+
+#: src/treiber.rs:299
+msgid "none loaded"
+msgstr "nessuno caricato"
+
+#: src/treiber.rs:304
+msgid "OpenGL renderer:"
+msgstr "Renderer OpenGL:"
+
+#: src/treiber.rs:307
+msgid "not measured"
+msgstr "non misurato"
+
+#: src/treiber.rs:308
+#, no-c-format
+msgid "not measured ({reason})"
+msgstr "non misurato ({reason})"
+
+#: src/treiber.rs:312
+msgid "This session:"
+msgstr "Questa sessione:"
+
+#: src/treiber.rs:314
+msgid "software OpenGL (llvmpipe), set by the session at login"
+msgstr "OpenGL software (llvmpipe), impostato dalla sessione all’accesso"
+
+#: src/treiber.rs:320
+msgid "OpenGL on the graphics card through zink on NVK"
+msgstr "OpenGL sulla scheda grafica tramite zink su NVK"
+
+#: src/treiber.rs:322
+msgid "OpenGL on the graphics card"
+msgstr "OpenGL sulla scheda grafica"
+
+#: src/treiber.rs:330
+msgid "Available Drivers"
+msgstr "Driver disponibili"
+
+#: src/treiber.rs:331
+msgid ""
+"Querencia default: the free driver. Choose the NVIDIA driver only if you need it."
+msgstr ""
+"Predefinito di Querencia: il driver libero. Scegliere il driver NVIDIA solo se serve."
+
+#: src/treiber.rs:336
+msgid ""
+"The list of drivers comes from the program ubuntu-drivers (package ubuntu-drivers-common), which is not installed."
+msgstr ""
+"L’elenco dei driver viene dal programma ubuntu-drivers (pacchetto ubuntu-drivers-common), che non è installato."
+
+#: src/treiber.rs:339
+msgid "Install ubuntu-drivers-common …"
+msgstr "Installa ubuntu-drivers-common …"
+
+#: src/treiber.rs:354
+#, no-c-format
+msgid "ubuntu-drivers did not answer: {error}"
+msgstr "ubuntu-drivers non ha risposto: {error}"
+
+#: src/treiber.rs:364
+msgid "This computer needs no additional drivers."
+msgstr "Questo computer non ha bisogno di driver aggiuntivi."
+
+#: src/treiber.rs:424
+msgid "Search Again"
+msgstr "Cerca di nuovo"
+
+#: src/treiber.rs:436
+msgid "Revert"
+msgstr "Ripristina"
+
+#: src/treiber.rs:437
+msgid "Apply Changes"
+msgstr "Applica modifiche"
+
+#: src/treiber.rs:457
+msgid "Software OpenGL in the session"
+msgstr "OpenGL software nella sessione"
+
+#: src/treiber.rs:459
+msgid ""
+"With the free nouveau driver, programs draw OpenGL through Mesa zink on the Vulkan driver NVK. On NVIDIA cards this made web pages in Messages and Firefox crash or freeze. That is why the session switches OpenGL to software (llvmpipe) at login when it finds zink on NVK. Vulkan stays on the graphics card."
+msgstr ""
+"Con il driver libero nouveau i programmi disegnano OpenGL tramite Mesa zink sul driver Vulkan NVK. Sulle schede NVIDIA questo faceva bloccare o chiudere le pagine web in Messaggi e Firefox. Per questo la sessione passa OpenGL al software (llvmpipe) all’accesso quando trova zink su NVK. Vulkan resta sulla scheda grafica."
+
+#: src/treiber.rs:462
+msgid ""
+"Everything keeps working, but OpenGL is drawn by the processor: video, 3D and web pages with WebGL are slower and need more memory."
+msgstr ""
+"Tutto continua a funzionare, ma OpenGL viene disegnato dal processore: video, 3D e pagine web con WebGL sono più lenti e usano più memoria."
+
+#: src/treiber.rs:465
+msgid ""
+"The NVIDIA driver makes the fallback unnecessary: OpenGL then runs on the graphics card, and the session notices this at the next login by itself."
+msgstr ""
+"Con il driver NVIDIA questo ripiego non serve più: OpenGL funziona allora sulla scheda grafica e la sessione se ne accorge da sola al prossimo accesso."
+
+#: src/treiber.rs:472
+msgid ""
+"~/.config/querencia/grafik.ini switches software OpenGL on for every login (Software-OpenGL=an)."
+msgstr ""
+"~/.config/querencia/grafik.ini attiva l’OpenGL software a ogni accesso (Software-OpenGL=an)."
+
+#: src/treiber.rs:475
+msgid ""
+"~/.config/querencia/grafik.ini switches software OpenGL off for every login (Software-OpenGL=aus)."
+msgstr ""
+"~/.config/querencia/grafik.ini disattiva l’OpenGL software a ogni accesso (Software-OpenGL=aus)."
+
+#: src/treiber.rs:478
+msgid ""
+"The session decides at every login (automatic). It can be fixed in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an or aus."
+msgstr ""
+"La sessione decide a ogni accesso (automatico). Si può fissare in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an o aus."
+
+#: src/treiber.rs:544
+msgid "Change Driver?"
+msgstr "Cambiare driver?"
+
+#: src/treiber.rs:558
+msgid "These packages will be removed:"
+msgstr "Questi pacchetti verranno rimossi:"
+
+#: src/treiber.rs:560
+msgid "These packages will be installed:"
+msgstr "Questi pacchetti verranno installati:"
+
+#: src/treiber.rs:572
+msgid ""
+"Your password is needed. The new driver is loaded after a restart of the computer."
+msgstr ""
+"Serve la password. Il nuovo driver viene caricato dopo un riavvio del computer."
+
+#: src/treiber.rs:578
+msgid "Change Driver"
+msgstr "Cambia driver"
+
+#: src/treiber.rs:627
+msgid "Connecting to the package management …"
+msgstr "Connessione alla gestione dei pacchetti …"
+
+#: src/treiber.rs:638
+msgid "The driver was changed."
+msgstr "Il driver è stato cambiato."
+
+#: src/treiber.rs:641
+msgid "Installed."
+msgstr "Installato."
+
+#: src/treiber.rs:706
+msgid "Removing packages …"
+msgstr "Rimozione dei pacchetti …"
+
+#: src/treiber.rs:707
+msgid "Downloading and installing packages …"
+msgstr "Scaricamento e installazione dei pacchetti …"
+
+#: src/treiber.rs:722
+msgid "Waiting for another program that installs software …"
+msgstr "In attesa di un altro programma che installa software …"
+
+#: src/treiber.rs:742
+#, no-c-format
+msgid "Could not open the restart question: {error}"
+msgstr "Impossibile aprire la richiesta di riavvio: {error}"
+
+#: src/treiber.rs:761
+#, no-c-format
+msgid "{driver} is installed and is used after a restart."
+msgstr "{driver} è installato e viene usato dopo un riavvio."
+
+#: src/treiber.rs:765
+msgid "A free driver is in use."
+msgstr "È in uso un driver libero."
+
+#: src/treiber.rs:766
+msgid "A proprietary driver is in use."
+msgstr "È in uso un driver proprietario."
+
+#: src/treiber.rs:768
+#, no-c-format
+msgid "The driver {module} stays loaded until the restart."
+msgstr "Il driver {module} resta caricato fino al riavvio."
+
+#: src/treiber.rs:772
+msgid "None of these drivers is loaded right now."
+msgstr "Nessuno di questi driver è caricato ora."
 
 #: src/xkb.rs:57
 msgid "no dead keys"

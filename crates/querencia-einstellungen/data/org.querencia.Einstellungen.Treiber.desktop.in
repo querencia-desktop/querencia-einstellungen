@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Drivers
+GenericName=Additional Drivers
+Comment=Choose the driver for the graphics card: the free driver or the NVIDIA driver
+Exec=querencia-einstellungen --seite treiber
+TryExec=querencia-einstellungen
+Icon=org.querencia.Einstellungen.Treiber
+Terminal=false
+NoDisplay=false
+Categories=Settings;System;HardwareSettings;
+Keywords=driver;drivers;graphics card;nvidia;nouveau;amd;intel;opengl;
+StartupNotify=true
+StartupWMClass=org.querencia.Einstellungen
