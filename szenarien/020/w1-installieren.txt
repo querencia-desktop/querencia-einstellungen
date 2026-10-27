@@ -1,0 +1,19 @@
+extent 1920 1080
+wait 7000
+move 795 589
+click
+wait 500
+move 1284 767
+click
+wait 1500
+shot 01-dialog.png
+move 1114 621
+click
+wait 700
+shot 02-fortschritt.png
+wait 5000
+shot 03-fertig.png
+move 1314 379
+click
+wait 1500
+shot 04-neustart.png

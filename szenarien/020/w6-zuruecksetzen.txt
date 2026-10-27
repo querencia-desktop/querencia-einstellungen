@@ -1,0 +1,15 @@
+extent 1920 1080
+wait 7000
+move 100 600
+wait 300
+shot 00-start.png
+move 795 589
+click
+wait 500
+shot 01-gewaehlt.png
+move 1127 767
+click
+wait 800
+move 100 600
+wait 500
+shot 02-zurueck.png

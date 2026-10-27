@@ -1,0 +1,8 @@
+extent 1024 768
+wait 7000
+mark seite treiber
+shot 01-oben.png
+move 572 464
+scroll 10
+wait 800
+shot 02-unten.png

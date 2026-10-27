@@ -1,0 +1,11 @@
+#!/bin/sh
+# Stub der Prüfung: --grafik-pruefen aus $QE_TREIBER_DATEN/renderer.txt,
+# --neustart wird nur protokolliert (samt Software-GL-Variablen).
+echo "$(date +%T) querencia-sitzung $* LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE-} GALLIUM_DRIVER=${GALLIUM_DRIVER-} MESA_LOADER_DRIVER_OVERRIDE=${MESA_LOADER_DRIVER_OVERRIDE-}" >> "$QE_TREIBER_ZUSTAND/aufrufe.log"
+case $1 in
+--grafik-pruefen)
+    [ -s "$QE_TREIBER_DATEN/renderer.txt" ] || { echo "querencia-sitzung: Grafikprüfung nach 3 ms: eglInitialize fehlgeschlagen" >&2; exit 1; }
+    cat "$QE_TREIBER_DATEN/renderer.txt" ;;
+--neustart) echo "$(date +%T) NEUSTART-RÜCKFRAGE (Stub, nichts ausgeführt)" >> "$QE_TREIBER_ZUSTAND/aufrufe.log" ;;
+*) exit 2 ;;
+esac

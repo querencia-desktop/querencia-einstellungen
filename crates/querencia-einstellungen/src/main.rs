@@ -2,7 +2,8 @@
 //!
 //!   querencia-einstellungen                 Kontrollzentrum
 //!   querencia-einstellungen --seite <name>  Kontrollzentrum auf dieser Seite
-//!                                           (Name der Stapelseite, z. B. sprache)
+//!                                           (Name der Stapelseite, z. B. sprache;
+//!                                           `treiber` für den Menüeintrag „Treiber“)
 //!   querencia-einstellungen --netzwerk      dasselbe mit der Seite „Netzwerk“
 //!                                           (Aktion netzwerk der Desktop-Datei,
 //!                                           Ziel des Netzwerksymbols im Panel)
@@ -56,6 +57,8 @@ mod sprache;
 mod standardanwendungen;
 mod standardanwendungen_modell;
 mod tastatur;
+mod treiber;
+mod treiber_modell;
 mod vorschau;
 mod xkb;
 

@@ -76,6 +76,11 @@ __pycache__/
 /nachweis/014/**/*.png
 /nachweis/014/**/querencia-einstellungen
 /nachweis/014/**/*.mo
-# Ausgaben der isolierten Prüfung (nicht einchecken)
-/target
-/nachweis/
+# Einstellungen 0.2.0: wie 0.1.6 – Textnachweise unter nachweis/020/ ins Repo,
+# Binaries, Kataloge, Bilder, Zustände der Attrappen und Läufe nicht
+!/nachweis/020/
+/nachweis/020/**/*.png
+/nachweis/020/**/querencia-einstellungen
+/nachweis/020/**/*.mo
+/nachweis/020/zustand/
+/nachweis/020/release/

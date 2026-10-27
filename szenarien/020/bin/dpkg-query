@@ -1,0 +1,4 @@
+#!/bin/sh
+# Stub der Prüfung: installierte Pakete aus dem Bestand der PackageKit-Attrappe.
+echo "$(date +%T) dpkg-query $*" >> "$QE_TREIBER_ZUSTAND/aufrufe.log"
+cat "$QE_TREIBER_ZUSTAND/dpkg.txt"

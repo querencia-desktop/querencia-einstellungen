@@ -12,6 +12,32 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.2.0] – 2026-10-27
+
+### Hinzugefügt
+- Neue Seite „Treiber“ nach dem Muster „Zusätzliche Treiber“ von Ubuntu:
+  zeigt die Grafikkarte, den geladenen Kerneltreiber, den OpenGL-Renderer und
+  ob die Sitzung OpenGL in Software zeichnet; darunter je Gerät die Treiber,
+  die `ubuntu-drivers` kennt (frei oder proprietär, von Ubuntu empfohlen,
+  installiert oder in Gebrauch). Vorgabe bleibt der freie Treiber.
+- Treiber wechseln: „Änderungen anwenden“ installiert den NVIDIA-Treiber samt
+  fertigem Kernelmodul bzw. entfernt ihn wieder ganz, über PackageKit wie
+  Querencia Software; das Passwort fragt der Berechtigungsdialog der Sitzung.
+  Danach bietet die Seite „Neu starten …“ an (Rückfrage der Sitzung).
+- Fehlt ubuntu-drivers-common, sagt die Seite das und installiert es auf Knopfdruck.
+- Hinweis, was der Software-OpenGL-Rückfall der Sitzung bei nouveau bedeutet
+  und dass ihn der NVIDIA-Treiber überflüssig macht.
+- Eigener Menüeintrag „Treiber“ unter System → Systemverwaltung mit eigenem
+  Symbol (`querencia-einstellungen --seite treiber`).
+
+### Geändert
+- Einstellungen braucht zum Bauen jetzt die PackageKit-Schicht von Querencia
+  Software (`querencia-software-paketkit`) im Nachbarordner.
+
+### Bekannte Einschränkungen
+- Die Ausgabe von `ubuntu-drivers` ist nur gegen nachgebildete Beispiele
+  geprüft; ein echter Treiberwechsel steht noch aus.
+
 ## [0.1.7] – 2026-10-26
 
 ### Hinzugefügt
