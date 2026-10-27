@@ -8,11 +8,11 @@ Installiert wird es zusammen mit Querencia Desktop aus der APT-Quelle;
 Anleitung auf <https://querencialinux.org>.
 
 *English summary:* A GNOME-2-style control centre for Querencia Desktop
-(appearance, background, desktop icons, window design, fonts, keyboard,
-mouse, display, workspaces, default applications, language and region).
-Part of Querencia Desktop, a classic GNOME-2-style desktop for Wayland.
-Alpha software; the user interface is available in English and German
-(GNU gettext), the documentation is in German.
+(appearance, background, desktop icons, window design, fonts, keyboard, mouse,
+display, workspaces, default applications, language and region). Part of
+Querencia Desktop, a classic GNOME-2-style desktop for Wayland. Alpha software;
+the user interface is available in German, English, Italian, Spanish and French
+(GNU gettext); documentation is in German.
 
 > **Alpha.** Die Seite „Panels“ zeigt den Aufbau nur an (Einstellen direkt am
 > Panel); Lage und Höhe der Panels sind noch fest. Keine Sicherheits- oder
