@@ -1,0 +1,2065 @@
+# Querencia Einstellungen: italienische Übersetzung.
+# Copyright (C) 2026 Querencia Desktop contributors
+# Diese Datei steht unter derselben Lizenz wie Querencia Einstellungen (GPL-3.0-or-later).
+# Begriffe nach der gemeinsamen Querencia-Begriffstabelle (GNOME-Wortwahl).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: querencia-einstellungen\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2026-10-26 23:16+0100\n"
+"Last-Translator: Querencia Desktop contributors\n"
+"Language-Team: Italiano (Querencia)\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Name
+#: data/org.querencia.Einstellungen.desktop.in:4
+msgid "System Settings"
+msgstr "Impostazioni di sistema"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel GenericName
+#: data/org.querencia.Einstellungen.desktop.in:5
+msgid "Settings"
+msgstr "Impostazioni"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Comment
+#: data/org.querencia.Einstellungen.desktop.in:6
+msgid ""
+"Change the appearance, background, keyboard, mouse, screen, language and other settings of Querencia"
+msgstr ""
+"Modifica aspetto, sfondo, tastiera, mouse, schermo, lingua e altre impostazioni di Querencia"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Keywords (Liste, Einträge mit ; trennen und abschließen)
+#: data/org.querencia.Einstellungen.desktop.in:13
+msgid ""
+"settings;preferences;control center;background;screen;resolution;monitor;scaling;keyboard;mouse;language;region;"
+msgstr ""
+"impostazioni;preferenze;centro di controllo;sfondo;schermo;risoluzione;monitor;scala;tastiera;mouse;lingua;regione;"
+
+#. TRANSLATORS: Desktop-Datei, Schlüssel Name
+#: data/org.querencia.Einstellungen.desktop.in:19
+msgid "Network Settings"
+msgstr "Impostazioni di rete"
+
+#: src/arbeitsflaeche.rs:25
+msgid "Desktop Icons"
+msgstr "Icone della scrivania"
+
+#: src/arbeitsflaeche.rs:31 src/standardanwendungen.rs:24
+#, no-c-format
+msgid "Querencia – {name}"
+msgstr "Querencia – {name}"
+
+#: src/arbeitsflaeche.rs:128
+msgid "Fixed Icons"
+msgstr "Icone fisse"
+
+#: src/arbeitsflaeche.rs:130
+msgid "Icon size:"
+msgstr "Dimensione icone:"
+
+#: src/arbeitsflaeche.rs:139
+msgid "Computer"
+msgstr "Computer"
+
+#: src/arbeitsflaeche.rs:141
+msgid "Home Folder"
+msgstr "Cartella home"
+
+#: src/arbeitsflaeche.rs:143
+msgid "Trash"
+msgstr "Cestino"
+
+#: src/arbeitsflaeche.rs:147
+msgid "Show Mounted Drives"
+msgstr "Mostra unità montate"
+
+#: src/arbeitsflaeche.rs:149
+msgid "Removable media"
+msgstr "Supporti rimovibili"
+
+#: src/arbeitsflaeche.rs:150
+msgid "USB sticks, memory cards, external hard disks"
+msgstr "Chiavette USB, schede di memoria, dischi esterni"
+
+#: src/arbeitsflaeche.rs:153
+msgid "Optical media"
+msgstr "Supporti ottici"
+
+#: src/arbeitsflaeche.rs:153
+msgid "CD, DVD"
+msgstr "CD, DVD"
+
+#: src/arbeitsflaeche.rs:156
+msgid "Network drives"
+msgstr "Unità di rete"
+
+#: src/arbeitsflaeche.rs:157
+msgid "mounted shares (SMB, SFTP, FTP, WebDAV)"
+msgstr "condivisioni montate (SMB, SFTP, FTP, WebDAV)"
+
+#: src/arbeitsflaeche.rs:161
+msgid "Internal drives"
+msgstr "Unità interne"
+
+#: src/arbeitsflaeche.rs:162
+msgid "internal hard disks and partitions"
+msgstr "dischi e partizioni interni"
+
+#: src/arbeitsflaeche.rs:173
+msgid ""
+"~/.config/querencia/desktop.ini [Icons] and [Volumes]; Querencia Desktop applies changes immediately."
+msgstr ""
+"~/.config/querencia/desktop.ini [Icons] e [Volumes]; Querencia Desktop applica subito le modifiche."
+
+#: src/arbeitsflaeche.rs:188 src/hintergrund.rs:282 src/labwc_seite.rs:274
+msgid "Restore Defaults"
+msgstr "Ripristina predefiniti"
+
+#: src/arbeitsflaeche.rs:189 src/labwc_seite.rs:275
+msgid "Reload"
+msgstr "Ricarica"
+
+#: src/arbeitsflaeche.rs:190 src/hintergrund.rs:283 src/hintergrund_seite.rs:136 src/labwc_seite.rs:276 src/standardanwendungen.rs:408
+msgid "Apply"
+msgstr "Applica"
+
+#: src/arbeitsflaeche.rs:198 src/bildschirm.rs:264
+msgid "Close"
+msgstr "Chiudi"
+
+#: src/arbeitsflaeche.rs:256 src/labwc_seite.rs:322
+msgid "Reloaded."
+msgstr "Ricaricato."
+
+#: src/arbeitsflaeche.rs:285 src/labwc_seite.rs:400
+msgid "Changes take effect only after “Apply”."
+msgstr "Le modifiche hanno effetto solo dopo «Applica»."
+
+#: src/arbeitsflaeche.rs:287
+#, no-c-format
+msgid ""
+"Note: {n} entry in desktop.ini was ignored (see the log); the default applies."
+msgid_plural ""
+"Note: {n} entries in desktop.ini were ignored (see the log); the default applies."
+msgstr[0] ""
+"Nota: {n} voce in desktop.ini è stata ignorata (vedere il registro); vale il predefinito."
+msgstr[1] ""
+"Nota: {n} voci in desktop.ini sono state ignorate (vedere il registro); vale il predefinito."
+
+#: src/arbeitsflaeche.rs:337
+msgid "Changed – “Apply” writes desktop.ini."
+msgstr "Modificato – «Applica» scrive desktop.ini."
+
+#: src/arbeitsflaeche.rs:339
+msgid "No change compared to desktop.ini."
+msgstr "Nessuna modifica rispetto a desktop.ini."
+
+#: src/arbeitsflaeche.rs:350
+msgid "the drive types"
+msgstr "i tipi di unità"
+
+#: src/arbeitsflaeche.rs:353
+msgid "showing and hiding Computer, Home Folder and Trash"
+msgstr "la visualizzazione di Computer, Cartella home e Cestino"
+
+#: src/arbeitsflaeche.rs:358
+msgid "the icon size"
+msgstr "la dimensione delle icone"
+
+#: src/arbeitsflaeche.rs:366
+msgid "these settings"
+msgstr "queste impostazioni"
+
+#: src/arbeitsflaeche.rs:370
+#, no-c-format
+msgid ""
+"Note: The running desktop does not evaluate {what} yet. They are saved anyway and take effect as soon as a newer Querencia Desktop is running."
+msgstr ""
+"Nota: la scrivania in esecuzione non considera ancora {what}. Vengono comunque salvate e avranno effetto non appena sarà in esecuzione un Querencia Desktop più recente."
+
+#: src/arbeitsflaeche.rs:386
+msgid ""
+"The icon settings in desktop.ini have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
+msgstr ""
+"Nel frattempo le impostazioni delle icone in desktop.ini sono state modificate altrove – non sovrascritte. «Ricarica» mostra lo stato attuale."
+
+#: src/arbeitsflaeche.rs:400 src/hintergrund.rs:959
+#, no-c-format
+msgid "Applied at {time}. Previous setting saved as {name}."
+msgstr "Applicato alle {time}. Impostazione precedente salvata come {name}."
+
+#: src/arbeitsflaeche.rs:412 src/hintergrund.rs:971 src/labwc_seite.rs:463
+#, no-c-format
+msgid "Applied at {time}."
+msgstr "Applicato alle {time}."
+
+#: src/arbeitsflaeche.rs:420 src/hintergrund.rs:974 src/hintergrund_seite.rs:359 src/labwc_seite.rs:538
+#, no-c-format
+msgid "Not saved: {error}"
+msgstr "Non salvato: {error}"
+
+#: src/arbeitsflaeche_modell.rs:54
+msgid "Small (32 pixels)"
+msgstr "Piccole (32 pixel)"
+
+#: src/arbeitsflaeche_modell.rs:55
+msgid "Normal (48 pixels)"
+msgstr "Normali (48 pixel)"
+
+#: src/arbeitsflaeche_modell.rs:56
+msgid "Large (72 pixels)"
+msgstr "Grandi (72 pixel)"
+
+#: src/arbeitsflaeche_modell.rs:57
+msgid "Very large (96 pixels)"
+msgstr "Molto grandi (96 pixel)"
+
+#: src/arbeitsflaechen.rs:70 src/bereiche.rs:73
+msgid "Workspaces"
+msgstr "Spazi di lavoro"
+
+#: src/arbeitsflaechen.rs:73
+msgid ""
+"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names)."
+msgstr ""
+"~/.config/querencia/labwc/rc.xml <desktops> (number, popupTime, names)."
+
+#: src/arbeitsflaechen.rs:125
+msgid "Number of workspaces:"
+msgstr "Numero di spazi di lavoro:"
+
+#: src/arbeitsflaechen.rs:126
+msgid "Windows on removed workspaces move to the first one."
+msgstr "Le finestre degli spazi di lavoro rimossi passano al primo."
+
+#: src/arbeitsflaechen.rs:130
+msgid "Names"
+msgstr "Nomi"
+
+#: src/arbeitsflaechen.rs:139
+msgid "Leave empty for the default name."
+msgstr "Lasciare vuoto per il nome predefinito."
+
+#: src/arbeitsflaechen.rs:142
+msgid "When Switching"
+msgstr "Al cambio"
+
+#: src/arbeitsflaechen.rs:143
+msgid "Briefly show the workspace name"
+msgstr "Mostra brevemente il nome dello spazio di lavoro"
+
+#: src/arbeitsflaechen.rs:146
+msgid "Duration (milliseconds):"
+msgstr "Durata (millisecondi):"
+
+#: src/arbeitsflaechen.rs:147
+msgid ""
+"The switcher in the panel always shows the switch; the overlay comes from labwc."
+msgstr ""
+"Il selettore nel pannello mostra sempre il cambio; la sovrimpressione viene da labwc."
+
+#: src/ausgaben.rs:78
+#, no-c-format
+msgid "no Wayland connection: {error}"
+msgstr "nessuna connessione Wayland: {error}"
+
+#: src/ausgaben.rs:93
+msgid "the compositor does not offer zwlr_output_manager_v1"
+msgstr "il compositor non offre zwlr_output_manager_v1"
+
+#: src/ausgaben.rs:106
+#, no-c-format
+msgid "Wayland query failed: {error}"
+msgstr "interrogazione Wayland non riuscita: {error}"
+
+#: src/ausgaben.rs:124
+msgid "the compositor does not respond (5 s)"
+msgstr "il compositor non risponde (5 s)"
+
+#: src/ausgaben.rs:173
+msgid "no zwlr_output_manager_v1"
+msgstr "nessun zwlr_output_manager_v1"
+
+#: src/ausgaben.rs:224
+msgid "the compositor rejects this setting (test failed)"
+msgstr "il compositor rifiuta questa impostazione (test non riuscito)"
+
+#: src/ausgaben.rs:226
+msgid "the compositor could not apply the setting"
+msgstr "il compositor non è riuscito ad applicare l’impostazione"
+
+#: src/ausgaben.rs:228
+msgid "the outputs have changed in the meantime; please try again"
+msgstr "le uscite sono cambiate nel frattempo; riprovare"
+
+#: src/bereiche.rs:28 src/erscheinungsbild.rs:272
+msgid "Appearance"
+msgstr "Aspetto"
+
+#: src/bereiche.rs:33 src/hintergrund_seite.rs:61
+msgid "Background Image"
+msgstr "Immagine di sfondo"
+
+#: src/bereiche.rs:43 src/fensterdesign.rs:139
+msgid "Window Design"
+msgstr "Stile finestre"
+
+#: src/bereiche.rs:48 src/schriften.rs:89
+msgid "Fonts"
+msgstr "Caratteri"
+
+#: src/bereiche.rs:53 src/panels.rs:180
+msgid "Panels"
+msgstr "Pannelli"
+
+#: src/bereiche.rs:58 src/tastatur.rs:233
+msgid "Keyboard"
+msgstr "Tastiera"
+
+#: src/bereiche.rs:63 src/maus.rs:86
+msgid "Mouse"
+msgstr "Mouse"
+
+#: src/bereiche.rs:68 src/bildschirm.rs:139
+msgid "Screen"
+msgstr "Schermo"
+
+#: src/bereiche.rs:83 src/bereiche.rs:284 src/panels.rs:27
+msgid "Network"
+msgstr "Rete"
+
+#: src/bereiche.rs:93 src/bereiche.rs:178
+msgid "About Querencia"
+msgstr "Informazioni su Querencia"
+
+#: src/bereiche.rs:143
+#, no-c-format
+msgid "Source: {source}"
+msgstr "Fonte: {source}"
+
+#: src/bereiche.rs:164
+#, no-c-format
+msgid "Could not open {address}: {error}"
+msgstr "Impossibile aprire {address}: {error}"
+
+#: src/bereiche.rs:196
+msgid "A classic desktop in the style of GNOME 2 for Wayland and labwc"
+msgstr "Un desktop classico in stile GNOME 2 per Wayland e labwc"
+
+#: src/bereiche.rs:197
+#, no-c-format
+msgid "Querencia Settings {version}"
+msgstr "Impostazioni di Querencia {version}"
+
+#: src/bereiche.rs:218
+msgid "System:"
+msgstr "Sistema:"
+
+#: src/bereiche.rs:219
+msgid "Compositor:"
+msgstr "Compositor:"
+
+#: src/bereiche.rs:221
+msgid "Desktop:"
+msgstr "Desktop:"
+
+#: src/bereiche.rs:233
+msgid "License:"
+msgstr "Licenza:"
+
+#: src/bereiche.rs:243
+msgid "Website:"
+msgstr "Sito web:"
+
+#: src/bereiche.rs:263
+msgid "Online Help"
+msgstr "Aiuto in linea"
+
+#: src/bereiche.rs:265
+msgid "Report a Problem"
+msgstr "Segnala un problema"
+
+#: src/bereiche.rs:287
+msgid ""
+"Network connections are set up in the panel: a click on the network icon shows the wired connections and the wireless networks in range. Choosing a network there connects to it; for protected networks the panel asks for the password."
+msgstr ""
+"Le connessioni di rete si configurano nel pannello: un clic sull’icona di rete mostra le connessioni via cavo e le reti senza fili nelle vicinanze. Scegliendo lì una rete ci si connette; per le reti protette il pannello chiede la password."
+
+#: src/bereiche.rs:290
+msgid ""
+"The same menu switches wireless networking and airplane mode on and off. “Connection Information …” shows the address and other details of the active connection."
+msgstr ""
+"Lo stesso menu attiva e disattiva la rete senza fili e la modalità aereo. «Informazioni connessione…» mostra l’indirizzo e altri dettagli della connessione attiva."
+
+#: src/bereiche.rs:293
+msgid ""
+"If the network icon is missing: right-click a free spot in the panel → “Add to Panel …” → Network."
+msgstr ""
+"Se l’icona di rete manca: clic destro su un punto libero del pannello → «Aggiungi al pannello…» → Rete."
+
+#: src/bereiche.rs:303
+msgid ""
+"Without NetworkManager the panel only shows the state of the network. Settings for addresses, VPN and proxy are not part of Querencia yet."
+msgstr ""
+"Senza NetworkManager il pannello mostra solo lo stato della rete. Le impostazioni per indirizzi, VPN e proxy non fanno ancora parte di Querencia."
+
+#: src/bildschirm.rs:24
+msgid "Querencia – Screen"
+msgstr "Querencia – Schermo"
+
+#: src/bildschirm.rs:145
+msgid "Monitor Arrangement (drag to move)"
+msgstr "Disposizione dei monitor (trascinare per spostare)"
+
+#: src/bildschirm.rs:159
+msgid "Monitor"
+msgstr "Monitor"
+
+#: src/bildschirm.rs:174
+msgid "On"
+msgstr "Acceso"
+
+#: src/bildschirm.rs:192
+msgid ""
+"This monitor did not report its data (EDID), so only basic resolutions such as 1024 × 768 are offered. With a graphics card passed through to a virtual machine this can happen after starting; unplugging and plugging in the monitor cable usually helps."
+msgstr ""
+"Questo monitor non ha comunicato i propri dati (EDID), quindi sono disponibili solo risoluzioni di base come 1024 × 768. Con una scheda grafica assegnata a una macchina virtuale può succedere dopo l’avvio; di solito aiuta scollegare e ricollegare il cavo del monitor."
+
+#: src/bildschirm.rs:202
+msgid "Use as Primary Monitor"
+msgstr "Usa come monitor principale"
+
+#: src/bildschirm.rs:203
+msgid ""
+"labwc has no primary monitor of its own: the primary monitor is placed at the top left, the others next to it."
+msgstr ""
+"labwc non ha un proprio monitor principale: il monitor principale viene posto in alto a sinistra, gli altri accanto."
+
+#: src/bildschirm.rs:210
+msgid "Monitor:"
+msgstr "Monitor:"
+
+#: src/bildschirm.rs:214
+msgid "Resolution:"
+msgstr "Risoluzione:"
+
+#: src/bildschirm.rs:216
+msgid "Refresh rate:"
+msgstr "Frequenza:"
+
+#: src/bildschirm.rs:218
+msgid "Rotation:"
+msgstr "Rotazione:"
+
+#: src/bildschirm.rs:220
+msgid "Scale:"
+msgstr "Scala:"
+
+#: src/bildschirm.rs:236
+msgid ""
+"the compositor (labwc); saved in ~/.config/querencia/bildschirm.toml and applied at login with “querencia-einstellungen --bildschirm-anwenden”."
+msgstr ""
+"il compositor (labwc); salvato in ~/.config/querencia/bildschirm.toml e applicato all’accesso con «querencia-einstellungen --bildschirm-anwenden»."
+
+#: src/bildschirm.rs:256
+msgid "Reset"
+msgstr "Ripristina"
+
+#: src/bildschirm.rs:257
+msgctxt "screen settings"
+msgid "Apply"
+msgstr "Applica"
+
+#: src/bildschirm.rs:315
+#, no-c-format
+msgid "The screen cannot be managed: {error}"
+msgstr "Impossibile gestire lo schermo: {error}"
+
+#: src/bildschirm.rs:336
+#, no-c-format
+msgid "{n} monitor found. Changes take effect only after “Apply”."
+msgid_plural "{n} monitors found. Changes take effect only after “Apply”."
+msgstr[0] "Trovato {n} monitor. Le modifiche hanno effetto solo dopo «Applica»."
+msgstr[1] "Trovati {n} monitor. Le modifiche hanno effetto solo dopo «Applica»."
+
+#: src/bildschirm.rs:411
+#, no-c-format
+msgid "{name} – primary monitor"
+msgstr "{name} – monitor principale"
+
+#: src/bildschirm.rs:414
+#, no-c-format
+msgid "{name} (off)"
+msgstr "{name} (spento)"
+
+#: src/bildschirm.rs:467
+#, no-c-format
+msgid "{size} (preferred)"
+msgstr "{size} (preferita)"
+
+#: src/bildschirm.rs:522
+#, no-c-format
+msgid ""
+"{output}{description}{size} · Modes: {modes} · logical size {width}×{height} at {x},{y}{serial}"
+msgstr ""
+"{output}{description}{size} · Modalità: {modes} · dimensione logica {width}×{height} in {x},{y}{serial}"
+
+#: src/bildschirm.rs:545
+msgid "no list (free sizes, e.g. virtual output)"
+msgstr "nessun elenco (dimensioni libere, ad es. uscita virtuale)"
+
+#: src/bildschirm.rs:559
+#, no-c-format
+msgid " · serial number {serial}"
+msgstr " · numero di serie {serial}"
+
+#: src/bildschirm.rs:611
+msgid ""
+"Fractional scaling: programs draw with the next whole factor and are scaled down, which can look slightly blurred; the desktop background may show “Centered” and “Tiled” smaller. Whole factors (1 ×, 2 ×) are pixel-exact."
+msgstr ""
+"Scala frazionaria: i programmi disegnano con il fattore intero successivo e vengono ridotti, il che può apparire leggermente sfocato; lo sfondo della scrivania può mostrare «Centrato» e «Affiancato» più piccoli. I fattori interi (1 ×, 2 ×) sono precisi al pixel."
+
+#: src/bildschirm.rs:646 src/bildschirm.rs:778
+msgid "no connection"
+msgstr "nessuna connessione"
+
+#: src/bildschirm.rs:666
+msgid "No change compared to the current state."
+msgstr "Nessuna modifica rispetto allo stato attuale."
+
+#: src/bildschirm.rs:673
+msgid "no connection to the compositor"
+msgstr "nessuna connessione al compositor"
+
+#: src/bildschirm.rs:684
+#, no-c-format
+msgid "Not applied – {error}"
+msgstr "Non applicato – {error}"
+
+#: src/bildschirm.rs:698
+#, no-c-format
+msgid ""
+"Applied. Confirm within {seconds} s, otherwise the previous state is restored."
+msgstr ""
+"Applicato. Confermare entro {seconds} s, altrimenti viene ripristinato lo stato precedente."
+
+#: src/bildschirm.rs:715
+msgid "Keep These Settings?"
+msgstr "Mantenere queste impostazioni?"
+
+#: src/bildschirm.rs:728
+msgid "The new screen settings are active. Do you want to keep them?"
+msgstr "Le nuove impostazioni dello schermo sono attive. Mantenerle?"
+
+#: src/bildschirm.rs:738
+msgid "Restore Previous Settings"
+msgstr "Ripristina impostazioni precedenti"
+
+#: src/bildschirm.rs:739
+msgid "Keep Settings"
+msgstr "Mantieni impostazioni"
+
+#: src/bildschirm.rs:750 src/i18n.rs:175
+#, no-c-format
+msgid "Without confirmation the previous settings are restored in {n} second."
+msgid_plural ""
+"Without confirmation the previous settings are restored in {n} seconds."
+msgstr[0] ""
+"Senza conferma le impostazioni precedenti verranno ripristinate tra {n} secondo."
+msgstr[1] ""
+"Senza conferma le impostazioni precedenti verranno ripristinate tra {n} secondi."
+
+#: src/bildschirm.rs:789
+msgid "Previous screen settings restored; nothing saved."
+msgstr "Impostazioni dello schermo precedenti ripristinate; nulla salvato."
+
+#: src/bildschirm.rs:793
+#, no-c-format
+msgid "Restoring failed – {error}. The new state remains, nothing saved."
+msgstr ""
+"Ripristino non riuscito – {error}. Resta il nuovo stato, nulla salvato."
+
+#: src/bildschirm.rs:867
+#, no-c-format
+msgid "Screen settings kept and saved in {file}."
+msgstr "Impostazioni dello schermo mantenute e salvate in {file}."
+
+#: src/bildschirm.rs:872
+#, no-c-format
+msgid "Settings active, but not saved: {error}"
+msgstr "Impostazioni attive, ma non salvate: {error}"
+
+#: src/bildschirm.rs:932
+msgid "No output switched on"
+msgstr "Nessuna uscita accesa"
+
+#: src/bildschirm.rs:1152
+msgid "Reset to the current state of the compositor."
+msgstr "Ripristinato allo stato attuale del compositor."
+
+#: src/bildschirm.rs:1156
+#, no-c-format
+msgid "Reading failed – {error}"
+msgstr "Lettura non riuscita – {error}"
+
+#: src/bildschirm_modell.rs:35
+msgid "automatic"
+msgstr "automatica"
+
+#: src/bildschirm_modell.rs:102
+msgid "Normal"
+msgstr "Normale"
+
+#: src/bildschirm_modell.rs:103
+msgid "90° (right)"
+msgstr "90° (destra)"
+
+#: src/bildschirm_modell.rs:104
+msgid "180° (upside down)"
+msgstr "180° (capovolto)"
+
+#: src/bildschirm_modell.rs:105
+msgid "270° (left)"
+msgstr "270° (sinistra)"
+
+#. TRANSLATORS: decimal separator of refresh rates and scale factors (59.95 Hz, 1.25 ×)
+#. TRANSLATORS: decimal separator of the pointer speed (+0.25)
+#: src/bildschirm_modell.rs:146 src/maus.rs:213
+msgctxt "decimal separator"
+msgid "."
+msgstr ","
+
+#: src/erscheinungsbild.rs:35 src/maus.rs:21
+msgid "Normal (24)"
+msgstr "Normale (24)"
+
+#: src/erscheinungsbild.rs:36 src/maus.rs:22
+msgid "Large (32)"
+msgstr "Grande (32)"
+
+#: src/erscheinungsbild.rs:37
+msgid "Very large (48)"
+msgstr "Molto grande (48)"
+
+#: src/erscheinungsbild.rs:145
+msgid "GTK default (built-in)"
+msgstr "Predefinito GTK (integrato)"
+
+#: src/erscheinungsbild.rs:188 src/fensterdesign.rs:266
+#, no-c-format
+msgid "{theme} (not installed)"
+msgstr "{theme} (non installato)"
+
+#: src/erscheinungsbild.rs:217
+msgid ""
+"The dark window frame Querencia-Klassisch-Dunkel is not installed, so window frames stay light."
+msgstr ""
+"La cornice scura Querencia-Klassisch-Dunkel non è installata, perciò le cornici delle finestre restano chiare."
+
+#: src/erscheinungsbild.rs:229
+msgid ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs), the Querencia programs too; Querencia Files keeps its own theme for now."
+msgstr ""
+"Diventano scuri i programmi che considerano questa preferenza (ad es. Firefox, pagine web, programmi GNOME), anche i programmi di Querencia; per ora Querencia Files mantiene il proprio tema."
+
+#: src/erscheinungsbild.rs:233
+msgid ""
+"Programs that evaluate this preference turn dark (e.g. Firefox, web pages, GNOME programs); Querencia programs keep their theme."
+msgstr ""
+"Diventano scuri i programmi che considerano questa preferenza (ad es. Firefox, pagine web, programmi GNOME); i programmi di Querencia mantengono il loro tema."
+
+#: src/erscheinungsbild.rs:274
+msgid ""
+"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); for labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) and rc.xml <theme><name> (the Querencia window frame follows the color scheme). Themes from ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons and /usr/share/themes."
+msgstr ""
+"gsettings org.gnome.desktop.interface (icon-theme, gtk-theme, color-scheme, cursor-theme, cursor-size); per labwc ~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE) e rc.xml <theme><name> (la cornice delle finestre di Querencia segue lo schema di colori). Temi da ~/.local/share/icons, ~/.local/share/themes, /usr/share/icons e /usr/share/themes."
+
+#: src/erscheinungsbild.rs:345
+msgid ""
+"Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes immediately after “Apply”, in other programs (e.g. X11) from the next login."
+msgstr ""
+"Icone, tema, schema di colori e puntatore hanno effetto subito dopo «Applica» in tutti i programmi GTK, nel pannello e sulla scrivania. Sopra le cornici delle finestre e la scrivania libera (labwc) il puntatore cambia subito dopo «Applica», negli altri programmi (ad es. X11) dal prossimo accesso."
+
+#: src/erscheinungsbild.rs:348
+msgid ""
+"Icons, theme, color scheme and pointer take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. Over window frames and the free desktop (labwc) the pointer changes from the next login, in other programs (e.g. X11) from the next login."
+msgstr ""
+"Icone, tema, schema di colori e puntatore hanno effetto subito dopo «Applica» in tutti i programmi GTK, nel pannello e sulla scrivania. Sopra le cornici delle finestre e la scrivania libera (labwc) il puntatore cambia dal prossimo accesso, negli altri programmi (ad es. X11) dal prossimo accesso."
+
+#: src/erscheinungsbild.rs:358
+msgid "Icons"
+msgstr "Icone"
+
+#: src/erscheinungsbild.rs:365 src/hintergrund.rs:269
+msgid "Preview:"
+msgstr "Anteprima:"
+
+#: src/erscheinungsbild.rs:370
+msgid "Controls (GTK Theme)"
+msgstr "Controlli (tema GTK)"
+
+#: src/erscheinungsbild.rs:375
+msgid "Prefer dark appearance"
+msgstr "Preferisci aspetto scuro"
+
+#: src/erscheinungsbild.rs:381 src/maus.rs:242
+msgid "Mouse Pointer"
+msgstr "Puntatore del mouse"
+
+#: src/erscheinungsbild.rs:383 src/maus.rs:244
+msgid "Theme:"
+msgstr "Tema:"
+
+#: src/erscheinungsbild.rs:394 src/maus.rs:255
+msgid "Size:"
+msgstr "Misura:"
+
+#: src/erscheinungsbild.rs:395
+msgid ""
+"The same pointer is in the “Mouse” section; both sections write the same values."
+msgstr ""
+"Lo stesso puntatore si trova nella sezione «Mouse»; entrambe le sezioni scrivono gli stessi valori."
+
+#: src/erscheinungsbild.rs:401
+msgid ""
+"Icon, GTK and pointer themes are stored in gsettings and also apply to a GNOME session on this computer."
+msgstr ""
+"I temi di icone, GTK e puntatore sono salvati in gsettings e valgono anche per una sessione GNOME su questo computer."
+
+#: src/erscheinungsbild.rs:545
+msgid ""
+"With “Adwaita”, panel and desktop keep showing the Querencia icons; programs show Adwaita."
+msgstr ""
+"Con «Adwaita» pannello e scrivania continuano a mostrare le icone di Querencia; i programmi mostrano Adwaita."
+
+#: src/erscheinungsbild.rs:547
+msgid ""
+"Panel, desktop and programs show this theme; missing icons come from the themes it builds on."
+msgstr ""
+"Pannello, scrivania e programmi mostrano questo tema; le icone mancanti provengono dai temi su cui si basa."
+
+#: src/fensterdesign.rs:21
+msgid ""
+"Program icon on the left; minimize, maximize, close on the right (default)"
+msgstr "Icona a sinistra; minimizza, massimizza, chiudi a destra (predefinito)"
+
+#: src/fensterdesign.rs:25
+msgid "Window menu on the left; minimize, maximize, close on the right"
+msgstr "Menu finestra a sinistra; minimizza, massimizza, chiudi a destra"
+
+#: src/fensterdesign.rs:29
+msgid "Close, minimize, maximize on the left"
+msgstr "Chiudi, minimizza, massimizza a sinistra"
+
+#: src/fensterdesign.rs:31
+msgid "Close only"
+msgstr "Solo chiudi"
+
+#: src/fensterdesign.rs:141
+msgid ""
+"~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); themes in ~/.local/share/themes/*/labwc/themerc and /usr/share/themes."
+msgstr ""
+"~/.config/querencia/labwc/rc.xml <theme> (name, cornerRadius, dropShadows, titlebar/layout, font place=\"ActiveWindow\"/\"InactiveWindow\"); temi in ~/.local/share/themes/*/labwc/themerc e /usr/share/themes."
+
+#: src/fensterdesign.rs:151
+msgid ""
+"Dark appearance is on: the Querencia window frame follows the color scheme (Querencia-Klassisch-Dunkel when dark, Querencia-Klassisch when light); other frames stay as chosen."
+msgstr ""
+"L’aspetto scuro è attivo: la cornice delle finestre di Querencia segue lo schema di colori (Querencia-Klassisch-Dunkel se scuro, Querencia-Klassisch se chiaro); le altre cornici restano come scelte."
+
+#: src/fensterdesign.rs:204
+msgid "Window Frame Theme"
+msgstr "Tema delle cornici"
+
+#: src/fensterdesign.rs:209
+msgid "Shape"
+msgstr "Forma"
+
+#: src/fensterdesign.rs:212
+msgid "Top corner radius (pixels):"
+msgstr "Raggio angoli superiori (pixel):"
+
+#: src/fensterdesign.rs:215
+msgid "Shadows behind windows"
+msgstr "Ombre dietro le finestre"
+
+#: src/fensterdesign.rs:219
+msgid "Title Bar Buttons"
+msgstr "Pulsanti della barra del titolo"
+
+#: src/fensterdesign.rs:224 src/fensterdesign.rs:227
+msgid "Title Bar Font"
+msgstr "Carattere della barra del titolo"
+
+#: src/fensterdesign.rs:233
+msgid ""
+"For active and inactive windows. The other fonts are in the “Fonts” section."
+msgstr ""
+"Per finestre attive e inattive. Gli altri caratteri sono nella sezione «Caratteri»."
+
+#: src/fensterdesign.rs:264
+msgid "Built-in labwc theme"
+msgstr "Tema integrato di labwc"
+
+#: src/fensterdesign.rs:291
+#, no-c-format
+msgid "Custom arrangement: {layout}"
+msgstr "Disposizione personalizzata: {layout}"
+
+#: src/gsettings.rs:85
+#, no-c-format
+msgid "Schema {schema} is missing"
+msgstr "Manca lo schema {schema}"
+
+#: src/gsettings.rs:89
+#, no-c-format
+msgid "{key}: “{value}” is not a number"
+msgstr "{key}: «{value}» non è un numero"
+
+#: src/hintergrund.rs:29
+msgid "Querencia – Background"
+msgstr "Querencia – Sfondo"
+
+#: src/hintergrund.rs:167
+msgid "Preview"
+msgstr "Anteprima"
+
+#: src/hintergrund.rs:175
+msgid "Preview for:"
+msgstr "Anteprima per:"
+
+#: src/hintergrund.rs:188
+msgid "Background Type"
+msgstr "Tipo di sfondo"
+
+#: src/hintergrund.rs:191 src/hintergrund.rs:199
+msgid "Background image"
+msgstr "Immagine di sfondo"
+
+#: src/hintergrund.rs:192
+msgid "Solid background color"
+msgstr "Colore di sfondo uniforme"
+
+#: src/hintergrund.rs:204
+msgid "Built-in images:"
+msgstr "Immagini integrate:"
+
+#: src/hintergrund.rs:208
+#, no-c-format
+msgid "The {format} version is used for this screen."
+msgstr "Per questo schermo viene usata la versione {format}."
+
+#: src/hintergrund.rs:220
+msgid "Choose Image …"
+msgstr "Scegli immagine…"
+
+#: src/hintergrund.rs:221
+msgid "Built-in Image"
+msgstr "Immagine integrata"
+
+#: src/hintergrund.rs:227
+msgid "Style:"
+msgstr "Stile:"
+
+#: src/hintergrund.rs:245
+msgid "Background Color"
+msgstr "Colore di sfondo"
+
+#: src/hintergrund.rs:261
+msgid "Palette:"
+msgstr "Tavolozza:"
+
+#: src/hintergrund.rs:265
+msgid "Color value:"
+msgstr "Valore colore:"
+
+#: src/hintergrund.rs:267
+msgid "Custom:"
+msgstr "Personalizzato:"
+
+#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/hintergrund.rs:494
+msgid "Invalid color value – expected #rrggbb, for example #204a87."
+msgstr "Valore colore non valido – atteso #rrggbb, ad esempio #204a87."
+
+#: src/hintergrund.rs:534
+msgid "Default restored in the preview – takes effect only after “Apply”."
+msgstr ""
+"Predefinito ripristinato nell’anteprima – ha effetto solo dopo «Applica»."
+
+#: src/hintergrund.rs:544
+#, no-c-format
+msgid "Note: {n} entry in desktop.ini was ignored (see the log)."
+msgid_plural "Note: {n} entries in desktop.ini were ignored (see the log)."
+msgstr[0] "Nota: {n} voce in desktop.ini è stata ignorata (vedere il registro)."
+msgstr[1] ""
+"Nota: {n} voci in desktop.ini sono state ignorate (vedere il registro)."
+
+#: src/hintergrund.rs:691
+#, no-c-format
+msgid "Current screen ({width}×{height})"
+msgstr "Schermo attuale ({width}×{height})"
+
+#: src/hintergrund.rs:730
+#, no-c-format
+msgid ""
+"Image “{file}” not readable ({error}). The desktop then shows the built-in image."
+msgstr ""
+"Immagine «{file}» non leggibile ({error}). La scrivania mostra allora l’immagine integrata."
+
+#: src/hintergrund.rs:743
+msgid "Built-in image not found – color only."
+msgstr "Immagine integrata non trovata – solo colore."
+
+#: src/hintergrund.rs:774
+msgid "Images (PNG, JPEG, WebP, …)"
+msgstr "Immagini (PNG, JPEG, WebP, …)"
+
+#: src/hintergrund.rs:779
+msgid "Choose Background Image"
+msgstr "Scegli immagine di sfondo"
+
+#: src/hintergrund.rs:815 src/hintergrund.rs:828
+#, no-c-format
+msgid "Built-in image “{name}” ({file})"
+msgstr "Immagine integrata «{name}» ({file})"
+
+#: src/hintergrund.rs:895
+msgid "Writes desktop.ini; the desktop applies it immediately."
+msgstr "Scrive desktop.ini; la scrivania lo applica subito."
+
+#: src/hintergrund.rs:900
+msgid "No change compared to the saved setting."
+msgstr "Nessuna modifica rispetto all’impostazione salvata."
+
+#: src/hintergrund.rs:902
+msgid "Changed – not applied yet."
+msgstr "Modificato – non ancora applicato."
+
+#: src/hintergrund.rs:908
+msgid "Determining the desktop’s capabilities …"
+msgstr "Rilevamento delle capacità della scrivania…"
+
+#: src/hintergrund.rs:909 src/hintergrund_seite.rs:298
+msgid "Determining the capabilities of the running desktop …"
+msgstr "Rilevamento delle capacità della scrivania in esecuzione…"
+
+#: src/hintergrund.rs:916 src/hintergrund_seite.rs:304
+#, no-c-format
+msgid "The running desktop cannot display this: {reason}"
+msgstr "La scrivania in esecuzione non può mostrarlo: {reason}"
+
+#: src/hintergrund.rs:941
+msgid ""
+"desktop.ini has been changed elsewhere in the meantime – not overwritten. Please close the dialog and open it again."
+msgstr ""
+"Nel frattempo desktop.ini è stato modificato altrove – non sovrascritto. Chiudere il dialogo e riaprirlo."
+
+#: src/hintergrund_katalog.rs:41
+msgid "Querencia Deep Blue"
+msgstr "Querencia Blu profondo"
+
+#: src/hintergrund_katalog.rs:47
+msgid "Querencia Blue Green"
+msgstr "Querencia Blu verde"
+
+#: src/hintergrund_katalog.rs:53
+msgid "Querencia Blue Glow"
+msgstr "Querencia Bagliore blu"
+
+#: src/hintergrund_katalog.rs:59
+msgid "Querencia Ember"
+msgstr "Querencia Brace"
+
+#: src/hintergrund_katalog.rs:65
+msgid "Querencia Hills"
+msgstr "Querencia Colline"
+
+#: src/hintergrund_katalog.rs:71
+msgid "Querencia Coast"
+msgstr "Querencia Costa"
+
+#: src/hintergrund_katalog.rs:77
+msgid "Querencia Dunes"
+msgstr "Querencia Dune"
+
+#: src/hintergrund_katalog.rs:83
+msgid "Querencia Lake"
+msgstr "Querencia Lago"
+
+#: src/hintergrund_katalog.rs:89
+msgid "Querencia Desert"
+msgstr "Querencia Deserto"
+
+#: src/hintergrund_katalog.rs:95
+msgid "Querencia Mountains"
+msgstr "Querencia Montagne"
+
+#: src/hintergrund_katalog.rs:101
+msgid "Querencia Beach"
+msgstr "Querencia Spiaggia"
+
+#: src/hintergrund_katalog.rs:107
+msgid "Querencia Glass"
+msgstr "Querencia Vetro"
+
+#: src/hintergrund_katalog.rs:113
+msgid "Querencia Deep Blue with logo"
+msgstr "Querencia Blu profondo con logo"
+
+#: src/hintergrund_katalog.rs:119
+msgid "Querencia Deep Blue with wordmark"
+msgstr "Querencia Blu profondo con scritta"
+
+#: src/hintergrund_katalog.rs:125
+msgid "Querencia Deep Blue with watermark"
+msgstr "Querencia Blu profondo con filigrana"
+
+#: src/hintergrund_katalog.rs:131
+msgid "Querencia Amber with logo"
+msgstr "Querencia Ambra con logo"
+
+#: src/hintergrund_katalog.rs:138 src/modell.rs:38
+msgid "Querencia Blue"
+msgstr "Querencia Blu"
+
+#: src/hintergrund_katalog.rs:144
+msgid "Querencia Evening"
+msgstr "Querencia Sera"
+
+#: src/hintergrund_katalog.rs:150
+msgid "Querencia Blue 2"
+msgstr "Querencia Blu 2"
+
+#: src/hintergrund_katalog.rs:156
+msgid "Querencia Earth"
+msgstr "Querencia Terra"
+
+#: src/hintergrund_katalog.rs:162
+msgid "Querencia Night"
+msgstr "Querencia Notte"
+
+#: src/hintergrund_katalog.rs:271
+#, no-c-format
+msgid "{name} with logo"
+msgstr "{name} con logo"
+
+#: src/hintergrund_seite.rs:47
+#, no-c-format
+msgid "Solid color {color}"
+msgstr "Colore uniforme {color}"
+
+#: src/hintergrund_seite.rs:51
+#, no-c-format
+msgid "Built-in image “{name}”"
+msgstr "Immagine integrata «{name}»"
+
+#: src/hintergrund_seite.rs:75
+msgid "Current background:"
+msgstr "Sfondo attuale:"
+
+#: src/hintergrund_seite.rs:88
+msgid "Background …"
+msgstr "Sfondo…"
+
+#: src/hintergrund_seite.rs:91
+msgid "Own image, solid-color background and style"
+msgstr "Immagine propria, sfondo a tinta unita e stile"
+
+#: src/hintergrund_seite.rs:99
+msgid "Own image, color and style"
+msgstr "Immagine propria, colore e stile"
+
+#: src/hintergrund_seite.rs:106
+msgid "Built-in Images"
+msgstr "Immagini integrate"
+
+#: src/hintergrund_seite.rs:115
+#, no-c-format
+msgid ""
+"A click selects the image for the preview, “Apply” sets it as the background. The {format} version is used for this screen."
+msgstr ""
+"Un clic seleziona l’immagine per l’anteprima, «Applica» la imposta come sfondo. Per questo schermo viene usata la versione {format}."
+
+#: src/hintergrund_seite.rs:126
+msgid ""
+"~/.config/querencia/desktop.ini [Background]; Querencia Desktop draws the background and reloads the file immediately when it changes."
+msgstr ""
+"~/.config/querencia/desktop.ini [Background]; Querencia Desktop disegna lo sfondo e ricarica subito il file quando cambia."
+
+#: src/hintergrund_seite.rs:135
+msgid "Discard Selection"
+msgstr "Annulla selezione"
+
+#: src/hintergrund_seite.rs:246
+#, no-c-format
+msgid "Style: {style}"
+msgstr "Stile: {style}"
+
+#: src/hintergrund_seite.rs:281
+msgid "Choose an image from the gallery and “Apply”."
+msgstr "Scegliere un’immagine dalla galleria e premere «Applica»."
+
+#: src/hintergrund_seite.rs:291
+#, no-c-format
+msgid "Selected: {name} – not applied yet."
+msgstr "Selezionata: {name} – non ancora applicata."
+
+#: src/hintergrund_seite.rs:325
+msgid ""
+"desktop.ini has been changed elsewhere in the meantime – not overwritten. “Discard Selection” shows the current state."
+msgstr ""
+"Nel frattempo desktop.ini è stato modificato altrove – non sovrascritto. «Annulla selezione» mostra lo stato attuale."
+
+#: src/hintergrund_seite.rs:341
+#, no-c-format
+msgid ""
+"Applied at {time}; the desktop shows the image immediately. Previous setting saved as {name}."
+msgstr ""
+"Applicato alle {time}; la scrivania mostra subito l’immagine. Impostazione precedente salvata come {name}."
+
+#: src/hintergrund_seite.rs:353
+#, no-c-format
+msgid "Applied at {time}; the desktop shows the image immediately."
+msgstr "Applicato alle {time}; la scrivania mostra subito l’immagine."
+
+#: src/labwc_konfig.rs:255
+#, no-c-format
+msgid "{file} not readable ({error})"
+msgstr "{file} non leggibile ({error})"
+
+#: src/labwc_konfig.rs:443
+msgid "an empty rc.xml is not written"
+msgstr "un rc.xml vuoto non viene scritto"
+
+#: src/labwc_konfig.rs:584
+msgid "labwc does not read the user copy"
+msgstr "labwc non legge la copia dell’utente"
+
+#: src/labwc_konfig.rs:594
+#, no-c-format
+msgid "{program} cannot be started: {error}"
+msgstr "impossibile avviare {program}: {error}"
+
+#: src/labwc_konfig.rs:634
+msgid ""
+"Changes take effect immediately after “Apply” (labwc reloads its configuration)."
+msgstr ""
+"Le modifiche hanno effetto subito dopo «Applica» (labwc ricarica la configurazione)."
+
+#: src/labwc_konfig.rs:637
+msgid ""
+"Effective from the next login. The running session does not read the user copy ~/.config/querencia/labwc yet; “Apply” saves there."
+msgstr ""
+"Effettivo dal prossimo accesso. La sessione in esecuzione non legge ancora la copia dell’utente ~/.config/querencia/labwc; «Applica» salva lì."
+
+#: src/labwc_konfig.rs:640
+msgid ""
+"No Querencia default for labwc was found, labwc’s built-in values are shown. “Apply” creates ~/.config/querencia/labwc; labwc reads it from the next login."
+msgstr ""
+"Nessun predefinito di Querencia per labwc trovato, vengono mostrati i valori integrati di labwc. «Applica» crea ~/.config/querencia/labwc; labwc lo legge dal prossimo accesso."
+
+#: src/labwc_konfig.rs:643
+msgid ""
+"Effective from the next login. There is no user copy yet, Querencia’s default is shown; “Apply” creates ~/.config/querencia/labwc, the session reads it from the next login."
+msgstr ""
+"Effettivo dal prossimo accesso. Non esiste ancora una copia dell’utente, viene mostrato il predefinito di Querencia; «Applica» crea ~/.config/querencia/labwc, la sessione la legge dal prossimo accesso."
+
+#: src/labwc_seite.rs:260
+msgid "New Default Available"
+msgstr "Nuovo predefinito disponibile"
+
+#: src/labwc_seite.rs:261
+msgid ""
+"Querencia has a newer default for rc.xml (e.g. new keyboard shortcuts). Your file was not replaced at login because it contains your own settings. “Adopt New Default” transfers your settings to the new default; the previous file is backed up."
+msgstr ""
+"Querencia ha un predefinito più recente per rc.xml (ad es. nuove scorciatoie da tastiera). Il file non è stato sostituito all’accesso perché contiene impostazioni personali. «Adotta nuovo predefinito» trasferisce le impostazioni nel nuovo predefinito; il file precedente viene salvato."
+
+#: src/labwc_seite.rs:264
+msgid "Adopt New Default"
+msgstr "Adotta nuovo predefinito"
+
+#: src/labwc_seite.rs:363
+#, no-c-format
+msgid ""
+"Attention: {error}. labwc’s default values are shown; “Apply” writes nothing until the file is readable."
+msgstr ""
+"Attenzione: {error}. Vengono mostrati i valori predefiniti di labwc; «Applica» non scrive nulla finché il file non è leggibile."
+
+#: src/labwc_seite.rs:371
+#, no-c-format
+msgid ""
+"Attention: {error}. labwc’s default values are shown; “Apply” does not write rc.xml until the file is repaired (layout and pointer are saved anyway)."
+msgstr ""
+"Attenzione: {error}. Vengono mostrati i valori predefiniti di labwc; «Applica» non scrive rc.xml finché il file non è riparato (disposizione e puntatore vengono comunque salvati)."
+
+#: src/labwc_seite.rs:410
+msgid "Changed – “Apply” saves."
+msgstr "Modificato – «Applica» salva."
+
+#: src/labwc_seite.rs:412
+msgid "No change."
+msgstr "Nessuna modifica."
+
+#: src/labwc_seite.rs:438
+msgid ""
+"The settings have been changed elsewhere in the meantime – not overwritten. “Reload” shows the current state."
+msgstr ""
+"Nel frattempo le impostazioni sono state modificate altrove – non sovrascritte. «Ricarica» mostra lo stato attuale."
+
+#: src/labwc_seite.rs:454
+#, no-c-format
+msgid "{error} (labwc configuration is already saved)"
+msgstr "{error} (la configurazione di labwc è già salvata)"
+
+#: src/labwc_seite.rs:466
+msgid "GTK programs, panel and desktop pick it up immediately."
+msgstr "I programmi GTK, il pannello e la scrivania lo applicano subito."
+
+#: src/labwc_seite.rs:475
+msgid "labwc has reloaded its configuration."
+msgstr "labwc ha ricaricato la configurazione."
+
+#: src/labwc_seite.rs:478
+#, no-c-format
+msgid "Reloading failed: {error}."
+msgstr "Ricaricamento non riuscito: {error}."
+
+#: src/labwc_seite.rs:480
+msgid "Saved in ~/.config/querencia/labwc; effective from the next login."
+msgstr "Salvato in ~/.config/querencia/labwc; effettivo dal prossimo accesso."
+
+#: src/labwc_seite.rs:491 src/labwc_seite.rs:518
+#, no-c-format
+msgid "Previously saved as {names}."
+msgstr "Salvato in precedenza come {names}."
+
+#: src/labwc_seite.rs:511
+msgid "New default adopted, your settings remain."
+msgstr "Nuovo predefinito adottato, le impostazioni personali restano."
+
+#: src/labwc_seite.rs:514
+msgid "labwc has reloaded."
+msgstr "labwc ha ricaricato."
+
+#: src/labwc_seite.rs:529
+#, no-c-format
+msgid "New default not adopted: {error}"
+msgstr "Nuovo predefinito non adottato: {error}"
+
+#: src/labwc_xml.rs:123
+#, no-c-format
+msgid "rc.xml is not valid XML ({error})"
+msgstr "rc.xml non è un XML valido ({error})"
+
+#: src/labwc_xml.rs:134
+#, no-c-format
+msgid "rc.xml: root is <{root}>, not <labwc_config>"
+msgstr "rc.xml: la radice è <{root}>, non <labwc_config>"
+
+#: src/labwc_xml.rs:575
+msgid "rc.xml contains changes outside the settings – please merge by hand"
+msgstr ""
+"rc.xml contiene modifiche al di fuori delle impostazioni – unirle a mano"
+
+#: src/main.rs:179 src/main.rs:192
+msgid "Querencia Settings"
+msgstr "Impostazioni di Querencia"
+
+#: src/maus.rs:23
+msgid "Larger (48)"
+msgstr "Più grande (48)"
+
+#: src/maus.rs:24
+msgid "Very large (64)"
+msgstr "Molto grande (64)"
+
+#: src/maus.rs:88
+msgid ""
+"~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE)."
+msgstr ""
+"~/.config/querencia/labwc: rc.xml <mouse><doubleClickTime>, <libinput><device category=\"default\">; environment.d/zz-querencia-einstellungen.env (XCURSOR_THEME, XCURSOR_SIZE)."
+
+#: src/maus.rs:199
+msgid "Pointer Motion"
+msgstr "Movimento del puntatore"
+
+#: src/maus.rs:204
+msgid "Slow"
+msgstr "Lento"
+
+#: src/maus.rs:206
+msgid "Fast"
+msgstr "Veloce"
+
+#: src/maus.rs:215
+msgid "Speed:"
+msgstr "Velocità:"
+
+#: src/maus.rs:217
+msgid "Acceleration (fast movements travel further)"
+msgstr "Accelerazione (i movimenti rapidi vanno più lontano)"
+
+#: src/maus.rs:221
+msgid "Buttons and Wheel"
+msgstr "Pulsanti e rotella"
+
+#: src/maus.rs:224
+msgid "Double-click timeout (milliseconds):"
+msgstr "Intervallo doppio clic (millisecondi):"
+
+#: src/maus.rs:227
+msgid ""
+"Applies to labwc (title bars, window frames); GTK programs have their own setting."
+msgstr ""
+"Vale per labwc (barre del titolo, cornici delle finestre); i programmi GTK hanno una propria impostazione."
+
+#: src/maus.rs:231
+msgid "Left-handed (swap left and right buttons)"
+msgstr "Mancino (scambia i pulsanti sinistro e destro)"
+
+#: src/maus.rs:233
+msgid "Natural scrolling (content follows the fingers)"
+msgstr "Scorrimento naturale (il contenuto segue le dita)"
+
+#: src/maus.rs:237
+msgid "Applies to all mice and touchpads without their own profile in rc.xml."
+msgstr "Vale per tutti i mouse e touchpad senza un proprio profilo in rc.xml."
+
+#: src/maus.rs:256
+msgid ""
+"Pointer of labwc (window frames, desktop) and GTK programs immediately after “Apply”, in other programs from the next login."
+msgstr ""
+"Puntatore di labwc (cornici delle finestre, scrivania) e dei programmi GTK subito dopo «Applica», negli altri programmi dal prossimo accesso."
+
+#: src/maus.rs:348
+msgid "Default"
+msgstr "Predefinito"
+
+#: src/modell.rs:39
+msgid "Tango Blue"
+msgstr "Blu Tango"
+
+#: src/modell.rs:40
+msgid "Anthracite"
+msgstr "Antracite"
+
+#: src/modell.rs:42
+msgid "Querencia Orange"
+msgstr "Arancione Querencia"
+
+#: src/modell.rs:45
+msgid "Slate"
+msgstr "Ardesia"
+
+#: src/modell.rs:46
+msgid "Moss"
+msgstr "Muschio"
+
+#: src/modell.rs:47
+msgid "Wine"
+msgstr "Vino"
+
+#: src/modell.rs:48
+msgid "Sand"
+msgstr "Sabbia"
+
+#: src/modell.rs:49
+msgid "Fog"
+msgstr "Nebbia"
+
+#: src/modell.rs:50
+msgid "Black"
+msgstr "Nero"
+
+#: src/modell.rs:118
+msgid "Zoom"
+msgstr "Zoom"
+
+#: src/modell.rs:119
+msgid "Scaled"
+msgstr "Scalato"
+
+#: src/modell.rs:120
+msgid "Centered"
+msgstr "Centrato"
+
+#: src/modell.rs:121
+msgid "Stretched"
+msgstr "Allungato"
+
+#: src/modell.rs:122
+msgid "Tiled"
+msgstr "Affiancato"
+
+#: src/modell.rs:304
+msgid ""
+"A plain solid-color background needs the desktop extension (Type=color); the running desktop shows the built-in image instead."
+msgstr ""
+"Uno sfondo a tinta unita richiede l’estensione della scrivania (Type=color); la scrivania in esecuzione mostra invece l’immagine integrata."
+
+#: src/modell.rs:310
+#, no-c-format
+msgid ""
+"“{style}” needs the desktop extension; the running desktop shows “{zoom}” instead."
+msgstr ""
+"«{style}» richiede l’estensione della scrivania; la scrivania in esecuzione mostra invece «{zoom}»."
+
+#: src/panels.rs:20
+msgid "Applications"
+msgstr "Applicazioni"
+
+#: src/panels.rs:21
+msgid "Places"
+msgstr "Risorse"
+
+#: src/panels.rs:22
+msgid "System"
+msgstr "Sistema"
+
+#: src/panels.rs:23
+msgid "Window List"
+msgstr "Elenco finestre"
+
+#: src/panels.rs:24
+msgid "Workspace Switcher"
+msgstr "Selettore spazi di lavoro"
+
+#: src/panels.rs:25
+msgid "Clock"
+msgstr "Orologio"
+
+#: src/panels.rs:26
+msgid "Volume"
+msgstr "Volume"
+
+#: src/panels.rs:31 src/xkb.rs:71
+msgid "left"
+msgstr "sinistra"
+
+#: src/panels.rs:32
+msgid "center"
+msgstr "centro"
+
+#: src/panels.rs:33 src/xkb.rs:72
+msgid "right"
+msgstr "destra"
+
+#: src/panels.rs:42
+msgid "Top Panel"
+msgstr "Pannello superiore"
+
+#: src/panels.rs:43
+msgid "Bottom Panel"
+msgstr "Pannello inferiore"
+
+#: src/panels.rs:44
+msgid "Left Panel"
+msgstr "Pannello sinistro"
+
+#: src/panels.rs:45
+msgid "Right Panel"
+msgstr "Pannello destro"
+
+#: src/panels.rs:46
+#, no-c-format
+msgid "Panel ({edge})"
+msgstr "Pannello ({edge})"
+
+#: src/panels.rs:63
+#, no-c-format
+msgid "Launcher “{name}”"
+msgstr "Lanciatore «{name}»"
+
+#: src/panels.rs:114
+#, no-c-format
+msgid "{panel} ({height} pixels):"
+msgstr "{panel} ({height} pixel):"
+
+#: src/panels.rs:119
+msgid "empty"
+msgstr "vuoto"
+
+#: src/panels.rs:143
+#, no-c-format
+msgid "not readable ({error}) – the panel then uses its default layout"
+msgstr ""
+"non leggibile ({error}) – il pannello usa allora la sua disposizione predefinita"
+
+#: src/panels.rs:151
+msgid ""
+"not present yet – the panel shows its default layout and creates the file at the first change"
+msgstr ""
+"non ancora presente – il pannello mostra la disposizione predefinita e crea il file alla prima modifica"
+
+#: src/panels.rs:184
+msgid "You set up the panels directly on the panel, as in GNOME 2."
+msgstr "I pannelli si configurano direttamente sul pannello, come in GNOME 2."
+
+#: src/panels.rs:187
+msgid ""
+"The panel saves every change immediately; this page shows the saved layout."
+msgstr ""
+"Il pannello salva subito ogni modifica; questa pagina mostra la disposizione salvata."
+
+#: src/panels.rs:196
+msgid "How It Works"
+msgstr "Come funziona"
+
+#: src/panels.rs:203
+msgid ""
+"Add: right-click a free spot on the panel → “Add to Panel …” (menus, clock, volume, network, application launcher). The item goes into the clicked part of the panel."
+msgstr ""
+"Aggiungere: clic destro su un punto libero del pannello → «Aggiungi al pannello…» (menu, orologio, volume, rete, lanciatore di applicazioni). L’elemento va nella parte del pannello su cui si è fatto clic."
+
+#: src/panels.rs:206
+msgid ""
+"Move: right-click an item → “Move Left”, “Move Right”, “Move to the Left Edge”, “Move to the Right Edge”; or drag it with the middle mouse button (or Alt and the left button)."
+msgstr ""
+"Spostare: clic destro su un elemento → «Sposta a sinistra», «Sposta a destra», «Sposta al bordo sinistro», «Sposta al bordo destro»; oppure trascinarlo con il pulsante centrale (o Alt e il pulsante sinistro)."
+
+#: src/panels.rs:209
+msgid ""
+"Remove: right-click a launcher, the clock or the volume control → “Remove From Panel”."
+msgstr ""
+"Rimuovere: clic destro su un lanciatore, sull’orologio o sul controllo del volume → «Rimuovi dal pannello»."
+
+#: src/panels.rs:222
+msgid "Saved Layout"
+msgstr "Disposizione salvata"
+
+#: src/panels.rs:234
+msgid ""
+"Position and height of the two panels are fixed (see above); a menu item for this comes with a later version of the panel."
+msgstr ""
+"Posizione e altezza dei due pannelli sono fisse (vedi sopra); una voce di menu apposita arriverà con una versione successiva del pannello."
+
+#: src/panels.rs:242
+#, no-c-format
+msgid "{file} (format version 1), written by the panel"
+msgstr "{file} (versione formato 1), scritto dal pannello"
+
+#. TRANSLATORS: address of the online help in your language; only change “/en/” if querencialinux.org has docs in your language
+#: src/produkt.rs:27
+msgid "https://querencialinux.org/en/docs/"
+msgstr "https://querencialinux.org/it/docs/"
+
+#: src/schriften.rs:91
+msgid ""
+"gsettings org.gnome.desktop.interface (font-name, document-font-name, monospace-font-name); ~/.config/querencia/labwc/rc.xml <theme><font place=\"ActiveWindow\"> and \"InactiveWindow\" (name, size, weight)."
+msgstr ""
+"gsettings org.gnome.desktop.interface (font-name, document-font-name, monospace-font-name); ~/.config/querencia/labwc/rc.xml <theme><font place=\"ActiveWindow\"> e \"InactiveWindow\" (name, size, weight)."
+
+#: src/schriften.rs:141
+msgid ""
+"The program fonts take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. The window title font also takes effect immediately (labwc reloads its configuration)."
+msgstr ""
+"I caratteri dei programmi hanno effetto subito dopo «Applica» in tutti i programmi GTK, nel pannello e sulla scrivania. Anche il carattere dei titoli delle finestre ha effetto subito (labwc ricarica la configurazione)."
+
+#: src/schriften.rs:144
+msgid ""
+"The program fonts take effect immediately after “Apply” in all GTK programs, in the panel and on the desktop. The window title font takes effect from the next login."
+msgstr ""
+"I caratteri dei programmi hanno effetto subito dopo «Applica» in tutti i programmi GTK, nel pannello e sulla scrivania. Il carattere dei titoli delle finestre ha effetto dal prossimo accesso."
+
+#: src/schriften.rs:153
+msgid "Program Fonts"
+msgstr "Caratteri dei programmi"
+
+#: src/schriften.rs:157
+msgid "Application Font"
+msgstr "Carattere delle applicazioni"
+
+#: src/schriften.rs:158
+msgid "Document Font"
+msgstr "Carattere dei documenti"
+
+#: src/schriften.rs:159
+msgid "Monospace Font"
+msgstr "Carattere a spaziatura fissa"
+
+#: src/schriften.rs:161
+msgid "Applications:"
+msgstr "Applicazioni:"
+
+#: src/schriften.rs:162
+msgid "Documents:"
+msgstr "Documenti:"
+
+#: src/schriften.rs:163
+msgid "Monospace:"
+msgstr "Spaziatura fissa:"
+
+#: src/schriften.rs:174
+msgid ""
+"“Applications” applies to menus, buttons and labels, “Documents” to text content, “Monospace” to terminal and source code. The font chooser shows all installed fonts."
+msgstr ""
+"«Applicazioni» vale per menu, pulsanti ed etichette, «Documenti» per i testi, «Spaziatura fissa» per terminale e codice sorgente. Il selettore di caratteri mostra tutti i caratteri installati."
+
+#: src/schriften.rs:179
+msgid "Window Titles"
+msgstr "Titoli delle finestre"
+
+#: src/schriften.rs:182
+msgid "Window Title Font"
+msgstr "Carattere dei titoli delle finestre"
+
+#: src/schriften.rs:189
+msgid ""
+"For active and inactive windows; the same value is in the “Window Design” section. Bold is applied, italic is not."
+msgstr ""
+"Per finestre attive e inattive; lo stesso valore si trova nella sezione «Stile finestre». Il grassetto viene applicato, il corsivo no."
+
+#: src/sprache.rs:367
+msgid "US units"
+msgstr "unità USA"
+
+#: src/sprache.rs:369
+msgid "metric"
+msgstr "metrico"
+
+#: src/sprache.rs:371
+#, no-c-format
+msgid ""
+"Date {date} · Time {time} · Number {number} · Currency {currency} · Paper {paper} · Units {units}"
+msgstr ""
+"Data {date} · Ora {time} · Numero {number} · Valuta {currency} · Carta {paper} · Unità {units}"
+
+#: src/sprache.rs:434
+#, no-c-format
+msgid "This session: texts {language}, formats {formats} ({variables})."
+msgstr "Questa sessione: testi {language}, formati {formats} ({variables})."
+
+#: src/sprache.rs:449
+msgid "Language and Region"
+msgstr "Lingua e regione"
+
+#: src/sprache.rs:451
+msgid ""
+"~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (LANG, LANGUAGE, LC_TIME, LC_NUMERIC, LC_MONETARY, LC_PAPER, LC_MEASUREMENT; default in environment); languages from the catalogs of this program, formats from “locale -a”."
+msgstr ""
+"~/.config/querencia/labwc/environment.d/zz-querencia-einstellungen.env (LANG, LANGUAGE, LC_TIME, LC_NUMERIC, LC_MONETARY, LC_PAPER, LC_MEASUREMENT; predefinito in environment); lingue dai cataloghi di questo programma, formati da «locale -a»."
+
+#: src/sprache.rs:482
+#, no-c-format
+msgid ""
+"Effective from the next login. Programs receive language and formats when they start; programs that are already running keep theirs. Querencia’s default: texts {language}, formats {formats} (LANGUAGE={language_variable}, LANG={lang_variable})."
+msgstr ""
+"Effettivo dal prossimo accesso. I programmi ricevono lingua e formati all’avvio; quelli già in esecuzione mantengono i propri. Predefinito di Querencia: testi {language}, formati {formats} (LANGUAGE={language_variable}, LANG={lang_variable})."
+
+#: src/sprache.rs:499
+msgid "Display Language"
+msgstr "Lingua di visualizzazione"
+
+#: src/sprache.rs:502
+msgid ""
+"Language of menus and texts (LANGUAGE). Offered are languages with a translation for which a locale is installed; programs without a translation show English."
+msgstr ""
+"Lingua di menu e testi (LANGUAGE). Sono offerte le lingue con traduzione per cui è installata una localizzazione; i programmi senza traduzione appaiono in inglese."
+
+#: src/sprache.rs:507
+msgid "Formats"
+msgstr "Formati"
+
+#: src/sprache.rs:519
+msgid ""
+"Date and time, numbers, currency, paper and units (LC_TIME, LC_NUMERIC, LC_MONETARY, LC_PAPER, LC_MEASUREMENT)."
+msgstr ""
+"Data e ora, numeri, valuta, carta e unità di misura (LC_TIME, LC_NUMERIC, LC_MONETARY, LC_PAPER, LC_MEASUREMENT)."
+
+#: src/sprache.rs:561
+#, no-c-format
+msgid "{language} (no translation)"
+msgstr "{language} (nessuna traduzione)"
+
+#: src/sprache.rs:584
+#, no-c-format
+msgid "{locale} (not installed)"
+msgstr "{locale} (non installata)"
+
+#: src/standardanwendungen.rs:20
+msgid "Default Applications"
+msgstr "Applicazioni predefinite"
+
+#: src/standardanwendungen.rs:174
+#, no-c-format
+msgid "{program} (not installed)"
+msgstr "{program} (non installato)"
+
+#: src/standardanwendungen.rs:184
+msgid "No suitable application installed"
+msgstr "Nessuna applicazione adatta installata"
+
+#: src/standardanwendungen.rs:186
+msgid "(not set)"
+msgstr "(non impostato)"
+
+#: src/standardanwendungen.rs:228
+msgid ""
+"Which application opens files and addresses – in Querencia Files, on the desktop and in all programs that open via GIO. A change takes effect immediately."
+msgstr ""
+"Quale applicazione apre file e indirizzi – in Querencia Files, sulla scrivania e in tutti i programmi che aprono tramite GIO. Una modifica ha effetto subito."
+
+#: src/standardanwendungen.rs:261 src/tastatur.rs:307
+msgid "Change …"
+msgstr "Cambia…"
+
+#: src/standardanwendungen.rs:275
+msgid ""
+"Terminal: panel and desktop always open Querencia Terminal. There is no MIME type and no way to write it via GIO for terminals; the choice follows with a separate building block."
+msgstr ""
+"Terminale: pannello e scrivania aprono sempre Querencia Terminal. Per i terminali non esiste un tipo MIME né un modo di scriverlo tramite GIO; la scelta arriverà con un componente separato."
+
+#: src/standardanwendungen.rs:289
+#, no-c-format
+msgid ""
+"{file} (user file; if it is missing, the system default applies). Only this file is written."
+msgstr ""
+"{file} (file dell’utente; se manca, vale il predefinito di sistema). Viene scritto solo questo file."
+
+#: src/standardanwendungen.rs:295
+#, no-c-format
+msgid "{file} takes precedence – entries there apply before this page."
+msgstr "{file} ha la precedenza – le voci lì valgono prima di questa pagina."
+
+#: src/standardanwendungen.rs:321
+#, no-c-format
+msgid "Choose Default Application – {category}"
+msgstr "Scegli applicazione predefinita – {category}"
+
+#: src/standardanwendungen.rs:337
+#, no-c-format
+msgid "<b>{category}</b> opens: {types}"
+msgstr "<b>{category}</b> apre: {types}"
+
+#: src/standardanwendungen.rs:368
+#, no-c-format
+msgid "{name} (suggestion)"
+msgstr "{name} (suggerimento)"
+
+#: src/standardanwendungen.rs:371
+#, no-c-format
+msgid "{name} – current"
+msgstr "{name} – attuale"
+
+#: src/standardanwendungen.rs:396
+#, no-c-format
+msgid "Suggestion {id} is not installed."
+msgstr "Il suggerimento {id} non è installato."
+
+#: src/standardanwendungen.rs:439
+#, no-c-format
+msgid ""
+"{category}: “{application}” is now the default for {types}. Saved in {file}."
+msgstr ""
+"{category}: «{application}» è ora il predefinito per {types}. Salvato in {file}."
+
+#: src/standardanwendungen.rs:449
+#, no-c-format
+msgid ""
+"{category}: saved, but GIO still reports “{application}” – a list with precedence ({lists}) sets something else."
+msgstr ""
+"{category}: salvato, ma GIO riporta ancora «{application}» – un elenco con precedenza ({lists}) imposta altro."
+
+#: src/standardanwendungen.rs:453
+msgid "(none)"
+msgstr "(nessuno)"
+
+#: src/standardanwendungen.rs:466
+#, no-c-format
+msgid "{category}: not saved – {error}"
+msgstr "{category}: non salvato – {error}"
+
+#: src/standardanwendungen_modell.rs:44
+msgid "Web Browser"
+msgstr "Browser web"
+
+#: src/standardanwendungen_modell.rs:56
+msgid "Email"
+msgstr "Email"
+
+#: src/standardanwendungen_modell.rs:63
+msgid "Text Editor"
+msgstr "Editor di testo"
+
+#: src/standardanwendungen_modell.rs:70
+msgid "Terminal"
+msgstr "Terminale"
+
+#: src/standardanwendungen_modell.rs:77
+msgid "Images"
+msgstr "Immagini"
+
+#: src/standardanwendungen_modell.rs:92
+msgid "Music"
+msgstr "Musica"
+
+#: src/standardanwendungen_modell.rs:106
+msgid "Video"
+msgstr "Video"
+
+#: src/standardanwendungen_modell.rs:119
+msgid "File Manager"
+msgstr "Gestore file"
+
+#: src/standardanwendungen_modell.rs:126
+msgid "PDF Documents"
+msgstr "Documenti PDF"
+
+#: src/standardanwendungen_modell.rs:133
+msgid "Archives"
+msgstr "Archivi"
+
+#: src/tastatur.rs:120
+msgid "No additional layouts."
+msgstr "Nessuna disposizione aggiuntiva."
+
+#: src/tastatur.rs:130
+msgid "Move Up"
+msgstr "Sposta su"
+
+#: src/tastatur.rs:131
+msgid "Move Down"
+msgstr "Sposta giù"
+
+#: src/tastatur.rs:133
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: src/tastatur.rs:145
+msgid "None"
+msgstr "Nessuna"
+
+#: src/tastatur.rs:235
+msgid ""
+"~/.config/querencia/labwc: rc.xml <keyboard> (repeat, Num Lock), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT, XKB_DEFAULT_OPTIONS; default in environment)."
+msgstr ""
+"~/.config/querencia/labwc: rc.xml <keyboard> (ripetizione, Bloc Num), environment.d/zz-querencia-einstellungen.env (XKB_DEFAULT_LAYOUT, XKB_DEFAULT_VARIANT, XKB_DEFAULT_OPTIONS; predefinito in environment)."
+
+#: src/tastatur.rs:301
+msgid "Keyboard Layout"
+msgstr "Disposizione della tastiera"
+
+#: src/tastatur.rs:311
+msgid ""
+"Applies to all programs. labwc applies the layout immediately with “Apply” as soon as the session reads the user copy."
+msgstr ""
+"Vale per tutti i programmi. labwc applica subito la disposizione con «Applica» non appena la sessione legge la copia dell’utente."
+
+#: src/tastatur.rs:316
+msgid "Key Repeat"
+msgstr "Ripetizione dei tasti"
+
+#: src/tastatur.rs:319
+msgid "Delay before repeating (milliseconds):"
+msgstr "Ritardo prima della ripetizione (millisecondi):"
+
+#: src/tastatur.rs:324
+msgid "Speed (characters per second):"
+msgstr "Velocità (caratteri al secondo):"
+
+#: src/tastatur.rs:328
+msgid "Try it here (after “Apply”)"
+msgstr "Provare qui (dopo «Applica»)"
+
+#: src/tastatur.rs:333
+msgid "Turn on Num Lock at login"
+msgstr "Attiva Bloc Num all’accesso"
+
+#: src/tastatur.rs:335
+msgid "labwc sets Num Lock when a keyboard is detected (login, plugging in)."
+msgstr ""
+"labwc attiva Bloc Num quando rileva una tastiera (accesso, collegamento)."
+
+#: src/tastatur.rs:341
+msgid "Additional Layouts and Switching"
+msgstr "Disposizioni aggiuntive e cambio"
+
+#: src/tastatur.rs:342
+msgid ""
+"With several layouts the switch key changes to the next one in turn; after login the first one applies."
+msgstr ""
+"Con più disposizioni il tasto di cambio passa a turno alla successiva; dopo l’accesso vale la prima."
+
+#: src/tastatur.rs:347
+msgid "Add Layout …"
+msgstr "Aggiungi disposizione…"
+
+#: src/tastatur.rs:350
+msgid "Switch layouts with:"
+msgstr "Cambia disposizione con:"
+
+#: src/tastatur.rs:358
+msgid ""
+"The panel does not show the active layout yet; a layout indicator follows with a later version of the panel."
+msgstr ""
+"Il pannello non mostra ancora la disposizione attiva; un indicatore arriverà con una versione successiva del pannello."
+
+#: src/tastatur.rs:441
+msgid "Choose Keyboard Layout"
+msgstr "Scegli disposizione della tastiera"
+
+#: src/tastatur.rs:453
+msgid "Search, e.g. German, Switzerland, Dvorak"
+msgstr "Cerca, ad es. italiano, Svizzera, Dvorak"
+
+#: src/tastatur.rs:479
+msgid "Select"
+msgstr "Seleziona"
+
+#: src/xkb.rs:57
+msgid "no dead keys"
+msgstr "senza tasti morti"
+
+#: src/xkb.rs:58
+msgid "with dead keys"
+msgstr "con tasti morti"
+
+#: src/xkb.rs:59
+msgid "intl."
+msgstr "internazionale"
+
+#: src/xkb.rs:60
+msgid "alt. intl."
+msgstr "internazionale, alternativa"
+
+#: src/xkb.rs:61
+msgid "with AltGr dead keys"
+msgstr "tasti morti con AltGr"
+
+#: src/xkb.rs:62
+msgid "alt."
+msgstr "alternativa"
+
+#: src/xkb.rs:63
+msgid "legacy"
+msgstr "obsoleta"
+
+#: src/xkb.rs:64
+msgid "extended"
+msgstr "estesa"
+
+#: src/xkb.rs:65
+msgid "dead acute"
+msgstr "acuto morto"
+
+#: src/xkb.rs:66
+msgid "dead grave acute"
+msgstr "grave e acuto morti"
+
+#: src/xkb.rs:67
+msgid "dead tilde"
+msgstr "tilde morta"
+
+#: src/xkb.rs:68
+msgid "euro on 5"
+msgstr "euro sul 5"
+
+#: src/xkb.rs:69
+msgid "phonetic"
+msgstr "fonetica"
+
+#: src/xkb.rs:70
+msgid "one-handed"
+msgstr "per una mano"
+
+#: src/xkb.rs:73
+msgid "Latin-9 only"
+msgstr "solo Latin-9"
+
+#: src/xkb.rs:74
+msgid "programmer Dvorak"
+msgstr "Dvorak per programmatori"
+
+#: src/xkb.rs:75
+msgid "classic Dvorak"
+msgstr "Dvorak classico"
+
+#: src/xkb.rs:76
+msgid "US"
+msgstr "USA"
+
+#: src/xkb.rs:77
+msgid "UK"
+msgstr "Regno Unito"
+
+#: src/xkb.rs:78
+msgid "Germany"
+msgstr "Germania"
+
+#: src/xkb.rs:79
+msgid "Austria"
+msgstr "Austria"
+
+#: src/xkb.rs:80
+msgid "Switzerland"
+msgstr "Svizzera"
+
+#: src/xkb.rs:81
+msgid "France"
+msgstr "Francia"
+
+#: src/xkb.rs:291
+msgid "Alt+Shift"
+msgstr "Alt+Maiusc"
+
+#: src/xkb.rs:292
+msgid "Ctrl+Shift"
+msgstr "Ctrl+Maiusc"
+
+#: src/xkb.rs:293
+msgid "Super+Space"
+msgstr "Super+Spazio"
+
+#: src/xkb.rs:294
+msgid "Alt+Space"
+msgstr "Alt+Spazio"
+
+#: src/xkb.rs:295
+msgid "Ctrl+Space"
+msgstr "Ctrl+Spazio"
+
+#: src/xkb.rs:296
+msgid "Alt+Ctrl"
+msgstr "Alt+Ctrl"
+
+#: src/xkb.rs:299
+msgid "Both Shift keys together"
+msgstr "Entrambi i tasti Maiusc insieme"
+
+#: src/xkb.rs:301
+msgid "Both Alt keys together"
+msgstr "Entrambi i tasti Alt insieme"
+
+#: src/xkb.rs:302
+msgid "Alt+Caps Lock"
+msgstr "Alt+Bloc Maiusc"
+
+#: src/xkb.rs:303
+msgid "Caps Lock"
+msgstr "Bloc Maiusc"
+
+#: src/xkb.rs:304
+msgid "Menu key"
+msgstr "Tasto Menu"
+
+#: src/xkb.rs:305
+msgid "Right Ctrl"
+msgstr "Ctrl destro"
+
+#: src/xkb.rs:306
+msgid "Scroll Lock"
+msgstr "Bloc Scorr"
+
+#: src/xkb.rs:386
+msgid "English (US) – labwc default"
+msgstr "Inglese (USA) – predefinito di labwc"

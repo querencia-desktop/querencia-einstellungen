@@ -47,7 +47,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 | Ort | Inhalt |
 |---|---|
 | `crates/querencia-einstellungen/src/` | Fenster und Bereiche, Modelle, `ini.rs`, labwc-Konfiguration (`labwc_konfig.rs`, `labwc_xml.rs`), Übersetzung (`i18n.rs`) |
-| `crates/querencia-einstellungen/po/` | Übersetzungen: Vorlage `querencia-einstellungen.pot`, `de.po`, `en.po`, `LINGUAS` |
+| `crates/querencia-einstellungen/po/` | Übersetzungen: Vorlage `querencia-einstellungen.pot`, `de.po`, `en.po`, `it.po`, `es.po`, `fr.po`, `LINGUAS` |
 | `crates/querencia-einstellungen/data/` | Programm- und Fenstersymbol (SVG), Querencia-Logo, eingebettete Ressource, Desktop-Datei (`.desktop.in` englisch, `.desktop` mit `[de]`) |
 | `szenarien/` | Eingabeszenarien und Testdaten der isolierten GUI-Läufe |
 | `werkzeug/` | isolierte GUI-Prüfung (`isoliert.sh`, `qe-eingabe.c`), GUI-Läufe und Auswertungen je Meilenstein, `i18n.py` (po-Pflege), `bauen-release.sh` |
@@ -57,8 +57,8 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.1.6 (Tag `einstellungen/0.1.6`) |
-| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 |
+| Version | 0.1.7 (Tag `einstellungen/0.1.7`): Italienisch, Spanisch, Französisch |
+| Letzte Prüfung | 22.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe deutsch und englisch in 1920×1080 und 1024×768, hell und dunkel; Bildschirm mit zwei virtuellen Ausgängen; Vergleich gegen 0.1.5 (Zahlen im Bericht der Entwicklungs-VM) |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; gespeicherte Bildschirmeinstellungen setzt die Sitzung erst, wenn ihr Autostart `--bildschirm-anwenden` aufruft |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |
 | Nicht getestet | andere Distributionen, HiDPI, Mehrmonitor und Tastaturumschaltung an echter Hardware |
