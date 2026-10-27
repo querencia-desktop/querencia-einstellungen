@@ -4,7 +4,8 @@
 # englische Benutzerkopie für „en“, ohne QUERENCIA_*-Variablen der
 # Live-Sitzung); dazu je Fall aus szenarien/020/faelle/<fall>/:
 #   sysfs.txt     PCI-Geräte (Adresse Klasse Hersteller Gerät Modul boot_vga)
-#                 → sysfs-Attrappe, QE_TREIBER_SYSFS
+#                 → sysfs-Attrappe, QE_TREIBER_SYSFS; Modul „a/b“ (0.2.1):
+#                 a am PCI-Gerät, b am Kindgerät virtio0 (virtio-pci/virtio_gpu)
 #   devices.txt, list.txt, renderer.txt → Stubs ubuntu-drivers und
 #                 querencia-sitzung (szenarien/020/bin, vorn im PATH)
 #   bestand.tsv   Pakete der PackageKit-Attrappe (privater Bus, QS_PK_BUS);
@@ -14,14 +15,19 @@
 #   ohne-werkzeug vorhanden: kein ubuntu-drivers im PATH, bis die Attrappe
 #                 ubuntu-drivers-common „installiert“
 # QS_TROCKENLAUF=1 wie bei der Sitzung. Belege: nachweis/<lauf>/treiber/
-# (pk.log, aufrufe.log, dpkg vorher/nachher).
+# (pk.log, aufrufe.log, dpkg vorher/nachher). Ab 0.2.1 andere Fälle und
+# Stubs über FAELLE und STUBS (Ordner relativ zum Repo). 0.2.1-2 (P-2):
+# SITZUNG_IN_HEIM=1 legt den Stub querencia-sitzung nicht in den PATH, sondern
+# nach ~/opt/querencia/bin im Profil-HOME (QE_HEIM_DATEIEN), wie auf der
+# Entwicklungs-VM.
 #
 #   bash werkzeug/020-lauf.sh <lauf> <binary> <hell|dunkel> <de|en> <BREITExHÖHE> <fall> <szenario> [app-args]
 set -uo pipefail
 P=$(dirname "$(dirname "$(readlink -f "$0")")")
 cd "$P"
 NAME=${1:?Lauf}; BIN=${2:?Binary}; ART=${3:?}; SP=${4:?}; AUFL=${5:?}; FALL=${6:?Fall}; SZ=${7:?Szenario}; ARGS=${8:---seite treiber}
-F=$P/szenarien/020/faelle/$FALL
+FAELLE=${FAELLE:-szenarien/020/faelle}; STUBS=${STUBS:-szenarien/020/bin}
+F=$P/$FAELLE/$FALL
 [ -d "$F" ] || { echo "Fall fehlt: $F" >&2; exit 2; }
 export NW=${NW:-nachweis/020}
 Z=$P/$NW/zustand/$NAME
@@ -31,13 +37,21 @@ while read -r slot klasse hersteller geraet modul boot; do
     d=$Z/sysfs/devices/$slot; mkdir -p "$d"
     echo "$klasse" > "$d/class"; echo "$hersteller" > "$d/vendor"; echo "$geraet" > "$d/device"
     [ "$boot" = 1 ] && echo 1 > "$d/boot_vga"
-    if [ "$modul" != - ]; then mkdir -p "$Z/sysfs/module/$modul"; ln -s "$Z/sysfs/module/$modul" "$d/driver"; fi
+    kind=${modul#*/}; modul=${modul%%/*}
+    if [ "$modul" != - ]; then mkdir -p "$Z/sysfs/module/$modul"; ln -sfn "$Z/sysfs/module/$modul" "$d/driver"; fi
+    if [ "$kind" != "$modul" ]; then
+        mkdir -p "$d/virtio0" "$Z/sysfs/module/$kind"; ln -s "$Z/sysfs/module/$kind" "$d/virtio0/driver"
+    fi
 done < "$F/sysfs.txt"
-cp "$P"/szenarien/020/bin/* "$Z/stubs/"
+cp "$P"/"$STUBS"/* "$Z/stubs/"
+if [ "${SITZUNG_IN_HEIM:-}" = 1 ]; then
+    mkdir -p "$Z/heim/opt/querencia/bin"; mv "$Z/stubs/querencia-sitzung" "$Z/heim/opt/querencia/bin/"
+    export QE_HEIM_DATEIEN=$Z/heim
+fi
 if [ -e "$F/ohne-werkzeug" ]; then
     rm "$Z/stubs/ubuntu-drivers"
     mkdir -p "$Z/nach-installation/ubuntu-drivers-common"
-    cp "$P/szenarien/020/bin/ubuntu-drivers" "$Z/nach-installation/ubuntu-drivers-common/"
+    cp "$P/$STUBS/ubuntu-drivers" "$Z/nach-installation/ubuntu-drivers-common/"
 fi
 eval "$(bash werkzeug/020-pk.sh start "$Z" "$F/bestand.tsv")" || exit 2
 cp "$Z/dpkg.txt" "$Z/dpkg-vorher.txt"

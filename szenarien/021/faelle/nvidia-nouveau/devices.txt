@@ -1,0 +1,10 @@
+udevadm hwdb is deprecated. Use systemd-hwdb instead.
+== /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
+modalias : pci:v000010DEd00002504sv00001462sd0000397Dbc03sc00i00
+vendor   : NVIDIA Corporation
+model    : GA106 [GeForce RTX 3060 Lite Hash Rate]
+driver   : nvidia-driver-615-open - distro non-free recommended
+driver   : nvidia-driver-615 - distro non-free
+driver   : nvidia-driver-580-server-open - distro non-free
+driver   : xserver-xorg-video-nouveau - distro free builtin
+

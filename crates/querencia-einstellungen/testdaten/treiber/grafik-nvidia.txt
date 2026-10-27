@@ -1,0 +1,5 @@
+renderer=NVIDIA GeForce RTX 3060/PCIe/SSE2
+vendor=NVIDIA Corporation
+version=OpenGL ES 3.2 NVIDIA 615.48.03
+egl=NVIDIA
+dauer-ms=95

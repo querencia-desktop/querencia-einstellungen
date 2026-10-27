@@ -22,6 +22,8 @@ pub const SOFTWARE_GL: [&str; 3] = [
     "MESA_LOADER_DRIVER_OVERRIDE",
     "GALLIUM_DRIVER",
 ];
+/// Pfad, den der Sitzungsstarter seinen Programmen mitgibt.
+pub const UMGEBUNG_SITZUNG: &str = "QUERENCIA_SITZUNG";
 /// Bringt `ubuntu-drivers`; fehlt es, bietet die Seite an, es zu installieren.
 pub const UBUNTU_DRIVERS_PAKET: &str = "ubuntu-drivers-common";
 
@@ -65,9 +67,13 @@ pub fn karten(wurzel: &Path) -> Vec<Karte> {
             if klasse >> 16 != 0x03 {
                 return None;
             }
-            let modul = std::fs::read_link(p.join("driver"))
-                .ok()
-                .and_then(|z| z.file_name().map(|n| n.to_string_lossy().into_owned()));
+            let modul = link_name(&p.join("driver")).map(|m| {
+                if m == "virtio-pci" {
+                    virtio_modul(&p).unwrap_or(m)
+                } else {
+                    m
+                }
+            });
             Some(Karte {
                 slot: e.file_name().to_string_lossy().into_owned(),
                 hersteller: hex_lesen(&p.join("vendor")).unwrap_or(0) as u16,
@@ -80,6 +86,22 @@ pub fn karten(wurzel: &Path) -> Vec<Karte> {
         .collect();
     aus.sort_by(|a, b| a.slot.cmp(&b.slot));
     aus
+}
+
+fn link_name(pfad: &Path) -> Option<String> {
+    std::fs::read_link(pfad)
+        .ok()
+        .and_then(|z| z.file_name().map(|n| n.to_string_lossy().into_owned()))
+}
+
+/// Bei virtio hängt am PCI-Gerät nur `virtio-pci`; der Grafiktreiber
+/// (`virtio_gpu`) sitzt am Kindgerät `virtio<n>`.
+fn virtio_modul(geraet: &Path) -> Option<String> {
+    std::fs::read_dir(geraet)
+        .ok()?
+        .flatten()
+        .filter(|e| e.file_name().to_string_lossy().starts_with("virtio"))
+        .find_map(|e| link_name(&e.path().join("driver")))
 }
 
 /// Ordner der PCI-Geräte: Prüfschalter oder [`SYSFS_PCI`].
@@ -447,10 +469,75 @@ pub fn renderer_zerlegen(text: &str) -> Option<Renderer> {
     (!r.renderer.is_empty()).then_some(r)
 }
 
-/// Dieselbe Regel wie der Sitzungsstarter: zink auf NVK/nouveau.
-pub fn ist_zink_auf_nvk(renderer: &str) -> bool {
-    renderer.starts_with("zink")
-        && (renderer.contains("NVK") || renderer.contains("ouveau") || renderer.contains("NOUVEAU"))
+/// Software-Renderer von Mesa: llvmpipe, softpipe (und swrast älterer Mesa).
+pub fn ist_software(renderer: &str) -> bool {
+    let r = renderer.to_ascii_lowercase();
+    r.starts_with("llvmpipe") || r.starts_with("softpipe") || r.contains("swrast")
+}
+
+/// Der proprietäre NVIDIA-Treiber zeichnet: sein Renderer heißt
+/// „NVIDIA …/PCIe/…“ mit Hersteller „NVIDIA Corporation“ (zink auf NVK
+/// nennt die Karte auch, aber mit Hersteller Mesa).
+pub fn ist_nvidia_renderer(r: &Renderer) -> bool {
+    r.vendor.starts_with("NVIDIA") || (r.renderer.starts_with("NVIDIA") && r.vendor.is_empty())
+}
+
+/// Wie diese Sitzung OpenGL zeichnet (0.2.1, Befund P-1 aus Alpha 3.4).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Darstellung {
+    /// Auf der Grafikkarte über einen freien Treiber (Mesa).
+    Frei,
+    /// Auf der Grafikkarte über den proprietären NVIDIA-Treiber.
+    Proprietaer,
+    /// Software, weil die Sitzung beim Anmelden umgeschaltet hat (die drei
+    /// Variablen); die Karte selbst könnte OpenGL.
+    SoftwareUmgeschaltet,
+    /// Software, weil es keine 3D-Beschleunigung gibt (z. B. VM ohne 3D):
+    /// schon die Messung ohne die Variablen liefert llvmpipe/softpipe.
+    SoftwareOhne3d,
+    Unbekannt,
+}
+
+/// Leitet die Darstellung aus den Messungen und den Kernelmodulen ab, nicht
+/// aus der Paketliste. `sitzung`: Renderer mit der Umgebung dieser Sitzung;
+/// `karte`: ohne die Software-Variablen (Hardware-Weg). Die Messung geht
+/// den Variablen vor (der NVIDIA-Treiber beachtet sie nicht); nur ohne
+/// Messung zählen die Variablen allein.
+pub fn darstellung(
+    sitzung: Option<&Renderer>,
+    karte: Option<&Renderer>,
+    software_gl: bool,
+    module: &[&str],
+) -> Darstellung {
+    // Mit den Variablen sagt die Messung der Karte nichts über die Sitzung.
+    let gemessen = if software_gl {
+        sitzung
+    } else {
+        sitzung.or(karte)
+    };
+    let Some(r) = gemessen else {
+        return match (
+            software_gl,
+            karte.is_some_and(|k| ist_software(&k.renderer)),
+        ) {
+            (true, false) => Darstellung::SoftwareUmgeschaltet,
+            (true, true) => Darstellung::SoftwareOhne3d,
+            (false, _) => Darstellung::Unbekannt,
+        };
+    };
+    if ist_software(&r.renderer) {
+        let karte_kann = karte.is_some_and(|k| !ist_software(&k.renderer));
+        return if software_gl && karte_kann {
+            Darstellung::SoftwareUmgeschaltet
+        } else {
+            Darstellung::SoftwareOhne3d
+        };
+    }
+    if ist_nvidia_renderer(r) && module.iter().any(|m| !modul_frei(m)) {
+        Darstellung::Proprietaer
+    } else {
+        Darstellung::Frei
+    }
 }
 
 /// Software-OpenGL der Sitzung: steht eine der drei Variablen in der
@@ -511,8 +598,13 @@ pub struct Befund {
     pub installiert: BTreeSet<String>,
     /// Renderer ohne die Software-Variablen gemessen (Hardware-Weg).
     pub renderer: Result<Renderer, String>,
+    /// Renderer mit der Umgebung dieser Sitzung; nur gemessen, wenn
+    /// [`Befund::software_gl`] gilt (sonst gleich `renderer`).
+    pub renderer_sitzung: Option<Result<Renderer, String>>,
     pub software_gl: bool,
     pub grafik_ini: &'static str,
+    /// Aufgerufenes `querencia-sitzung` (Pfad oder Name über `PATH`).
+    pub sitzung_programm: String,
 }
 
 impl Befund {
@@ -522,6 +614,25 @@ impl Befund {
             .iter()
             .find(|k| k.slot == slot)
             .and_then(|k| k.modul.as_deref())
+    }
+
+    /// Was die Programme dieser Sitzung als Renderer bekommen.
+    pub fn sitzungs_renderer(&self) -> &Result<Renderer, String> {
+        self.renderer_sitzung.as_ref().unwrap_or(&self.renderer)
+    }
+
+    pub fn darstellung(&self) -> Darstellung {
+        let module: Vec<&str> = self
+            .karten
+            .iter()
+            .filter_map(|k| k.modul.as_deref())
+            .collect();
+        darstellung(
+            self.sitzungs_renderer().as_ref().ok(),
+            self.renderer.as_ref().ok(),
+            self.software_gl,
+            &module,
+        )
     }
 }
 
@@ -567,14 +678,37 @@ pub fn ausfuehren(
 }
 
 fn werkzeug_da(name: &str) -> bool {
-    std::env::var_os("PATH").is_some_and(|pfade| {
-        std::env::split_paths(&pfade).any(|d| {
-            std::fs::metadata(d.join(name)).is_ok_and(|m| {
-                use std::os::unix::fs::PermissionsExt;
-                m.is_file() && m.permissions().mode() & 0o111 != 0
-            })
-        })
-    })
+    std::env::var_os("PATH")
+        .is_some_and(|pfade| std::env::split_paths(&pfade).any(|d| ist_ausfuehrbar(&d.join(name))))
+}
+
+/// Wo `querencia-sitzung` liegt (0.2.1-2, P-2): erst der Pfad, den die
+/// Sitzung selbst mitgibt (`QUERENCIA_SITZUNG`), dann die Ablage
+/// `~/opt/querencia/bin`, dann `/usr/bin`, zuletzt der Name über `PATH`.
+/// Auf der Entwicklungs-VM steht `~/opt/querencia/bin` nicht im `PATH`.
+pub fn sitzung_programm(
+    lesen: impl Fn(&str) -> Option<String>,
+    usr_bin: &Path,
+    ausfuehrbar: impl Fn(&Path) -> bool,
+) -> std::path::PathBuf {
+    const NAME: &str = "querencia-sitzung";
+    let mut kandidaten: Vec<std::path::PathBuf> = Vec::new();
+    if let Some(p) = lesen(UMGEBUNG_SITZUNG).filter(|p| Path::new(p).is_absolute()) {
+        kandidaten.push(p.into());
+    }
+    if let Some(h) = lesen("HOME").filter(|h| !h.is_empty()) {
+        kandidaten.push(Path::new(&h).join("opt/querencia/bin").join(NAME));
+    }
+    kandidaten.push(usr_bin.join(NAME));
+    kandidaten
+        .into_iter()
+        .find(|p| ausfuehrbar(p))
+        .unwrap_or_else(|| NAME.into())
+}
+
+fn ist_ausfuehrbar(p: &Path) -> bool {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::metadata(p).is_ok_and(|m| m.is_file() && m.permissions().mode() & 0o111 != 0)
 }
 
 /// Sammelt den Befund (blockierend, für `gio::spawn_blocking`).
@@ -635,13 +769,24 @@ pub fn ermitteln() -> Befund {
     )
     .map(|t| dpkg_zerlegen(&t))
     .unwrap_or_default();
-    let renderer = ausfuehren(
-        "querencia-sitzung",
-        &["--grafik-pruefen"],
-        &SOFTWARE_GL,
-        Duration::from_secs(5),
-    )
-    .and_then(|t| renderer_zerlegen(&t).ok_or_else(|| "renderer=".to_string()));
+    let sitzung = sitzung_programm(
+        |v| std::env::var(v).ok(),
+        Path::new("/usr/bin"),
+        ist_ausfuehrbar,
+    );
+    let sitzung = sitzung.to_string_lossy().into_owned();
+    let messen = |ohne: &[&str]| {
+        ausfuehren(
+            &sitzung,
+            &["--grafik-pruefen"],
+            ohne,
+            Duration::from_secs(5),
+        )
+        .and_then(|t| renderer_zerlegen(&t).ok_or_else(|| "renderer=".to_string()))
+    };
+    let renderer = messen(&SOFTWARE_GL);
+    let software_gl = software_gl_in_umgebung(|v| std::env::var(v).ok());
+    let renderer_sitzung = software_gl.then(|| messen(&[]));
     let config = std::env::var_os("XDG_CONFIG_HOME")
         .filter(|v| !v.is_empty())
         .map(std::path::PathBuf::from)
@@ -656,8 +801,10 @@ pub fn ermitteln() -> Befund {
         liste,
         installiert,
         renderer,
-        software_gl: software_gl_in_umgebung(|v| std::env::var(v).ok()),
+        renderer_sitzung,
+        software_gl,
         grafik_ini,
+        sitzung_programm: sitzung,
     }
 }
 
@@ -901,11 +1048,9 @@ mod tests {
              vendor=Mesa\nversion=OpenGL ES 3.2 Mesa 26.0.8\ntreiber=zink\ndauer-ms=381\n",
         )
         .expect("Renderer");
-        assert!(ist_zink_auf_nvk(&r.renderer));
+        assert!(r.renderer.starts_with("zink") && !ist_software(&r.renderer));
         assert_eq!(r.vendor, "Mesa");
-        assert!(!ist_zink_auf_nvk("NVIDIA GeForce RTX 3060/PCIe/SSE2"));
-        assert!(!ist_zink_auf_nvk("AMD Radeon Graphics (radeonsi, navi23)"));
-        assert!(!ist_zink_auf_nvk("llvmpipe (LLVM 21.1.0, 256 bits)"));
+        assert!(!ist_nvidia_renderer(&r));
         assert_eq!(renderer_zerlegen("dauer-ms=3\n"), None);
         let umgebung = |paare: &'static [(&'static str, &'static str)]| {
             move |k: &str| {
@@ -934,6 +1079,161 @@ mod tests {
             "automatisch"
         );
         assert_eq!(grafik_ini_wert(""), "automatisch");
+    }
+
+    fn grafik(name: &str) -> Renderer {
+        let t = match name {
+            "llvmpipe-vm" => include_str!("../testdaten/treiber/grafik-llvmpipe-vm.txt"),
+            "llvmpipe-umgeschaltet" => {
+                include_str!("../testdaten/treiber/grafik-llvmpipe-umgeschaltet.txt")
+            }
+            "softpipe" => include_str!("../testdaten/treiber/grafik-softpipe.txt"),
+            "zink-nvk" => include_str!("../testdaten/treiber/grafik-zink-nvk.txt"),
+            "radeonsi" => include_str!("../testdaten/treiber/grafik-radeonsi.txt"),
+            "nvidia" => include_str!("../testdaten/treiber/grafik-nvidia.txt"),
+            _ => unreachable!(),
+        };
+        renderer_zerlegen(t).expect("Renderer")
+    }
+
+    #[test]
+    fn darstellung_aus_messung_und_modul() {
+        use Darstellung::*;
+        let llvm_vm = grafik("llvmpipe-vm");
+        let llvm_sw = grafik("llvmpipe-umgeschaltet");
+        let zink = grafik("zink-nvk");
+        let radeon = grafik("radeonsi");
+        let nv = grafik("nvidia");
+        assert!(ist_software(&llvm_vm.renderer) && ist_software(&grafik("softpipe").renderer));
+        assert!(!ist_software(&zink.renderer) && !ist_software(&radeon.renderer));
+        assert!(ist_nvidia_renderer(&nv) && !ist_nvidia_renderer(&zink));
+        // VM ohne 3D (Weg B, Alpha 3.4): llvmpipe schon ohne die Variablen
+        assert_eq!(
+            darstellung(None, Some(&llvm_vm), false, &["virtio_gpu"]),
+            SoftwareOhne3d
+        );
+        assert_eq!(
+            darstellung(None, Some(&grafik("softpipe")), false, &[]),
+            SoftwareOhne3d
+        );
+        // VM, aber grafik.ini=an: die Karte kann trotzdem kein 3D
+        assert_eq!(
+            darstellung(Some(&llvm_sw), Some(&llvm_vm), true, &["virtio_gpu"]),
+            SoftwareOhne3d
+        );
+        // zink auf NVK, die Sitzung hat umgeschaltet
+        assert_eq!(
+            darstellung(Some(&llvm_sw), Some(&zink), true, &["nouveau"]),
+            SoftwareUmgeschaltet
+        );
+        // zink auf NVK ohne Software-Variablen (grafik.ini=aus)
+        assert_eq!(darstellung(None, Some(&zink), false, &["nouveau"]), Frei);
+        assert_eq!(darstellung(None, Some(&radeon), false, &["amdgpu"]), Frei);
+        assert_eq!(
+            darstellung(None, Some(&nv), false, &["nvidia"]),
+            Proprietaer
+        );
+        // Der NVIDIA-Treiber beachtet die Mesa-Variablen nicht: die Messung zählt
+        assert_eq!(
+            darstellung(Some(&nv), Some(&nv), true, &["nvidia"]),
+            Proprietaer
+        );
+        // Laptop: Intel zeichnet, NVIDIA-Modul nur für die zweite Karte
+        let intel = renderer_zerlegen(
+            "renderer=Mesa Intel(R) Iris(R) Xe Graphics (ADL GT2)\nvendor=Intel\n",
+        )
+        .expect("Renderer");
+        assert_eq!(
+            darstellung(None, Some(&intel), false, &["i915", "nvidia"]),
+            Frei
+        );
+        // ohne Messung: nur die Variablen
+        assert_eq!(
+            darstellung(None, None, true, &["nouveau"]),
+            SoftwareUmgeschaltet
+        );
+        assert_eq!(darstellung(None, None, false, &["nvidia"]), Unbekannt);
+        assert_eq!(
+            darstellung(None, Some(&zink), true, &["nouveau"]),
+            SoftwareUmgeschaltet
+        );
+        assert_eq!(
+            darstellung(None, Some(&llvm_vm), true, &["virtio_gpu"]),
+            SoftwareOhne3d
+        );
+    }
+
+    #[test]
+    fn befund_nimmt_den_sitzungsrenderer() {
+        let mut b = Befund {
+            karten: vec![Karte {
+                slot: "0000:01:00.0".into(),
+                hersteller: 0x10de,
+                geraet: 0x2504,
+                modul: Some("nouveau".into()),
+                boot_vga: true,
+            }],
+            namen: HashMap::new(),
+            liste: Liste::WerkzeugFehlt,
+            installiert: BTreeSet::new(),
+            renderer: Ok(grafik("zink-nvk")),
+            renderer_sitzung: None,
+            software_gl: false,
+            grafik_ini: "aus",
+            sitzung_programm: String::new(),
+        };
+        assert_eq!(b.darstellung(), Darstellung::Frei);
+        assert!(
+            b.sitzungs_renderer()
+                .as_ref()
+                .is_ok_and(|r| r.renderer.starts_with("zink"))
+        );
+        b.software_gl = true;
+        b.renderer_sitzung = Some(Ok(grafik("llvmpipe-umgeschaltet")));
+        assert_eq!(b.darstellung(), Darstellung::SoftwareUmgeschaltet);
+        assert!(
+            b.sitzungs_renderer()
+                .as_ref()
+                .is_ok_and(|r| r.renderer.starts_with("llvmpipe"))
+        );
+        b.renderer_sitzung = Some(Err("x".into()));
+        assert_eq!(b.darstellung(), Darstellung::SoftwareUmgeschaltet);
+        b.renderer = Err("x".into());
+        b.software_gl = false;
+        b.renderer_sitzung = None;
+        assert_eq!(b.darstellung(), Darstellung::Unbekannt);
+        b.karten[0].modul = Some("nvidia".into());
+        b.renderer = Ok(grafik("nvidia"));
+        assert_eq!(b.darstellung(), Darstellung::Proprietaer);
+    }
+
+    #[test]
+    fn virtio_grafiktreiber_am_kindgeraet() {
+        let w = attrappe(
+            "v",
+            &[(
+                "0000:00:01.0",
+                "0x030000",
+                "0x1af4",
+                "0x1050",
+                Some("virtio-pci"),
+                true,
+            )],
+        );
+        let kind = w.join("devices/0000:00:01.0/virtio0");
+        std::fs::create_dir_all(&kind).unwrap();
+        std::fs::create_dir_all(w.join("module/virtio_gpu")).unwrap();
+        std::os::unix::fs::symlink(w.join("module/virtio_gpu"), kind.join("driver")).unwrap();
+        let k = karten(&w.join("devices"));
+        assert_eq!(k[0].modul.as_deref(), Some("virtio_gpu"));
+        std::fs::remove_file(kind.join("driver")).unwrap();
+        let k = karten(&w.join("devices"));
+        assert_eq!(
+            k[0].modul.as_deref(),
+            Some("virtio-pci"),
+            "ohne Kindtreiber"
+        );
+        let _ = std::fs::remove_dir_all(&w);
     }
 
     /// (Adresse, Klasse, Hersteller, Gerät, Modul, boot_vga)
@@ -1027,8 +1327,10 @@ mod tests {
             liste: Liste::WerkzeugFehlt,
             installiert: BTreeSet::new(),
             renderer: Err(String::new()),
+            renderer_sitzung: None,
             software_gl: false,
             grafik_ini: "automatisch",
+            sitzung_programm: String::new(),
         };
         assert_eq!(b.modul_fuer(&g[0]), Some("nouveau"));
         assert!(modul_frei("nouveau") && !modul_frei("nvidia"));
@@ -1038,6 +1340,56 @@ mod tests {
             ),
             Some("GA106 [GeForce RTX 3060]".into())
         );
+    }
+
+    #[test]
+    fn sitzung_programm_wie_die_sitzung_aufloesen() {
+        let w = std::env::temp_dir().join(format!("qe-treiber-sitzung-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&w);
+        let heim = w.join("heim");
+        let ablage = heim.join("opt/querencia/bin");
+        let usr_bin = w.join("usr/bin");
+        let eigen = w.join("eigen/querencia-sitzung");
+        for d in [&ablage, &usr_bin, &w.join("eigen")] {
+            std::fs::create_dir_all(d).unwrap();
+        }
+        let anlegen = |p: &Path, modus: u32| {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::write(p, "#!/bin/sh\n").unwrap();
+            std::fs::set_permissions(p, std::fs::Permissions::from_mode(modus)).unwrap();
+        };
+        let h = heim.to_string_lossy().into_owned();
+        let e = eigen.to_string_lossy().into_owned();
+        let finden = |sitzung: Option<&str>| {
+            let (h, s) = (h.clone(), sitzung.map(str::to_string));
+            sitzung_programm(
+                move |k| match k {
+                    "HOME" => Some(h.clone()),
+                    UMGEBUNG_SITZUNG => s.clone(),
+                    _ => None,
+                },
+                &usr_bin,
+                ist_ausfuehrbar,
+            )
+        };
+        // nichts da: der Name, also PATH (Stubs der GUI-Prüfung)
+        assert_eq!(finden(None), Path::new("querencia-sitzung"));
+        anlegen(&usr_bin.join("querencia-sitzung"), 0o755);
+        assert_eq!(finden(None), usr_bin.join("querencia-sitzung"));
+        // nicht ausführbar zählt nicht
+        anlegen(&ablage.join("querencia-sitzung"), 0o644);
+        assert_eq!(finden(None), usr_bin.join("querencia-sitzung"));
+        anlegen(&ablage.join("querencia-sitzung"), 0o755);
+        assert_eq!(finden(None), ablage.join("querencia-sitzung"));
+        // der Pfad der Sitzung geht vor; relativ oder fehlend zählt nicht
+        assert_eq!(finden(Some(&e)), ablage.join("querencia-sitzung"));
+        anlegen(&eigen, 0o755);
+        assert_eq!(finden(Some(&e)), eigen);
+        assert_eq!(
+            finden(Some("querencia-sitzung")),
+            ablage.join("querencia-sitzung")
+        );
+        let _ = std::fs::remove_dir_all(&w);
     }
 
     #[test]

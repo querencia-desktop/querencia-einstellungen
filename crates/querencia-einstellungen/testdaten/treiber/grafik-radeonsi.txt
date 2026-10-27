@@ -1,0 +1,6 @@
+renderer=AMD Radeon RX 6600 (radeonsi, navi23, LLVM 21.1.0, DRM 3.64, 7.0.0-38-generic)
+vendor=AMD
+version=OpenGL ES 3.2 Mesa 26.0.8
+treiber=radeonsi
+egl=Mesa Project
+dauer-ms=120

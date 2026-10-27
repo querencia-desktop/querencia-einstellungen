@@ -1,0 +1,1 @@
+0000:00:01.0 0x030000 0x1af4 0x1050 virtio-pci/virtio_gpu 1
