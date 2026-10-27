@@ -26,7 +26,7 @@ Erst wenn sie zum ersten Mal sichtbar wird, in einem Hintergrund-Thread
 | Treiberliste | `ubuntu-drivers devices`: je Gerät `driver : <paket> - distro|third-party free|non-free [recommended] [builtin]` |
 | Kernelmodul-Paket | `ubuntu-drivers list`: `<paket>, (kernel modules provided by <modulpaket>)` |
 | installiert | `dpkg-query -W -f '${Package}\t${db:Status-Abbrev}\n'`, nur Status `ii` |
-| OpenGL-Renderer | `querencia-sitzung --grafik-pruefen` (EGL ohne Fenster, Zeitgrenze 5 s) **ohne** die drei Software-Variablen, also der Hardware-Weg; sind die Variablen gesetzt, ein zweites Mal **mit** ihnen (was die Programme der Sitzung bekommen, 0.2.1). Die Zeile „OpenGL-Renderer“ zeigt diese Sitzungsmessung, „OpenGL der Karte“ dann die Hardware-Messung |
+| OpenGL-Renderer | `querencia-sitzung --grafik-pruefen` (EGL ohne Fenster, Zeitgrenze 5 s) **ohne** die drei Software-Variablen, also der Hardware-Weg; sind die Variablen gesetzt, ein zweites Mal **mit** ihnen (was die Programme der Sitzung bekommen, 0.2.1). Die Zeile „OpenGL-Renderer“ zeigt diese Sitzungsmessung, „OpenGL der Karte“ dann die Hardware-Messung. `querencia-sitzung` wird wie in der Sitzung aufgelöst (0.2.1-2, P-2): `$QUERENCIA_SITZUNG` (setzt der Sitzungsstarter), `~/opt/querencia/bin/querencia-sitzung`, `/usr/bin/querencia-sitzung`, zuletzt `PATH` |
 | Software-OpenGL der Sitzung | die eigene Umgebung: `LIBGL_ALWAYS_SOFTWARE=1`, `GALLIUM_DRIVER=llvmpipe` oder `MESA_LOADER_DRIVER_OVERRIDE=llvmpipe` (vom Sitzungsstarter für Autostart und Aktivierung gesetzt) |
 | Übersteuerung | `~/.config/querencia/grafik.ini` `[Grafik] Software-OpenGL = automatisch | an | aus` (wie der Starter: letzter Wert, unbekannt = automatisch) |
 
@@ -134,7 +134,10 @@ nichts; sie nennt nur `grafik.ini`.
   `vm-llvmpipe` und `nvidia-nouveau-ohne-sw`; Stub `querencia-sitzung` mit
   `renderer-software.txt` bei `LIBGL_ALWAYS_SOFTWARE=1`; `020-lauf.sh` nimmt
   `FAELLE`/`STUBS` und Modul `a/b` für ein virtio-Kindgerät), Auswertung
-  `werkzeug/auswerten-021.py`.
+  `werkzeug/auswerten-021.py`. 0.2.1-2: `sitzung_programm_wie_die_sitzung_aufloesen`;
+  GUI-Läufe `021-h-*` mit `SITZUNG_IN_HEIM=1` (Stub nur unter
+  `~/opt/querencia/bin` des Profil-HOME, nicht im `PATH`); die Protokollzeile
+  nennt `programm=…`.
 - GUI: `werkzeug/020-gui-lauf.sh` mit `werkzeug/020-lauf.sh`. Prüfschalter
   der Seite: `QE_TREIBER_SYSFS=<ordner>` (sysfs-Attrappe; dann kein `lspci`).
   Die Stubs `ubuntu-drivers`, `dpkg-query`, `querencia-sitzung` liegen in

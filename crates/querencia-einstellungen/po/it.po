@@ -2136,12 +2136,14 @@ msgstr "Rendering software: attivato in ~/.config/querencia/grafik.ini"
 #: src/treiber.rs:345
 msgid ""
 "Software rendering: the session switched over at login because of a graphics problem with this card"
-msgstr "Rendering software: la sessione è passata al software all’accesso a causa di un problema grafico con questa scheda"
+msgstr ""
+"Rendering software: la sessione è passata al software all’accesso a causa di un problema grafico con questa scheda"
 
 #: src/treiber.rs:348
 msgid ""
 "Software rendering: no 3D acceleration, for example in a virtual machine without 3D graphics"
-msgstr "Rendering software: nessuna accelerazione 3D, per esempio in una macchina virtuale senza grafica 3D"
+msgstr ""
+"Rendering software: nessuna accelerazione 3D, per esempio in una macchina virtuale senza grafica 3D"
 
 #: src/treiber.rs:351
 msgid "unknown"
@@ -2279,25 +2281,25 @@ msgstr "In attesa di un altro programma che installa software …"
 msgid "Could not open the restart question: {error}"
 msgstr "Impossibile aprire la richiesta di riavvio: {error}"
 
-#: src/treiber.rs:844
+#: src/treiber.rs:845
 #, no-c-format
 msgid "{driver} is installed and is used after a restart."
 msgstr "{driver} è installato e viene usato dopo un riavvio."
 
-#: src/treiber.rs:848
+#: src/treiber.rs:849
 msgid "A free driver is in use."
 msgstr "È in uso un driver libero."
 
-#: src/treiber.rs:849
+#: src/treiber.rs:850
 msgid "A proprietary driver is in use."
 msgstr "È in uso un driver proprietario."
 
-#: src/treiber.rs:851
+#: src/treiber.rs:852
 #, no-c-format
 msgid "The driver {module} stays loaded until the restart."
 msgstr "Il driver {module} resta caricato fino al riavvio."
 
-#: src/treiber.rs:855
+#: src/treiber.rs:856
 msgid "None of these drivers is loaded right now."
 msgstr "Nessuno di questi driver è caricato ora."
 

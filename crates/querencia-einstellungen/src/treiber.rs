@@ -809,7 +809,7 @@ fn befund_zeile(b: &Befund) -> String {
             .join(" "),
     };
     format!(
-        "karten=[{}] liste=[{}] renderer={} sitzung={} software-gl={} grafik.ini={} darstellung={:?}",
+        "karten=[{}] liste=[{}] renderer={} sitzung={} software-gl={} grafik.ini={} darstellung={:?} programm={}",
         karten.join(" "),
         liste,
         gemessen(&b.renderer),
@@ -819,7 +819,8 @@ fn befund_zeile(b: &Befund) -> String {
         },
         b.software_gl,
         b.grafik_ini,
-        b.darstellung()
+        b.darstellung(),
+        b.sitzung_programm
     )
 }
 

@@ -2181,25 +2181,25 @@ msgstr ""
 msgid "Could not open the restart question: {error}"
 msgstr ""
 
-#: src/treiber.rs:844
+#: src/treiber.rs:845
 #, no-c-format
 msgid "{driver} is installed and is used after a restart."
 msgstr ""
 
-#: src/treiber.rs:848
+#: src/treiber.rs:849
 msgid "A free driver is in use."
 msgstr ""
 
-#: src/treiber.rs:849
+#: src/treiber.rs:850
 msgid "A proprietary driver is in use."
 msgstr ""
 
-#: src/treiber.rs:851
+#: src/treiber.rs:852
 #, no-c-format
 msgid "The driver {module} stays loaded until the restart."
 msgstr ""
 
-#: src/treiber.rs:855
+#: src/treiber.rs:856
 msgid "None of these drivers is loaded right now."
 msgstr ""
 

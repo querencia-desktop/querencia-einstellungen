@@ -28,6 +28,9 @@ zusammengefasst.
   `virtio-pci`.
 - Der Hinweis „Software-OpenGL in der Sitzung“ entfällt, wenn der
   NVIDIA-Treiber zeichnet.
+- Die Seite findet `querencia-sitzung` wie die Sitzung selbst (Pfad aus der
+  Sitzung, `~/opt/querencia/bin`, `/usr/bin`), nicht nur über `PATH`; vorher
+  blieb der Renderer auf der Entwicklungs-VM „nicht gemessen“ (0.2.1-2).
 
 ## [0.2.0] – 2026-10-27
 

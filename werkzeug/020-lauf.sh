@@ -16,7 +16,10 @@
 #                 ubuntu-drivers-common „installiert“
 # QS_TROCKENLAUF=1 wie bei der Sitzung. Belege: nachweis/<lauf>/treiber/
 # (pk.log, aufrufe.log, dpkg vorher/nachher). Ab 0.2.1 andere Fälle und
-# Stubs über FAELLE und STUBS (Ordner relativ zum Repo).
+# Stubs über FAELLE und STUBS (Ordner relativ zum Repo). 0.2.1-2 (P-2):
+# SITZUNG_IN_HEIM=1 legt den Stub querencia-sitzung nicht in den PATH, sondern
+# nach ~/opt/querencia/bin im Profil-HOME (QE_HEIM_DATEIEN), wie auf der
+# Entwicklungs-VM.
 #
 #   bash werkzeug/020-lauf.sh <lauf> <binary> <hell|dunkel> <de|en> <BREITExHÖHE> <fall> <szenario> [app-args]
 set -uo pipefail
@@ -41,6 +44,10 @@ while read -r slot klasse hersteller geraet modul boot; do
     fi
 done < "$F/sysfs.txt"
 cp "$P"/"$STUBS"/* "$Z/stubs/"
+if [ "${SITZUNG_IN_HEIM:-}" = 1 ]; then
+    mkdir -p "$Z/heim/opt/querencia/bin"; mv "$Z/stubs/querencia-sitzung" "$Z/heim/opt/querencia/bin/"
+    export QE_HEIM_DATEIEN=$Z/heim
+fi
 if [ -e "$F/ohne-werkzeug" ]; then
     rm "$Z/stubs/ubuntu-drivers"
     mkdir -p "$Z/nach-installation/ubuntu-drivers-common"

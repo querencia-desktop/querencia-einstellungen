@@ -9,6 +9,9 @@
 #   p   Fotos: vm-llvmpipe, nvidia-nouveau (Software-Variablen gesetzt),
 #       nvidia-nouveau-ohne-sw, amd, intel, nvidia-original, keine × de/en
 #       1920×1080; vm-llvmpipe und nvidia-nouveau zusätzlich de 1024×768
+#   h   0.2.1-2 (P-2): querencia-sitzung nur unter ~/opt/querencia/bin des
+#       Profil-HOME, nicht im PATH (SITZUNG_IN_HEIM=1): nvidia-nouveau de,
+#       vm-llvmpipe en, 1920×1080
 #   d1  Regression: alle Seiten alt (0.2.0, Live-Ablage) ↔ neu, de 1024 und
 #       en 1920
 #
@@ -42,6 +45,8 @@ done
 for fall in vm-llvmpipe nvidia-nouveau; do
     lauf "021-p-$fall-hell-de-1024" "$NEU" hell de 1024x768 $fall szenarien/020/foto-1024.txt
 done
+SITZUNG_IN_HEIM=1 lauf 021-h-nvidia-nouveau-hell-de-1920 "$NEU" hell de 1920x1080 nvidia-nouveau szenarien/020/foto-1920.txt
+SITZUNG_IN_HEIM=1 lauf 021-h-vm-llvmpipe-hell-en-1920 "$NEU" hell en 1920x1080 vm-llvmpipe szenarien/020/foto-1920.txt
 for k in de-1024 en-1920; do
     sp=${k%-*} b=${k#*-}
     s=$([ "$b" = 1920 ] && echo 1920x1080 || echo 1024x768)

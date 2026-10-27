@@ -59,7 +59,7 @@ Anwendungskennung (App-ID): `org.querencia.Einstellungen` · Binary:
 
 | | |
 |---|---|
-| Version | 0.2.1 (Tag `einstellungen/0.2.1`): Zeile „Diese Sitzung“ der Seite „Treiber“ nach Renderer und Kernelmodul; 0.2.0: Seite „Treiber“; 0.1.7: Italienisch, Spanisch, Französisch |
+| Version | 0.2.1-2 (Tag `einstellungen/0.2.1-2`): Zeile „Diese Sitzung“ der Seite „Treiber“ nach Renderer und Kernelmodul; 0.2.0: Seite „Treiber“; 0.1.7: Italienisch, Spanisch, Französisch |
 | Letzte Prüfung | 27.10.2026: Unit-Tests, fmt, clippy; isolierte GUI-Läufe der Seite „Treiber“ mit Attrappen (sysfs, ubuntu-drivers, PackageKit auf privatem Bus) deutsch und englisch in 1920×1080 und 1024×768; Vergleich der übrigen Seiten gegen 0.1.6-2 (Zahlen im Bericht der Entwicklungs-VM) |
 | Bekannte Lücken | Panels nur Anzeige; das Panel hat noch keinen Belegungsanzeiger; Sprache und Formate wirken erst ab der nächsten Anmeldung; gespeicherte Bildschirmeinstellungen setzt die Sitzung erst, wenn ihr Autostart `--bildschirm-anwenden` aufruft |
 | Getestet auf | Ubuntu 26.04, labwc 0.9.8, GTK 4.22, Rust 1.93 |

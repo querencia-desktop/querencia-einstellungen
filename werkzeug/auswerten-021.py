@@ -7,6 +7,9 @@
        zweites Mal mit ihnen nur im Fall mit Software-Variablen; kein
        PackageKit-Schreibvorgang; Fotos vorhanden, Ausschnitt nach
        nachweis/021/bilder/
+  h    0.2.1-2 (P-2): querencia-sitzung nur unter ~/opt/querencia/bin des
+       Profil-HOME: programm= ist dieser Pfad, Befund wie im Fall; in den
+       p-Läufen programm=querencia-sitzung (Stub über PATH)
   d1   alt (0.2.0) ↔ neu, Seiten paarweise im Fensterausschnitt: Seitenleiste
        und Inhalt pixelgleich bis auf die Programmversion auf „Informationen“
        und das Uhrzeit-Band auf „Sprache“
@@ -79,7 +82,20 @@ def fotos():
     laeufe = sorted(os.path.basename(d) for d in glob.glob(os.path.join(N, "021-p-*")))
     faelle = {(text(l, "treiber/fall.txt") or "").strip() for l in laeufe}
     pruef(g, "alle Fälle fotografiert", faelle == set(ERWARTET), sorted(faelle))
-    for lauf in laeufe:
+    heim = sorted(os.path.basename(d) for d in glob.glob(os.path.join(N, "021-h-*")))
+    pruef("P-2", "zwei Läufe mit querencia-sitzung nur in ~/opt/querencia/bin", len(heim) == 2, heim)
+    for lauf in laeufe + heim:
+        b = befunde(lauf)
+        if lauf.startswith("021-h-"):
+            # HOME der App ist das Profil-HOME (isoliert.sh, QE_PROFIL_STABIL)
+            ok = bool(b) and re.search(r" programm=/\S+/heim/opt/querencia/bin/querencia-sitzung$", b[0])
+            pruef("P-2", f"{lauf}: programm=<Profil-HOME>/opt/querencia/bin/querencia-sitzung, Stub aufgerufen",
+                  ok and "--grafik-pruefen" in (text(lauf, "treiber/aufrufe.log") or ""),
+                  b[0][-160:] if b else "kein Befund")
+        else:
+            pruef("P-2", f"{lauf}: programm=querencia-sitzung (Stub über PATH)",
+                  bool(b) and b[0].endswith(" programm=querencia-sitzung"), b[0][-120:] if b else "kein Befund")
+    for lauf in laeufe + heim:
         fall = (text(lauf, "treiber/fall.txt") or "").strip()
         teile, zweite = ERWARTET.get(fall, (("?",), False))
         b = befunde(lauf)

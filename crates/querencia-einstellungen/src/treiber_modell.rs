@@ -22,6 +22,8 @@ pub const SOFTWARE_GL: [&str; 3] = [
     "MESA_LOADER_DRIVER_OVERRIDE",
     "GALLIUM_DRIVER",
 ];
+/// Pfad, den der Sitzungsstarter seinen Programmen mitgibt.
+pub const UMGEBUNG_SITZUNG: &str = "QUERENCIA_SITZUNG";
 /// Bringt `ubuntu-drivers`; fehlt es, bietet die Seite an, es zu installieren.
 pub const UBUNTU_DRIVERS_PAKET: &str = "ubuntu-drivers-common";
 
@@ -601,6 +603,8 @@ pub struct Befund {
     pub renderer_sitzung: Option<Result<Renderer, String>>,
     pub software_gl: bool,
     pub grafik_ini: &'static str,
+    /// Aufgerufenes `querencia-sitzung` (Pfad oder Name über `PATH`).
+    pub sitzung_programm: String,
 }
 
 impl Befund {
@@ -674,14 +678,37 @@ pub fn ausfuehren(
 }
 
 fn werkzeug_da(name: &str) -> bool {
-    std::env::var_os("PATH").is_some_and(|pfade| {
-        std::env::split_paths(&pfade).any(|d| {
-            std::fs::metadata(d.join(name)).is_ok_and(|m| {
-                use std::os::unix::fs::PermissionsExt;
-                m.is_file() && m.permissions().mode() & 0o111 != 0
-            })
-        })
-    })
+    std::env::var_os("PATH")
+        .is_some_and(|pfade| std::env::split_paths(&pfade).any(|d| ist_ausfuehrbar(&d.join(name))))
+}
+
+/// Wo `querencia-sitzung` liegt (0.2.1-2, P-2): erst der Pfad, den die
+/// Sitzung selbst mitgibt (`QUERENCIA_SITZUNG`), dann die Ablage
+/// `~/opt/querencia/bin`, dann `/usr/bin`, zuletzt der Name über `PATH`.
+/// Auf der Entwicklungs-VM steht `~/opt/querencia/bin` nicht im `PATH`.
+pub fn sitzung_programm(
+    lesen: impl Fn(&str) -> Option<String>,
+    usr_bin: &Path,
+    ausfuehrbar: impl Fn(&Path) -> bool,
+) -> std::path::PathBuf {
+    const NAME: &str = "querencia-sitzung";
+    let mut kandidaten: Vec<std::path::PathBuf> = Vec::new();
+    if let Some(p) = lesen(UMGEBUNG_SITZUNG).filter(|p| Path::new(p).is_absolute()) {
+        kandidaten.push(p.into());
+    }
+    if let Some(h) = lesen("HOME").filter(|h| !h.is_empty()) {
+        kandidaten.push(Path::new(&h).join("opt/querencia/bin").join(NAME));
+    }
+    kandidaten.push(usr_bin.join(NAME));
+    kandidaten
+        .into_iter()
+        .find(|p| ausfuehrbar(p))
+        .unwrap_or_else(|| NAME.into())
+}
+
+fn ist_ausfuehrbar(p: &Path) -> bool {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::metadata(p).is_ok_and(|m| m.is_file() && m.permissions().mode() & 0o111 != 0)
 }
 
 /// Sammelt den Befund (blockierend, für `gio::spawn_blocking`).
@@ -742,9 +769,15 @@ pub fn ermitteln() -> Befund {
     )
     .map(|t| dpkg_zerlegen(&t))
     .unwrap_or_default();
+    let sitzung = sitzung_programm(
+        |v| std::env::var(v).ok(),
+        Path::new("/usr/bin"),
+        ist_ausfuehrbar,
+    );
+    let sitzung = sitzung.to_string_lossy().into_owned();
     let messen = |ohne: &[&str]| {
         ausfuehren(
-            "querencia-sitzung",
+            &sitzung,
             &["--grafik-pruefen"],
             ohne,
             Duration::from_secs(5),
@@ -771,6 +804,7 @@ pub fn ermitteln() -> Befund {
         renderer_sitzung,
         software_gl,
         grafik_ini,
+        sitzung_programm: sitzung,
     }
 }
 
@@ -1146,6 +1180,7 @@ mod tests {
             renderer_sitzung: None,
             software_gl: false,
             grafik_ini: "aus",
+            sitzung_programm: String::new(),
         };
         assert_eq!(b.darstellung(), Darstellung::Frei);
         assert!(
@@ -1295,6 +1330,7 @@ mod tests {
             renderer_sitzung: None,
             software_gl: false,
             grafik_ini: "automatisch",
+            sitzung_programm: String::new(),
         };
         assert_eq!(b.modul_fuer(&g[0]), Some("nouveau"));
         assert!(modul_frei("nouveau") && !modul_frei("nvidia"));
@@ -1304,6 +1340,56 @@ mod tests {
             ),
             Some("GA106 [GeForce RTX 3060]".into())
         );
+    }
+
+    #[test]
+    fn sitzung_programm_wie_die_sitzung_aufloesen() {
+        let w = std::env::temp_dir().join(format!("qe-treiber-sitzung-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&w);
+        let heim = w.join("heim");
+        let ablage = heim.join("opt/querencia/bin");
+        let usr_bin = w.join("usr/bin");
+        let eigen = w.join("eigen/querencia-sitzung");
+        for d in [&ablage, &usr_bin, &w.join("eigen")] {
+            std::fs::create_dir_all(d).unwrap();
+        }
+        let anlegen = |p: &Path, modus: u32| {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::write(p, "#!/bin/sh\n").unwrap();
+            std::fs::set_permissions(p, std::fs::Permissions::from_mode(modus)).unwrap();
+        };
+        let h = heim.to_string_lossy().into_owned();
+        let e = eigen.to_string_lossy().into_owned();
+        let finden = |sitzung: Option<&str>| {
+            let (h, s) = (h.clone(), sitzung.map(str::to_string));
+            sitzung_programm(
+                move |k| match k {
+                    "HOME" => Some(h.clone()),
+                    UMGEBUNG_SITZUNG => s.clone(),
+                    _ => None,
+                },
+                &usr_bin,
+                ist_ausfuehrbar,
+            )
+        };
+        // nichts da: der Name, also PATH (Stubs der GUI-Prüfung)
+        assert_eq!(finden(None), Path::new("querencia-sitzung"));
+        anlegen(&usr_bin.join("querencia-sitzung"), 0o755);
+        assert_eq!(finden(None), usr_bin.join("querencia-sitzung"));
+        // nicht ausführbar zählt nicht
+        anlegen(&ablage.join("querencia-sitzung"), 0o644);
+        assert_eq!(finden(None), usr_bin.join("querencia-sitzung"));
+        anlegen(&ablage.join("querencia-sitzung"), 0o755);
+        assert_eq!(finden(None), ablage.join("querencia-sitzung"));
+        // der Pfad der Sitzung geht vor; relativ oder fehlend zählt nicht
+        assert_eq!(finden(Some(&e)), ablage.join("querencia-sitzung"));
+        anlegen(&eigen, 0o755);
+        assert_eq!(finden(Some(&e)), eigen);
+        assert_eq!(
+            finden(Some("querencia-sitzung")),
+            ablage.join("querencia-sitzung")
+        );
+        let _ = std::fs::remove_dir_all(&w);
     }
 
     #[test]

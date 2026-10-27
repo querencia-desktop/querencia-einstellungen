@@ -2275,25 +2275,25 @@ msgstr "Waiting for another program that installs software …"
 msgid "Could not open the restart question: {error}"
 msgstr "Could not open the restart question: {error}"
 
-#: src/treiber.rs:844
+#: src/treiber.rs:845
 #, no-c-format
 msgid "{driver} is installed and is used after a restart."
 msgstr "{driver} is installed and is used after a restart."
 
-#: src/treiber.rs:848
+#: src/treiber.rs:849
 msgid "A free driver is in use."
 msgstr "A free driver is in use."
 
-#: src/treiber.rs:849
+#: src/treiber.rs:850
 msgid "A proprietary driver is in use."
 msgstr "A proprietary driver is in use."
 
-#: src/treiber.rs:851
+#: src/treiber.rs:852
 #, no-c-format
 msgid "The driver {module} stays loaded until the restart."
 msgstr "The driver {module} stays loaded until the restart."
 
-#: src/treiber.rs:855
+#: src/treiber.rs:856
 msgid "None of these drivers is loaded right now."
 msgstr "None of these drivers is loaded right now."
 
