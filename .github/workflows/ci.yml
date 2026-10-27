@@ -33,6 +33,10 @@
 #  - actions/checkout@v7 und actions/cache@v6 laufen mit Node 24 (Runner ab
 #    2.327.1, bei GitHub gegeben) und sind im Container-Job geprüft. checkout
 #    legt keine Zugangsdaten ab (`persist-credentials: false`): Die CI liest nur.
+#  - Einstellungen: Seit 0.2.0 sind qs_paketkit und qs_typen Pfad-Abhängigkeiten
+#    auf ../querencia-software-paketkit. Der Schritt „Paketkit daneben“ holt
+#    dafür das öffentliche Repo querencia-software-paketkit auf einem festen
+#    Commit (Tag paketkit/0.1.0, passend zu Cargo.lock).
 name: CI
 
 on:
@@ -100,6 +104,16 @@ jobs:
       - name: Git-Eigentümer erlauben (Container)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      # Pfad-Abhängigkeiten ../querencia-software-paketkit (README, „Bauen“)
+      - name: Paketkit daneben
+        env:
+          PAKETKIT_COMMIT: 4d598d337f560d51c1a2af5ff8e88f643d90b116
+        run: |
+          R="$GITHUB_WORKSPACE/../querencia-software-paketkit"
+          git init -q "$R"
+          git -C "$R" fetch -q --depth 1 https://github.com/querencia-desktop/querencia-software-paketkit.git "$PAKETKIT_COMMIT"
+          git -C "$R" checkout -q FETCH_HEAD
+
       # Absolute Pfade: Die Cache-Aktion läuft als root (HOME=/github/home),
       # cargo als Prüfbenutzer mit CARGO_HOME=/home/pruefer/.cargo.
       - name: Cargo-Cache
@@ -117,7 +131,7 @@ jobs:
       - name: Arbeitsbereich dem Prüfbenutzer übereignen
         run: |
           install -d -m 700 -o "$PRUEFER" -g "$PRUEFER" "$XDG_RUNTIME_DIR"
-          chown -R "$PRUEFER:$PRUEFER" "$GITHUB_WORKSPACE" "/home/$PRUEFER"
+          chown -R "$PRUEFER:$PRUEFER" "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/../querencia-software-paketkit" "/home/$PRUEFER"
           runuser -u "$PRUEFER" -- sh -c 'id; echo "HOME=$HOME USER=$USER LANG=$LANG"; cargo --version'
 
       - name: Format
