@@ -1,0 +1,6 @@
+== /sys/devices/pci0000:00/0000:00:03.1/0000:0a:00.0 ==
+modalias : pci:v00001002d000073FFsv00001DA2sd0000E451bc03sc00i00
+vendor   : Advanced Micro Devices, Inc. [AMD/ATI]
+model    : Navi 23 [Radeon RX 6600/6600 XT/6600M]
+driver   : xserver-xorg-video-amdgpu - distro free builtin
+

@@ -908,7 +908,7 @@ msgstr "Farbwert:"
 msgid "Custom:"
 msgstr "Benutzerdefiniert:"
 
-#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478 src/treiber.rs:63 src/treiber.rs:595
+#: src/hintergrund.rs:281 src/standardanwendungen.rs:407 src/tastatur.rs:478 src/treiber.rs:65 src/treiber.rs:607
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -1942,352 +1942,366 @@ msgstr "Suchen, z. B. Deutsch, Schweiz, Dvorak"
 msgid "Select"
 msgstr "Auswählen"
 
-#: src/treiber.rs:69
+#: src/treiber.rs:71
 msgid "Restart the computer to load the new driver."
 msgstr "Den Rechner neu starten, damit der neue Treiber geladen wird."
 
-#: src/treiber.rs:75
+#: src/treiber.rs:77
 msgid "Restart …"
 msgstr "Neu starten …"
 
-#: src/treiber.rs:76
+#: src/treiber.rs:78
 msgid ""
 "Opens the restart question of the session; nothing restarts without your confirmation."
 msgstr ""
 "Öffnet die Rückfrage der Sitzung zum Neustart; ohne Ihre Bestätigung startet nichts neu."
 
-#: src/treiber.rs:91
+#: src/treiber.rs:93
 msgid ""
 "ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; changes through PackageKit"
 msgstr ""
 "ubuntu-drivers (devices, list), /sys/bus/pci/devices, dpkg, querencia-sitzung --grafik-pruefen; Änderungen über PackageKit"
 
-#: src/treiber.rs:156
+#: src/treiber.rs:158
 #, no-c-format
 msgid "NVIDIA driver {version} with open kernel modules"
 msgstr "NVIDIA-Treiber {version} mit offenen Kernelmodulen"
 
-#: src/treiber.rs:157
+#: src/treiber.rs:159
 #, no-c-format
 msgid "NVIDIA driver {version}"
 msgstr "NVIDIA-Treiber {version}"
 
-#: src/treiber.rs:158
+#: src/treiber.rs:160
 #, no-c-format
 msgid "NVIDIA server driver {version} with open kernel modules"
 msgstr "NVIDIA-Servertreiber {version} mit offenen Kernelmodulen"
 
-#: src/treiber.rs:162
+#: src/treiber.rs:164
 #, no-c-format
 msgid "NVIDIA server driver {version}"
 msgstr "NVIDIA-Servertreiber {version}"
 
-#: src/treiber.rs:166
+#: src/treiber.rs:168
 msgid "Free driver nouveau (Querencia default)"
 msgstr "Freier Treiber nouveau (Querencia-Vorgabe)"
 
-#: src/treiber.rs:167
+#: src/treiber.rs:169
 #, no-c-format
 msgid "Free driver {module}"
 msgstr "Freier Treiber {module}"
 
-#: src/treiber.rs:175
+#: src/treiber.rs:177
 #, no-c-format
 msgid "package {package}"
 msgstr "Paket {package}"
 
-#: src/treiber.rs:177
+#: src/treiber.rs:179
 msgid "free"
 msgstr "frei"
 
-#: src/treiber.rs:179
+#: src/treiber.rs:181
 msgid "proprietary"
 msgstr "proprietär"
 
-#: src/treiber.rs:183
+#: src/treiber.rs:185
 msgid "recommended by Ubuntu"
 msgstr "von Ubuntu empfohlen"
 
-#: src/treiber.rs:186
+#: src/treiber.rs:188
 msgid "third-party source"
 msgstr "Fremdquelle"
 
-#: src/treiber.rs:189
+#: src/treiber.rs:191
 msgid "in use"
 msgstr "in Gebrauch"
 
-#: src/treiber.rs:190
+#: src/treiber.rs:192
 msgid "installed, in use after a restart"
 msgstr "installiert, in Gebrauch nach einem Neustart"
 
-#: src/treiber.rs:191
+#: src/treiber.rs:193
 msgid "available"
 msgstr "verfügbar"
 
-#: src/treiber.rs:192
+#: src/treiber.rs:194
 msgid "not installed"
 msgstr "nicht installiert"
 
-#: src/treiber.rs:200
+#: src/treiber.rs:202
 msgid "Not authorized: the password was not accepted."
 msgstr "Nicht berechtigt: Das Passwort wurde nicht angenommen."
 
-#: src/treiber.rs:201
+#: src/treiber.rs:203
 msgid ""
 "The password dialog of the session (polkit agent) is not running. Log out and in again."
 msgstr ""
 "Der Passwortdialog der Sitzung (polkit-Agent) läuft nicht. Bitte ab- und wieder anmelden."
 
-#: src/treiber.rs:204
+#: src/treiber.rs:206
 msgid ""
 "Another program is installing software right now. Try again when it has finished."
 msgstr ""
 "Gerade installiert ein anderes Programm Software. Bitte erneut versuchen, wenn es fertig ist."
 
-#: src/treiber.rs:207
+#: src/treiber.rs:209
 msgid "No network connection."
 msgstr "Keine Netzwerkverbindung."
 
-#: src/treiber.rs:209
+#: src/treiber.rs:211
 #, no-c-format
 msgid "Package not found: {details}"
 msgstr "Paket nicht gefunden: {details}"
 
-#: src/treiber.rs:212
+#: src/treiber.rs:214
 #, no-c-format
 msgid "Packages conflict: {details}"
 msgstr "Pakete im Konflikt: {details}"
 
-#: src/treiber.rs:214
+#: src/treiber.rs:216
 msgid "The package management (PackageKit) stopped."
 msgstr "Die Paketverwaltung (PackageKit) wurde beendet."
 
-#: src/treiber.rs:215
+#: src/treiber.rs:217
 msgid "Cancelled."
 msgstr "Abgebrochen."
 
-#: src/treiber.rs:216
+#: src/treiber.rs:218
 #, no-c-format
 msgid "Package management error: {code} {details}"
 msgstr "Fehler der Paketverwaltung: {code} {details}"
 
-#: src/treiber.rs:235
+#: src/treiber.rs:237
 msgid "Looking for graphics cards and drivers …"
 msgstr "Grafikkarten und Treiber werden gesucht …"
 
-#: src/treiber.rs:259
+#: src/treiber.rs:261
 msgid "The search for drivers failed."
 msgstr "Die Suche nach Treibern ist fehlgeschlagen."
 
-#: src/treiber.rs:271
+#: src/treiber.rs:273
 msgid "Graphics"
 msgstr "Grafik"
 
-#: src/treiber.rs:289 src/treiber.rs:301
+#: src/treiber.rs:291 src/treiber.rs:303
 msgid "Graphics card:"
 msgstr "Grafikkarte:"
 
-#: src/treiber.rs:289
+#: src/treiber.rs:291
 msgid "none found"
 msgstr "keine gefunden"
 
-#: src/treiber.rs:308
+#: src/treiber.rs:310
 msgid "Kernel driver:"
 msgstr "Kerneltreiber:"
 
-#: src/treiber.rs:311
+#: src/treiber.rs:313
 #, no-c-format
 msgid "{module} (free)"
 msgstr "{module} (frei)"
 
-#: src/treiber.rs:313
+#: src/treiber.rs:315
 #, no-c-format
 msgid "{module} (proprietary)"
 msgstr "{module} (proprietär)"
 
-#: src/treiber.rs:314
+#: src/treiber.rs:316
 msgid "none loaded"
 msgstr "keiner geladen"
 
-#: src/treiber.rs:319
+#: src/treiber.rs:322
 msgid "OpenGL renderer:"
 msgstr "OpenGL-Renderer:"
 
-#: src/treiber.rs:323
+#: src/treiber.rs:326
 msgid "not measured"
 msgstr "nicht gemessen"
 
-#: src/treiber.rs:327
+#: src/treiber.rs:333
+msgid "Graphics card OpenGL:"
+msgstr "OpenGL der Karte:"
+
+#: src/treiber.rs:336
 msgid "This session:"
 msgstr "Diese Sitzung:"
 
-#: src/treiber.rs:329
-msgid "software OpenGL (llvmpipe), set by the session at login"
-msgstr "Software-OpenGL (llvmpipe), von der Sitzung bei der Anmeldung gesetzt"
+#: src/treiber.rs:338
+msgid "OpenGL on the graphics card with the free driver"
+msgstr "OpenGL auf der Grafikkarte mit dem freien Treiber"
 
-#: src/treiber.rs:335
-msgid "OpenGL on the graphics card through zink on NVK"
-msgstr "OpenGL auf der Grafikkarte über zink auf NVK"
+#: src/treiber.rs:340
+msgid "OpenGL on the graphics card with the proprietary NVIDIA driver"
+msgstr "OpenGL auf der Grafikkarte mit dem proprietären NVIDIA-Treiber"
 
-#: src/treiber.rs:337
+#: src/treiber.rs:343
+msgid "Software rendering: switched on in ~/.config/querencia/grafik.ini"
+msgstr "Software-Darstellung: eingeschaltet in ~/.config/querencia/grafik.ini"
+
+#: src/treiber.rs:345
+msgid ""
+"Software rendering: the session switched over at login because of a graphics problem with this card"
+msgstr "Software-Darstellung: Die Sitzung hat bei der Anmeldung umgeschaltet, weil es mit dieser Karte ein Grafikproblem gibt"
+
+#: src/treiber.rs:348
+msgid ""
+"Software rendering: no 3D acceleration, for example in a virtual machine without 3D graphics"
+msgstr "Software-Darstellung: keine 3D-Beschleunigung, zum Beispiel in einer virtuellen Maschine ohne 3D-Grafik"
+
+#: src/treiber.rs:351
 msgid "unknown"
 msgstr "unbekannt"
 
-#: src/treiber.rs:339
-msgid "OpenGL on the graphics card"
-msgstr "OpenGL auf der Grafikkarte"
-
-#: src/treiber.rs:347
+#: src/treiber.rs:359
 msgid "Available Drivers"
 msgstr "Verfügbare Treiber"
 
-#: src/treiber.rs:348
+#: src/treiber.rs:360
 msgid ""
 "Querencia default: the free driver. Choose the NVIDIA driver only if you need it."
 msgstr ""
 "Querencia-Vorgabe: der freie Treiber. Den NVIDIA-Treiber nur wählen, wenn Sie ihn brauchen."
 
-#: src/treiber.rs:353
+#: src/treiber.rs:365
 msgid ""
 "The list of drivers comes from the program ubuntu-drivers (package ubuntu-drivers-common), which is not installed."
 msgstr ""
 "Die Liste der Treiber liefert das Programm ubuntu-drivers (Paket ubuntu-drivers-common); es ist nicht installiert."
 
-#: src/treiber.rs:356
+#: src/treiber.rs:368
 msgid "Install ubuntu-drivers-common …"
 msgstr "ubuntu-drivers-common installieren …"
 
-#: src/treiber.rs:371
+#: src/treiber.rs:383
 #, no-c-format
 msgid "ubuntu-drivers did not answer: {error}"
 msgstr "ubuntu-drivers hat nicht geantwortet: {error}"
 
-#: src/treiber.rs:381
+#: src/treiber.rs:393
 msgid "This computer needs no additional drivers."
 msgstr "Dieser Rechner braucht keine zusätzlichen Treiber."
 
-#: src/treiber.rs:442
+#: src/treiber.rs:454
 msgid "Search Again"
 msgstr "Erneut suchen"
 
-#: src/treiber.rs:454
+#: src/treiber.rs:466
 msgid "Revert"
 msgstr "Zurücksetzen"
 
-#: src/treiber.rs:455
+#: src/treiber.rs:467
 msgid "Apply Changes"
 msgstr "Änderungen anwenden"
 
-#: src/treiber.rs:475
+#: src/treiber.rs:487
 msgid "Software OpenGL in the session"
 msgstr "Software-OpenGL in der Sitzung"
 
-#: src/treiber.rs:477
+#: src/treiber.rs:489
 msgid ""
 "With the free nouveau driver, programs draw OpenGL through Mesa zink on the Vulkan driver NVK. On NVIDIA cards this made web pages in Messages and Firefox crash or freeze. That is why the session switches OpenGL to software (llvmpipe) at login when it finds zink on NVK. Vulkan stays on the graphics card."
 msgstr ""
 "Mit dem freien Treiber nouveau zeichnen Programme OpenGL über Mesa zink auf dem Vulkan-Treiber NVK. Auf NVIDIA-Karten ließ das Webseiten in Nachrichten und Firefox abstürzen oder einfrieren. Deshalb stellt die Sitzung OpenGL bei der Anmeldung auf Software (llvmpipe) um, wenn sie zink auf NVK findet. Vulkan bleibt auf der Grafikkarte."
 
-#: src/treiber.rs:480
+#: src/treiber.rs:492
 msgid ""
 "Everything keeps working, but OpenGL is drawn by the processor: video, 3D and web pages with WebGL are slower and need more memory."
 msgstr ""
 "Alles funktioniert weiter, aber OpenGL zeichnet der Prozessor: Videos, 3D und Webseiten mit WebGL sind langsamer und brauchen mehr Speicher."
 
-#: src/treiber.rs:483
+#: src/treiber.rs:495
 msgid ""
 "The NVIDIA driver makes the fallback unnecessary: OpenGL then runs on the graphics card, and the session notices this at the next login by itself."
 msgstr ""
 "Mit dem NVIDIA-Treiber ist dieser Rückfall nicht mehr nötig: OpenGL läuft dann auf der Grafikkarte, und die Sitzung merkt das bei der nächsten Anmeldung von selbst."
 
-#: src/treiber.rs:490
+#: src/treiber.rs:502
 msgid ""
 "~/.config/querencia/grafik.ini switches software OpenGL on for every login (Software-OpenGL=an)."
 msgstr ""
 "~/.config/querencia/grafik.ini schaltet Software-OpenGL bei jeder Anmeldung ein (Software-OpenGL=an)."
 
-#: src/treiber.rs:493
+#: src/treiber.rs:505
 msgid ""
 "~/.config/querencia/grafik.ini switches software OpenGL off for every login (Software-OpenGL=aus)."
 msgstr ""
 "~/.config/querencia/grafik.ini schaltet Software-OpenGL bei jeder Anmeldung aus (Software-OpenGL=aus)."
 
-#: src/treiber.rs:496
+#: src/treiber.rs:508
 msgid ""
 "The session decides at every login (automatic). It can be fixed in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an or aus."
 msgstr ""
 "Die Sitzung entscheidet bei jeder Anmeldung (automatisch). Festlegen lässt es sich in ~/.config/querencia/grafik.ini: [Grafik] Software-OpenGL = an oder aus."
 
-#: src/treiber.rs:562
+#: src/treiber.rs:574
 msgid "Change Driver?"
 msgstr "Treiber wechseln?"
 
-#: src/treiber.rs:576
+#: src/treiber.rs:588
 msgid "These packages will be removed:"
 msgstr "Diese Pakete werden entfernt:"
 
-#: src/treiber.rs:578
+#: src/treiber.rs:590
 msgid "These packages will be installed:"
 msgstr "Diese Pakete werden installiert:"
 
-#: src/treiber.rs:590
+#: src/treiber.rs:602
 msgid ""
 "Your password is needed. The new driver is loaded after a restart of the computer."
 msgstr ""
 "Ihr Passwort wird gebraucht. Der neue Treiber wird nach einem Neustart des Rechners geladen."
 
-#: src/treiber.rs:596
+#: src/treiber.rs:608
 msgid "Change Driver"
 msgstr "Treiber wechseln"
 
-#: src/treiber.rs:645
+#: src/treiber.rs:657
 msgid "Connecting to the package management …"
 msgstr "Verbindung zur Paketverwaltung …"
 
-#: src/treiber.rs:656
+#: src/treiber.rs:668
 msgid "The driver was changed."
 msgstr "Der Treiber wurde gewechselt."
 
-#: src/treiber.rs:660
+#: src/treiber.rs:672
 msgid "Installed."
 msgstr "Installiert."
 
-#: src/treiber.rs:725
+#: src/treiber.rs:737
 msgid "Removing packages …"
 msgstr "Pakete werden entfernt …"
 
-#: src/treiber.rs:726
+#: src/treiber.rs:738
 msgid "Downloading and installing packages …"
 msgstr "Pakete werden heruntergeladen und installiert …"
 
-#: src/treiber.rs:741
+#: src/treiber.rs:753
 msgid "Waiting for another program that installs software …"
 msgstr "Warten auf ein anderes Programm, das Software installiert …"
 
-#: src/treiber.rs:761
+#: src/treiber.rs:773
 #, no-c-format
 msgid "Could not open the restart question: {error}"
 msgstr "Die Rückfrage zum Neustart ließ sich nicht öffnen: {error}"
 
-#: src/treiber.rs:823
+#: src/treiber.rs:844
 #, no-c-format
 msgid "{driver} is installed and is used after a restart."
 msgstr "{driver} ist installiert und wird nach einem Neustart verwendet."
 
-#: src/treiber.rs:827
+#: src/treiber.rs:848
 msgid "A free driver is in use."
 msgstr "Ein freier Treiber ist in Gebrauch."
 
-#: src/treiber.rs:828
+#: src/treiber.rs:849
 msgid "A proprietary driver is in use."
 msgstr "Ein proprietärer Treiber ist in Gebrauch."
 
-#: src/treiber.rs:830
+#: src/treiber.rs:851
 #, no-c-format
 msgid "The driver {module} stays loaded until the restart."
 msgstr "Der Treiber {module} bleibt bis zum Neustart geladen."
 
-#: src/treiber.rs:834
+#: src/treiber.rs:855
 msgid "None of these drivers is loaded right now."
 msgstr "Keiner dieser Treiber ist gerade geladen."
 

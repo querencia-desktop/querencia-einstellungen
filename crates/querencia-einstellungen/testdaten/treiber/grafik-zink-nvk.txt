@@ -1,0 +1,6 @@
+renderer=zink Vulkan 1.4(NVIDIA GeForce RTX 3060 (NVK GA106) (MESA_NVK))
+vendor=Mesa
+version=OpenGL ES 3.2 Mesa 26.0.8-1ubuntu0.3
+treiber=zink
+egl=Mesa Project
+dauer-ms=357

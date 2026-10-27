@@ -1,0 +1,6 @@
+== /sys/devices/pci0000:00/0000:00:02.0 ==
+modalias : pci:v00008086d000046A6sv000017AAsd000022E6bc03sc00i00
+vendor   : Intel Corporation
+model    : Alder Lake-P GT2 [Iris Xe Graphics]
+driver   : xserver-xorg-video-intel - distro free builtin
+

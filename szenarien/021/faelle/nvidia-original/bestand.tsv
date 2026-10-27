@@ -1,0 +1,18 @@
+bash	5.3-1ubuntu1	1	GNU Bourne Again SHell
+ubuntu-drivers-common	1:0.10.4	1	Detect and install additional Ubuntu driver packages
+xserver-xorg-video-nouveau	1:1.0.18-1	1	X.Org X server -- Nouveau display driver
+nvidia-driver-615-open	615.48.03-0ubuntu1	1	NVIDIA driver (open kernel) metapackage
+nvidia-driver-615	615.48.03-0ubuntu1	0	NVIDIA driver metapackage
+nvidia-driver-580-server-open	580.95.05-0ubuntu1	0	NVIDIA Server Driver (open kernel) metapackage
+linux-modules-nvidia-615-open-generic	6.20.0-11.11	1	Extra drivers for nvidia-615-open for the generic flavour
+linux-modules-nvidia-615-generic	6.20.0-11.11	0	Extra drivers for nvidia-615 for the generic flavour
+libnvidia-gl-615	615.48.03-0ubuntu1	1	NVIDIA (libnvidia-gl-615)
+libnvidia-compute-615	615.48.03-0ubuntu1	1	NVIDIA (libnvidia-compute-615)
+libnvidia-common-615	615.48.03-0ubuntu1	1	NVIDIA (libnvidia-common-615)
+nvidia-kernel-common-615	615.48.03-0ubuntu1	1	NVIDIA (nvidia-kernel-common-615)
+nvidia-utils-615	615.48.03-0ubuntu1	1	NVIDIA (nvidia-utils-615)
+nvidia-firmware-615-615.48.03	615.48.03-0ubuntu1	1	NVIDIA (nvidia-firmware-615-615.48.03)
+xserver-xorg-video-nvidia-615	615.48.03-0ubuntu1	1	NVIDIA (xserver-xorg-video-nvidia-615)
+linux-modules-nvidia-615-open-6.20.0-11-generic	615.48.03-0ubuntu1	1	NVIDIA (linux-modules-nvidia-615-open-6.20.0-11-generic)
+libnvidia-egl-wayland1	615.48.03-0ubuntu1	1	NVIDIA (libnvidia-egl-wayland1)
+nvidia-settings	615.48.03-0ubuntu1	1	NVIDIA (nvidia-settings)

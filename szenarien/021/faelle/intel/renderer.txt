@@ -1,0 +1,5 @@
+renderer=Mesa Intel(R) Iris(R) Xe Graphics (ADL GT2)
+vendor=Intel
+version=OpenGL ES 3.2 Mesa 26.0.8
+treiber=iris
+dauer-ms=88

@@ -20,7 +20,9 @@ use qs_paketkit::PaketKit;
 use qs_typen::{Abbruch, Fehler, Fortschritt, Paketquelle, Vorgang};
 
 use crate::i18n::{gettext, gettext_f};
-use crate::treiber_modell::{self as modell, Befund, Liste, UdGeraet, UdTreiber, Zustand};
+use crate::treiber_modell::{
+    self as modell, Befund, Darstellung, Liste, UdGeraet, UdTreiber, Zustand,
+};
 
 /// Sichtbarer Name der Seite.
 pub const NAME: &str = "Drivers";
@@ -315,28 +317,38 @@ impl Seite {
                 },
             );
         }
+        let sitzung = b.sitzungs_renderer();
         setzen(
             gettext("OpenGL renderer:"),
-            match &b.renderer {
+            match sitzung {
                 Ok(r) => r.renderer.clone(),
                 // der Grund (Ausgabe von querencia-sitzung) steht im Protokoll
                 Err(_) => gettext("not measured"),
             },
         );
+        // Nach dem Umschalten: was die Karte ohne die Variablen liefert
+        if let (Ok(karte), Some(s)) = (&b.renderer, &b.renderer_sitzung)
+            && s.as_ref().map_or(true, |s| s.renderer != karte.renderer)
+        {
+            setzen(gettext("Graphics card OpenGL:"), karte.renderer.clone());
+        }
         setzen(
             gettext("This session:"),
-            if b.software_gl {
-                gettext("software OpenGL (llvmpipe), set by the session at login")
-            } else if b
-                .renderer
-                .as_ref()
-                .is_ok_and(|r| modell::ist_zink_auf_nvk(&r.renderer))
-            {
-                gettext("OpenGL on the graphics card through zink on NVK")
-            } else if b.renderer.is_err() {
-                gettext("unknown")
-            } else {
-                gettext("OpenGL on the graphics card")
+            match b.darstellung() {
+                Darstellung::Frei => gettext("OpenGL on the graphics card with the free driver"),
+                Darstellung::Proprietaer => {
+                    gettext("OpenGL on the graphics card with the proprietary NVIDIA driver")
+                }
+                Darstellung::SoftwareUmgeschaltet if b.grafik_ini == "an" => {
+                    gettext("Software rendering: switched on in ~/.config/querencia/grafik.ini")
+                }
+                Darstellung::SoftwareUmgeschaltet => gettext(
+                    "Software rendering: the session switched over at login because of a graphics problem with this card",
+                ),
+                Darstellung::SoftwareOhne3d => gettext(
+                    "Software rendering: no 3D acceleration, for example in a virtual machine without 3D graphics",
+                ),
+                Darstellung::Unbekannt => gettext("unknown"),
             },
         );
         self.inhalt.append(&raster);
@@ -468,7 +480,7 @@ impl Seite {
 
     fn hinweis_zeigen(&self, b: &Befund) {
         let nvidia = b.karten.iter().any(modell::Karte::ist_nvidia);
-        if !nvidia && !b.software_gl {
+        if !b.software_gl && (!nvidia || b.darstellung() == Darstellung::Proprietaer) {
             return;
         }
         self.hinweis
@@ -797,16 +809,25 @@ fn befund_zeile(b: &Befund) -> String {
             .join(" "),
     };
     format!(
-        "karten=[{}] liste=[{}] renderer={} software-gl={} grafik.ini={}",
+        "karten=[{}] liste=[{}] renderer={} sitzung={} software-gl={} grafik.ini={} darstellung={:?}",
         karten.join(" "),
         liste,
-        match &b.renderer {
-            Ok(r) => format!("„{}“", r.renderer),
-            Err(e) => format!("nicht gemessen ({e})"),
+        gemessen(&b.renderer),
+        match &b.renderer_sitzung {
+            Some(r) => gemessen(r),
+            None => "gleich".to_string(),
         },
         b.software_gl,
-        b.grafik_ini
+        b.grafik_ini,
+        b.darstellung()
     )
+}
+
+fn gemessen(r: &Result<modell::Renderer, String>) -> String {
+    match r {
+        Ok(r) => format!("„{}“", r.renderer),
+        Err(e) => format!("nicht gemessen ({e})"),
+    }
 }
 
 /// Ein Satz zum Stand des Geräts unter der Liste.

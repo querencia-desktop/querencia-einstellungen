@@ -1,4 +1,4 @@
-# Seite „Treiber“ (Einstellungen 0.2.0, QD-170)
+# Seite „Treiber“ (Einstellungen 0.2.0, QD-170; Zeile „Diese Sitzung“ 0.2.1)
 
 Vorbild ist „Zusätzliche Treiber“ von Ubuntu (software-properties-gtk mit
 ubuntu-drivers-common): je Gerät die Treiber, die Ubuntu dafür kennt, zur
@@ -21,18 +21,37 @@ Erst wenn sie zum ersten Mal sichtbar wird, in einem Hintergrund-Thread
 | Angabe | Quelle |
 |---|---|
 | Grafikkarten | `/sys/bus/pci/devices/*`: PCI-Klasse `0x03xxxx`, `vendor`, `device`, `boot_vga` |
-| Kerneltreiber | Name des Links `driver` im Geräteordner (`nouveau`, `nvidia`, `amdgpu`, `i915`, `xe` …), wie `render_treiber` des Sitzungsstarters |
+| Kerneltreiber | Name des Links `driver` im Geräteordner (`nouveau`, `nvidia`, `amdgpu`, `i915`, `xe` …), wie `render_treiber` des Sitzungsstarters; bei `virtio-pci` der Treiber des Kindgeräts `virtio<n>` (`virtio_gpu`, 0.2.1) |
 | Gerätename | Zeile `model` aus `ubuntu-drivers devices`, sonst `lspci -vmm -s <adresse>` |
 | Treiberliste | `ubuntu-drivers devices`: je Gerät `driver : <paket> - distro|third-party free|non-free [recommended] [builtin]` |
 | Kernelmodul-Paket | `ubuntu-drivers list`: `<paket>, (kernel modules provided by <modulpaket>)` |
 | installiert | `dpkg-query -W -f '${Package}\t${db:Status-Abbrev}\n'`, nur Status `ii` |
-| OpenGL-Renderer | `querencia-sitzung --grafik-pruefen` (EGL ohne Fenster, Zeitgrenze 5 s) **ohne** die drei Software-Variablen, also der Hardware-Weg |
+| OpenGL-Renderer | `querencia-sitzung --grafik-pruefen` (EGL ohne Fenster, Zeitgrenze 5 s) **ohne** die drei Software-Variablen, also der Hardware-Weg; sind die Variablen gesetzt, ein zweites Mal **mit** ihnen (was die Programme der Sitzung bekommen, 0.2.1). Die Zeile „OpenGL-Renderer“ zeigt diese Sitzungsmessung, „OpenGL der Karte“ dann die Hardware-Messung |
 | Software-OpenGL der Sitzung | die eigene Umgebung: `LIBGL_ALWAYS_SOFTWARE=1`, `GALLIUM_DRIVER=llvmpipe` oder `MESA_LOADER_DRIVER_OVERRIDE=llvmpipe` (vom Sitzungsstarter für Autostart und Aktivierung gesetzt) |
 | Übersteuerung | `~/.config/querencia/grafik.ini` `[Grafik] Software-OpenGL = automatisch | an | aus` (wie der Starter: letzter Wert, unbekannt = automatisch) |
 
 Fehlt `ubuntu-drivers` im `PATH`, sagt die Seite das und bietet „ubuntu-drivers-common
 installieren …“ an (gleicher PackageKit-Weg wie unten). Grafik, Kerneltreiber
 und Renderer zeigt sie trotzdem.
+
+## Zeile „Diese Sitzung“ (0.2.1)
+
+Quelle sind die gemessenen Renderer und die Kernelmodule, nicht die
+Paketliste (`treiber_modell::darstellung`). Befund P-1 aus Alpha 3.4: 0.2.0
+leitete die Zeile nur aus den Variablen ab und zeigte in einer VM mit
+llvmpipe „OpenGL auf der Grafikkarte“.
+
+| Fall | Bedingung | Text (de) |
+|---|---|---|
+| frei | Renderer der Karte (z. B. „AMD …“, „Mesa Intel …“, „zink … NVK“ ohne Variablen) | OpenGL auf der Grafikkarte mit dem freien Treiber |
+| proprietär | Renderer von NVIDIA (Hersteller „NVIDIA Corporation“) und Modul `nvidia` geladen | OpenGL auf der Grafikkarte mit dem proprietären NVIDIA-Treiber |
+| umgeschaltet | Variablen gesetzt, Sitzungsmessung llvmpipe/softpipe, die Karte selbst kann OpenGL | Software-Darstellung: Die Sitzung hat bei der Anmeldung umgeschaltet, weil es mit dieser Karte ein Grafikproblem gibt (bei `grafik.ini` `an`: „eingeschaltet in ~/.config/querencia/grafik.ini“) |
+| ohne 3D | schon die Messung ohne Variablen liefert llvmpipe/softpipe (VM ohne 3D, Karte ohne Treiber) | Software-Darstellung: keine 3D-Beschleunigung, zum Beispiel in einer virtuellen Maschine ohne 3D-Grafik |
+| unbekannt | keine Messung und keine Variablen | unbekannt |
+
+Die Messung geht den Variablen vor (der NVIDIA-Treiber beachtet sie nicht);
+fehlt die Sitzungsmessung, zählen die Variablen allein. Der Hinweis
+„Software-OpenGL“ unten erscheint nicht mehr, wenn der NVIDIA-Treiber zeichnet.
 
 ## Zustände und Wahl
 
@@ -92,7 +111,8 @@ neu.
 
 ## Hinweis Software-OpenGL
 
-Bei einer NVIDIA-Karte oder wenn die Sitzung Software-OpenGL nutzt, erklärt
+Bei einer NVIDIA-Karte (nicht mehr, wenn der NVIDIA-Treiber zeichnet, 0.2.1)
+oder wenn die Sitzung Software-OpenGL nutzt, erklärt
 die Seite den Rückfall (QD-169): zink auf NVK ließ WebKit und Firefox
 abstürzen, deshalb schaltet der Sitzungsstarter OpenGL bei der Anmeldung auf
 llvmpipe, Vulkan bleibt auf der Karte; Preis: OpenGL auf dem Prozessor. Mit
@@ -107,6 +127,14 @@ nichts; sie nennt nur `grafik.ini`.
   (Fixtures unter `testdaten/treiber/`), Rauschen und doppelte Zeilen,
   `ubuntu-drivers list`, dpkg-Status, Zweig-Satz, Wechselplan, Neustart,
   Renderer, Umgebung, `grafik.ini`, sysfs-Attrappen, fehlendes Werkzeug.
+- 0.2.1: `darstellung_aus_messung_und_modul`, `befund_nimmt_den_sitzungsrenderer`,
+  `virtio_grafiktreiber_am_kindgeraet` mit den Fixtures `testdaten/treiber/grafik-*.txt`
+  (llvmpipe VM und umgeschaltet, softpipe, zink/NVK, radeonsi, NVIDIA). GUI
+  `werkzeug/021-gui-lauf.sh` (Fälle `szenarien/021/faelle/`, darunter
+  `vm-llvmpipe` und `nvidia-nouveau-ohne-sw`; Stub `querencia-sitzung` mit
+  `renderer-software.txt` bei `LIBGL_ALWAYS_SOFTWARE=1`; `020-lauf.sh` nimmt
+  `FAELLE`/`STUBS` und Modul `a/b` für ein virtio-Kindgerät), Auswertung
+  `werkzeug/auswerten-021.py`.
 - GUI: `werkzeug/020-gui-lauf.sh` mit `werkzeug/020-lauf.sh`. Prüfschalter
   der Seite: `QE_TREIBER_SYSFS=<ordner>` (sysfs-Attrappe; dann kein `lspci`).
   Die Stubs `ubuntu-drivers`, `dpkg-query`, `querencia-sitzung` liegen in

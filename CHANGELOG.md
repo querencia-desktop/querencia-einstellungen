@@ -12,6 +12,23 @@ zusammengefasst.
 - Die Seite „Panels“ zeigt den Aufbau nur an; Lage und Höhe der Panels sind
   noch fest.
 
+## [0.2.1] – 2026-10-27
+
+### Behoben
+- Seite „Treiber“: Die Zeile „Diese Sitzung“ folgt jetzt dem gemessenen
+  Renderer und dem Kernelmodul. Sie unterscheidet OpenGL auf der Grafikkarte
+  mit dem freien Treiber, mit dem proprietären NVIDIA-Treiber und
+  Software-Darstellung – mit dem Grund: die Sitzung hat wegen eines
+  Grafikproblems umgeschaltet, oder es gibt keine 3D-Beschleunigung (z. B.
+  eine virtuelle Maschine). Bisher stand in einer VM mit llvmpipe „OpenGL auf
+  der Grafikkarte“.
+- „OpenGL-Renderer“ zeigt, was die Programme dieser Sitzung bekommen; nach
+  dem Umschalten nennt „OpenGL der Karte“ den Renderer der Grafikkarte.
+- Virtuelle Grafik (virtio): als Kerneltreiber steht `virtio_gpu` statt
+  `virtio-pci`.
+- Der Hinweis „Software-OpenGL in der Sitzung“ entfällt, wenn der
+  NVIDIA-Treiber zeichnet.
+
 ## [0.2.0] – 2026-10-27
 
 ### Hinzugefügt

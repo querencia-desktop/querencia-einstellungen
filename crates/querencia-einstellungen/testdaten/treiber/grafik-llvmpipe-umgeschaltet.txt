@@ -1,0 +1,6 @@
+renderer=llvmpipe (LLVM 21.1.8, 256 bits)
+vendor=Mesa
+version=OpenGL ES 3.2 Mesa 26.0.8-1ubuntu0.3
+treiber=swrast
+egl=Mesa Project
+dauer-ms=67
